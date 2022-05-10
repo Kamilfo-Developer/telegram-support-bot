@@ -1,3 +1,9 @@
+#Tokens, other pricate data
+config.py
+
+# Certificates
+ca-certificates
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
