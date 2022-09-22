@@ -2,28 +2,32 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.db_config import Base
 from bot.db.models.question_model import QuestionModel
 from bot.db.models.answer_model import AnswerModel
+from bot.db.models.user_model import UserModel
+from bot.db.db_config import is_uuid_binary
 
 
-class SupportUserModel(Base):
+class SupportUserModel(UserModel):
     __tablename__ = "support_users"
 
-    id = Column(UUIDType(binary=True), primary_key=True, default=uuid4)
-
-    # Unique telegram id that's given
-    # to a user when chatting started
-    tg_bot_user_id = Column(Integer, nullable=True, default=None)
+    id = Column(
+        UUIDType(binary=is_uuid_binary),
+        ForeignKey("users.id"),
+        primary_key=True,
+        default=uuid4,
+    )
 
     current_question_id = Column(
-        UUIDType(binary=True),
+        UUIDType(binary=is_uuid_binary),
         ForeignKey("questions.id"),
         nullable=True,
         default=None,
     )
 
-    current_question = relationship("QuestionModel", uselist=False)
+    current_question = relationship(
+        "QuestionModel", uselist=False, overlaps="current_support_user"
+    )
 
     role_id = Column(
         Integer, ForeignKey("roles.id"), nullable=True, default=None
