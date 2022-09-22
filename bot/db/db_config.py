@@ -8,6 +8,8 @@ import pathlib
 # SQLAlchemy base
 Base = declarative_base()
 
+# Should the uuids stored as bytes?
+is_uuid_binary = False
 
 db_name = "data"
 

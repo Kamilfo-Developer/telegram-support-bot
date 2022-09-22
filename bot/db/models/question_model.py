@@ -3,17 +3,19 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.db_config import Base
+from bot.db.db_config import Base, is_uuid_binary
 from bot.db.models.answer_model import AnswerModel
 
 
 class QuestionModel(Base):
     __tablename__ = "questions"
 
-    id = Column(UUIDType(binary=True), primary_key=True, default=uuid4)
+    id = Column(
+        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
+    )
 
     regular_user_id = Column(
-        UUIDType(binary=True), ForeignKey("regular_users.id")
+        UUIDType(binary=is_uuid_binary), ForeignKey("regular_users.id")
     )
 
     answers = relationship("AnswerModel", cascade="all, delete-orphan")
@@ -22,7 +24,7 @@ class QuestionModel(Base):
 
     message = Column(Text)
 
-    tg_message_id = Column(Integer, nullable=True)
+    tg_message_id = Column(Integer, nullable=True, unique=True)
 
     date = Column(DateTime, nullable=False, default=datetime.now)
 

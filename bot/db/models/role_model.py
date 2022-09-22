@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Boolean, Integer, String, DateTime
 from bot.db.db_config import Base
+from bot.db.models.support_user_model import SupportUserModel
 
 
 class RoleModel(Base):
@@ -11,7 +12,7 @@ class RoleModel(Base):
 
     users = relationship("SupportUserModel")
 
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
 
     date = Column(DateTime, nullable=False, default=datetime.now)
 
@@ -26,3 +27,14 @@ class RoleModel(Base):
     # If False the support user cannot assing roles
     # to other users
     can_assign_roles = Column(Boolean, default=False)
+
+    def add_user(self, support_user: SupportUserModel):
+        """Binds question to the support_user
+
+        Needed to be commited using session.commit()
+
+        Args:
+            support_user (SupportUserModel): a user, which will be added
+            to users with this role
+        """
+        self.users.append(support_user)
