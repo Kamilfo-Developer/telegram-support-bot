@@ -1,18 +1,24 @@
 from datetime import datetime
+from uuid import uuid4
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Boolean, Integer, String, DateTime
-from bot.db.db_config import Base
+from sqlalchemy import Column, Boolean, String, DateTime, Text
+from sqlalchemy_utils import UUIDType
+from bot.db.db_config import Base, is_uuid_binary
 from bot.db.models.support_user_model import SupportUserModel
 
 
 class RoleModel(Base):
     __tablename__ = "roles"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(
+        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
+    )
 
     users = relationship("SupportUserModel")
 
     name = Column(String, nullable=False, unique=True)
+
+    description = Column(Text, nullable=False, default="")
 
     date = Column(DateTime, nullable=False, default=datetime.now)
 

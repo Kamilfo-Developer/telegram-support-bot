@@ -17,7 +17,10 @@ class RegularUserModel(UserModel):
         default=uuid4,
     )
 
-    questions = relationship("QuestionModel", cascade="all, delete")
+    questions = relationship(
+        "QuestionModel",
+        cascade="all, delete, delete-orphan",
+    )
 
     def add_question(self, question: QuestionModel):
         """Adds question to this user

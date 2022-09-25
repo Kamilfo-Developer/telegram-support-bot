@@ -1,20 +1,19 @@
-from bot.roles import Role
 from uuid import UUID
 import abc
 
 
 class RolesRepository(abc.ABC):
-    def get_all_roles():
+    def get_all_roles(self):
         raise NotImplementedError
 
-    def delete_all_roles():
+    def delete_all_roles(self):
         raise NotImplementedError
 
-    def delete_role(role_id: UUID):
+    def delete_role(self, role_id: UUID):
         raise NotImplementedError
 
-    def get_role(role_id: UUID):
+    def get_role(self, role_id: UUID):
         raise NotImplementedError
 
-    def add_role(role: Role):
+    def add_role(self, role):
         raise NotImplementedError

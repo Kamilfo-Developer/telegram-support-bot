@@ -13,11 +13,13 @@ class AnswerModel(Base):
     )
 
     support_user_id = Column(
-        UUIDType(binary=is_uuid_binary), ForeignKey("support_users.id")
+        UUIDType(binary=is_uuid_binary),
+        ForeignKey("support_users.id", ondelete="CASCADE"),
     )
 
     question_id = Column(
-        UUIDType(binary=is_uuid_binary), ForeignKey("questions.id")
+        UUIDType(binary=is_uuid_binary),
+        ForeignKey("questions.id", ondelete="CASCADE"),
     )
 
     message = Column(Text)

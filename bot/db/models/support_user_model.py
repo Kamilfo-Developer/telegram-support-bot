@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.models.question_model import QuestionModel
@@ -30,10 +30,13 @@ class SupportUserModel(UserModel):
     )
 
     role_id = Column(
-        Integer, ForeignKey("roles.id"), nullable=True, default=None
+        UUIDType(binary=is_uuid_binary),
+        ForeignKey("roles.id"),
+        nullable=True,
+        default=None,
     )
 
-    answers = relationship("AnswerModel", cascade="all, delete")
+    answers = relationship("AnswerModel", passive_deletes="all")
 
     def bind_question(self, question: QuestionModel):
         """Binds question to the support_user

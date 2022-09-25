@@ -15,7 +15,8 @@ class QuestionModel(Base):
     )
 
     regular_user_id = Column(
-        UUIDType(binary=is_uuid_binary), ForeignKey("regular_users.id")
+        UUIDType(binary=is_uuid_binary),
+        ForeignKey("regular_users.id", ondelete="CASCADE"),
     )
 
     answers = relationship("AnswerModel", cascade="all, delete-orphan")
@@ -35,6 +36,6 @@ class QuestionModel(Base):
 
         Args:
             answer (AnswerModel): an answer that will be added to
-            the user answers
+            the user's answers
         """
         self.answers.append(answer)
