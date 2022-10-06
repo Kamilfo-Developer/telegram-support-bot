@@ -5,7 +5,7 @@ from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
-from tests.test_db_config import engine, async_session
+from tests.db_test_config import engine, async_session
 from bot.db.db_config import Base
 from bot.db.models.answer_model import AnswerModel
 from bot.db.models.question_model import QuestionModel
@@ -14,7 +14,6 @@ from bot.db.models.role_model import RoleModel
 from bot.db.models.support_user_model import SupportUserModel
 from bot.db.repositories.answers_repository import AnswersRepository
 from bot.db.db_config import async_session
-from bot.utils import get_session
 
 
 class SAAnswersRepo(AnswersRepository):
@@ -31,7 +30,7 @@ class SAAnswersRepo(AnswersRepository):
     async def get_all_answers(self) -> Iterable[AnswerModel]:
         session = self.session
 
-        q = select(AnswerModel)
+        q = select(AnswerModel).options()
 
         return (await session.execute(q)).scalars().all()
 
@@ -93,3 +92,5 @@ class SAAnswersRepo(AnswersRepository):
         except Exception as err:
             await self.session.rollback()
             raise err
+        finally:
+            await self.session.close()

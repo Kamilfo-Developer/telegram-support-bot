@@ -10,11 +10,16 @@ from bot.db.models.support_user_model import SupportUserModel
 class RoleModel(Base):
     __tablename__ = "roles"
 
+    # RELATIONSHIPS
+
+    # Users relationship
+    users = relationship("SupportUserModel", back_populates="role")
+
+    # PROPERTIES
+
     id = Column(
         UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
     )
-
-    users = relationship("SupportUserModel")
 
     name = Column(String, nullable=False, unique=True)
 
@@ -33,6 +38,8 @@ class RoleModel(Base):
     # If False the support user cannot assing roles
     # to other users
     can_assign_roles = Column(Boolean, default=False)
+
+    # METHODS
 
     def add_user(self, support_user: SupportUserModel):
         """Binds question to the support_user

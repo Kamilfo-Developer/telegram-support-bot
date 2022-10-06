@@ -10,24 +10,38 @@ from bot.db.models.answer_model import AnswerModel
 class QuestionModel(Base):
     __tablename__ = "questions"
 
-    id = Column(
-        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
-    )
+    # RELATIONSHIPS
 
+    # Regular User relationship
     regular_user_id = Column(
         UUIDType(binary=is_uuid_binary),
         ForeignKey("regular_users.id", ondelete="CASCADE"),
     )
 
-    answers = relationship("AnswerModel", cascade="all, delete-orphan")
+    regular_user = relationship("RegularUserModel", back_populates="questions")
 
-    current_support_user = relationship("SupportUserModel", uselist=False)
+    # Answers for the question relationship
+    answers = relationship(
+        "AnswerModel", passive_deletes=True, back_populates="question"
+    )
+
+    # Support User that binded the question relationship
+    current_support_user = relationship(
+        "SupportUserModel", uselist=False, back_populates="current_question"
+    )
+
+    # PROPERTIES
+    id = Column(
+        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
+    )
 
     message = Column(Text)
 
     tg_message_id = Column(Integer, nullable=True, unique=True)
 
     date = Column(DateTime, nullable=False, default=datetime.now)
+
+    # METHODS
 
     def add_answer(self, answer: AnswerModel):
         """Adds answer to this user's answers

@@ -10,6 +10,7 @@ from bot.db.db_config import is_uuid_binary
 class RegularUserModel(UserModel):
     __tablename__ = "regular_users"
 
+    # User id
     id = Column(
         UUIDType(binary=is_uuid_binary),
         ForeignKey("users.id"),
@@ -17,11 +18,14 @@ class RegularUserModel(UserModel):
         default=uuid4,
     )
 
+    # RELATIONSHIPS
+
+    # Questions relationship
     questions = relationship(
-        "QuestionModel",
-        cascade="all, delete, delete-orphan",
+        "QuestionModel", passive_deletes=True, back_populates="regular_user"
     )
 
+    # METHODS
     def add_question(self, question: QuestionModel):
         """Adds question to this user
 

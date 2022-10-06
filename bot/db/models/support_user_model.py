@@ -11,6 +11,7 @@ from bot.db.db_config import is_uuid_binary
 class SupportUserModel(UserModel):
     __tablename__ = "support_users"
 
+    # User id
     id = Column(
         UUIDType(binary=is_uuid_binary),
         ForeignKey("users.id"),
@@ -18,6 +19,9 @@ class SupportUserModel(UserModel):
         default=uuid4,
     )
 
+    # RELATIONSHIPS
+
+    # Current question relationship
     current_question_id = Column(
         UUIDType(binary=is_uuid_binary),
         ForeignKey("questions.id"),
@@ -26,9 +30,10 @@ class SupportUserModel(UserModel):
     )
 
     current_question = relationship(
-        "QuestionModel", uselist=False, overlaps="current_support_user"
+        "QuestionModel", uselist=False, back_populates="current_support_user"
     )
 
+    # Role relationship
     role_id = Column(
         UUIDType(binary=is_uuid_binary),
         ForeignKey("roles.id"),
@@ -36,7 +41,15 @@ class SupportUserModel(UserModel):
         default=None,
     )
 
-    answers = relationship("AnswerModel", passive_deletes="all")
+    role = relationship("RoleModel", back_populates="users")
+
+    # Answers relationship
+
+    answers = relationship(
+        "AnswerModel", passive_deletes="all", back_populates="support_user"
+    )
+
+    # METHODS
 
     def bind_question(self, question: QuestionModel):
         """Binds question to the support_user

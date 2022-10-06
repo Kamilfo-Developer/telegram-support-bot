@@ -7,6 +7,7 @@ from bot.db.db_config import Base, is_uuid_binary
 class UserModel(Base):
     __tablename__ = "users"
 
+    # PROPERTIES
     id = Column(
         UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
     )
