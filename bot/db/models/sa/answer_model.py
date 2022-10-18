@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.db_config import Base, is_uuid_binary
+from bot.db.db_settings import Base, BINARY_UUID
 
 
 class AnswerModel(Base):
@@ -13,7 +13,7 @@ class AnswerModel(Base):
 
     # Support User relationship
     support_user_id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("support_users.id", ondelete="CASCADE"),
     )
 
@@ -21,16 +21,14 @@ class AnswerModel(Base):
 
     # Question relationship
     question_id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("questions.id", ondelete="CASCADE"),
     )
 
     question = relationship("QuestionModel", back_populates="answers")
 
     # PROPERTIES
-    id = Column(
-        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
-    )
+    id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
 
     message = Column(Text)
 

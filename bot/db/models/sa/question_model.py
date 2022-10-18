@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.db_config import Base, is_uuid_binary
-from bot.db.models.answer_model import AnswerModel
+from bot.db.db_settings import Base, BINARY_UUID
+from bot.db.models.sa.answer_model import AnswerModel
 
 
 class QuestionModel(Base):
@@ -14,7 +14,7 @@ class QuestionModel(Base):
 
     # Regular User relationship
     regular_user_id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("regular_users.id", ondelete="CASCADE"),
     )
 
@@ -31,9 +31,7 @@ class QuestionModel(Base):
     )
 
     # PROPERTIES
-    id = Column(
-        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
-    )
+    id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
 
     message = Column(Text)
 

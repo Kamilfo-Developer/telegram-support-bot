@@ -2,10 +2,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.models.question_model import QuestionModel
-from bot.db.models.answer_model import AnswerModel
-from bot.db.models.user_model import UserModel
-from bot.db.db_config import is_uuid_binary
+from bot.db.models.sa.question_model import QuestionModel
+from bot.db.models.sa.answer_model import AnswerModel
+from bot.db.models.sa.user_model import UserModel
+from bot.db.db_settings import BINARY_UUID
 
 
 class SupportUserModel(UserModel):
@@ -13,7 +13,7 @@ class SupportUserModel(UserModel):
 
     # User id
     id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("users.id"),
         primary_key=True,
         default=uuid4,
@@ -23,7 +23,7 @@ class SupportUserModel(UserModel):
 
     # Current question relationship
     current_question_id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("questions.id"),
         nullable=True,
         default=None,
@@ -35,7 +35,7 @@ class SupportUserModel(UserModel):
 
     # Role relationship
     role_id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("roles.id"),
         nullable=True,
         default=None,

@@ -2,9 +2,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.models.question_model import QuestionModel
-from bot.db.models.user_model import UserModel
-from bot.db.db_config import is_uuid_binary
+from bot.db.models.sa.question_model import QuestionModel
+from bot.db.models.sa.user_model import UserModel
+from bot.db.db_settings import BINARY_UUID
 
 
 class RegularUserModel(UserModel):
@@ -12,7 +12,7 @@ class RegularUserModel(UserModel):
 
     # User id
     id = Column(
-        UUIDType(binary=is_uuid_binary),
+        UUIDType(binary=BINARY_UUID),
         ForeignKey("users.id"),
         primary_key=True,
         default=uuid4,

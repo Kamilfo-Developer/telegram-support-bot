@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Boolean, String, DateTime, Text
 from sqlalchemy_utils import UUIDType
-from bot.db.db_config import Base, is_uuid_binary
-from bot.db.models.support_user_model import SupportUserModel
+from bot.db.db_settings import Base, BINARY_UUID
+from bot.db.models.sa.support_user_model import SupportUserModel
 
 
 class RoleModel(Base):
@@ -17,9 +17,7 @@ class RoleModel(Base):
 
     # PROPERTIES
 
-    id = Column(
-        UUIDType(binary=is_uuid_binary), primary_key=True, default=uuid4
-    )
+    id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
 
     name = Column(String, nullable=False, unique=True)
 

@@ -11,20 +11,20 @@ import pathlib
 Base = declarative_base()
 
 # Should the uuids stored as bytes?
-is_uuid_binary = False
+BINARY_UUID = False
 
-db_provider_name = "sqlite"
+DB_PROVIDER_NAME = "sqlite"
 
-db_driver_name = "aiosqlite"
+DB_DRIVER_NAME = "aiosqlite"
 
-db_name = "data"
+DB_NAME = "data"
 
 
 curr_dir = pathlib.Path().resolve()
 
 # URL for your database
-db_URL = f"{db_provider_name}+{db_driver_name}:///" + os.path.join(
-    curr_dir, f"{db_name}.db"
+db_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
+    curr_dir, f"{DB_NAME}.db"
 )
 
 engine = create_async_engine(db_URL)
@@ -36,7 +36,7 @@ async_session = sessionmaker(
 )
 
 
-if db_provider_name == "sqlite":
+if DB_PROVIDER_NAME == "sqlite":
 
     @event.listens_for(Engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
