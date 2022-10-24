@@ -1,17 +1,21 @@
 from datetime import datetime
-from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import func, delete
 from tests.db_test_config import async_session
-from bot.db.models.answer_model import AnswerModel
-from bot.db.models.question_model import QuestionModel
-from bot.db.models.regular_user_model import RegularUserModel
-from bot.db.models.role_model import RoleModel
-from bot.db.models.support_user_model import SupportUserModel
-from bot.db.models.user_model import UserModel
+from bot.db.models.sa.answer_model import AnswerModel
+from bot.db.models.sa.question_model import QuestionModel
+from bot.db.models.sa.regular_user_model import RegularUserModel
+from bot.db.models.sa.role_model import RoleModel
+from bot.db.models.sa.support_user_model import SupportUserModel
 from sqlalchemy.future import select
-from tests.utils_for_tests import add_data, init_db
+from tests.utils_for_tests import (
+    add_data,
+    init_db,
+    query_support_user_by_id,
+    query_random_support_user,
+    query_question_by_id,
+    query_random_question,
+)
 import pytest
 import pytest_asyncio
 
@@ -55,63 +59,18 @@ async def test_adding_questions(create_models):
         assert new_question in new_result.questions
 
 
-async def query_question(
-    session: AsyncSession, id: UUID = None
-) -> QuestionModel:
-    if id:
-        q = (
-            select(QuestionModel)
-            .where(QuestionModel.id == id)
-            .options(selectinload(QuestionModel.answers))
-        )
-
-        return (await session.execute(q)).scalars().first()
-
-    q = (
-        select(QuestionModel)
-        .where(QuestionModel.current_support_user == None)
-        .where(QuestionModel.answers == None)
-        .options(selectinload(QuestionModel.answers))
-    )
-
-    return (await session.execute(q)).scalars().first()
-
-
-async def query_support_user(
-    session: AsyncSession, id: UUID = None
-) -> SupportUserModel:
-    if id:
-        q = (
-            select(SupportUserModel)
-            .where(SupportUserModel.id == id)
-            .options(
-                selectinload(SupportUserModel.answers),
-                selectinload(SupportUserModel.current_question),
-            )
-        )
-
-        return (await session.execute(q)).scalars().first()
-
-    q = select(SupportUserModel).options(
-        selectinload(SupportUserModel.answers),
-        selectinload(SupportUserModel.current_question),
-    )
-
-    return (await session.execute(q)).scalars().first()
-
-
 @pytest.mark.asyncio
 async def test_binding_questions(create_models):
     async with async_session() as session:
-        support_user = await query_support_user(session)
+        support_user = await query_random_support_user(session)
 
-        random_question = await query_question(session)
+        random_question = await query_random_question(session)
 
         support_user.bind_question(random_question)
 
         await session.commit()
 
-        result = await query_support_user(session, support_user.id)
+        result = await query_support_user_by_id(session, support_user.id)
 
         assert random_question == result.current_question
 
@@ -120,9 +79,9 @@ async def test_binding_questions(create_models):
 async def test_adding_answers(create_models):
     async with async_session() as session:
 
-        support_user = await query_support_user(session)
+        support_user = await query_random_support_user(session)
 
-        question = await query_question(session)
+        question = await query_random_question(session)
 
         support_user.bind_question(question)
 
@@ -253,19 +212,19 @@ async def test_count_answer(create_models):
 
         assert result == 3
 
-        support_user = await query_support_user(session)
+        support_user = await query_random_support_user(session)
 
-        new_answer = QuestionModel(
+        new_question = QuestionModel(
             tg_message_id=12345613,
             message="Really?",
             date=datetime(2021, 10, 25),
         )
 
-        session.add(new_answer)
+        session.add(new_question)
 
         await session.commit()
 
-        question = await query_question(session, new_answer.id)
+        question = await query_question_by_id(session, new_question.id)
 
         support_user.bind_question(question)
 

@@ -1,13 +1,15 @@
+from uuid import UUID
+from sqlalchemy.orm import selectinload
+from sqlalchemy.future import select
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.models.answer_model import AnswerModel
-from bot.db.models.question_model import QuestionModel
-from bot.db.models.regular_user_model import RegularUserModel
-from bot.db.models.role_model import RoleModel
-from bot.db.models.support_user_model import SupportUserModel
-from bot.db.db_config import Base
+from bot.db.models.sa.answer_model import AnswerModel
+from bot.db.models.sa.question_model import QuestionModel
+from bot.db.models.sa.regular_user_model import RegularUserModel
+from bot.db.models.sa.role_model import RoleModel
+from bot.db.models.sa.support_user_model import SupportUserModel
+from bot.db.db_settings import Base
 from tests.db_test_config import engine
-
 import pytest_asyncio
 
 
@@ -86,6 +88,157 @@ async def add_data(async_session: AsyncSession):
         question3.add_answer(answer3)
 
         await session.commit()
+
+
+async def query_random_question(session: AsyncSession):
+    q = select(QuestionModel).options(
+        selectinload(QuestionModel.answers),
+        selectinload(QuestionModel.current_support_user),
+        selectinload(QuestionModel.regular_user),
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_unanswered_question(session: AsyncSession):
+    q = (
+        select(QuestionModel)
+        .where(QuestionModel.answers == None)
+        .options(
+            selectinload(QuestionModel.answers),
+            selectinload(QuestionModel.current_support_user),
+            selectinload(QuestionModel.regular_user),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_answered_question(session: AsyncSession):
+    q = (
+        select(QuestionModel)
+        .where(QuestionModel.answers != None)
+        .options(
+            selectinload(QuestionModel.answers),
+            selectinload(QuestionModel.current_support_user),
+            selectinload(QuestionModel.regular_user),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_question_by_id(session: AsyncSession, id: UUID):
+    q = (
+        select(QuestionModel)
+        .where(QuestionModel.id == id)
+        .options(
+            selectinload(QuestionModel.answers),
+            selectinload(QuestionModel.current_support_user),
+            selectinload(QuestionModel.regular_user),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_regular_user_by_id(
+    session: AsyncSession, id: UUID
+) -> RegularUserModel:
+    q = (
+        select(RegularUserModel)
+        .where(RegularUserModel.id == id)
+        .options(selectinload(RegularUserModel.questions))
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_regular_user(session: AsyncSession) -> RegularUserModel:
+    q = select(RegularUserModel).options(
+        selectinload(RegularUserModel.questions)
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_regular_user_with_no_questions(
+    session: AsyncSession,
+) -> RegularUserModel:
+    q = (
+        select(RegularUserModel)
+        .where(RegularUserModel.questions == None)
+        .options(selectinload(RegularUserModel.questions))
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_regular_user_with_questions(
+    session: AsyncSession,
+) -> RegularUserModel:
+    q = (
+        select(RegularUserModel)
+        .where(RegularUserModel.questions != None)
+        .options(selectinload(RegularUserModel.questions))
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_support_user_by_id(
+    session: AsyncSession, id: UUID = None
+) -> SupportUserModel:
+
+    q = (
+        select(SupportUserModel)
+        .where(SupportUserModel.id == id)
+        .options(
+            selectinload(SupportUserModel.answers),
+            selectinload(SupportUserModel.current_question),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_support_user_with_no_answered_questions(
+    session: AsyncSession,
+):
+    q = (
+        select(SupportUserModel)
+        .where(SupportUserModel.answers == None)
+        .options(
+            selectinload(SupportUserModel.answers),
+            selectinload(SupportUserModel.current_question),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_support_user_with_answered_questions(
+    session: AsyncSession,
+):
+    q = (
+        select(SupportUserModel)
+        .where(SupportUserModel.answers != None)
+        .options(
+            selectinload(SupportUserModel.answers),
+            selectinload(SupportUserModel.current_question),
+        )
+    )
+
+    return (await session.execute(q)).scalars().first()
+
+
+async def query_random_support_user(session: AsyncSession) -> SupportUserModel:
+    q = select(SupportUserModel).options(
+        selectinload(SupportUserModel.answers),
+        selectinload(SupportUserModel.current_question),
+    )
+
+    return (await session.execute(q)).scalars().first()
 
 
 @pytest_asyncio.fixture(autouse=True)
