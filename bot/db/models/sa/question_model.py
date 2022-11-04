@@ -5,6 +5,7 @@ from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.db_settings import Base, BINARY_UUID
 from bot.db.models.sa.answer_model import AnswerModel
+from bot.entities.question import Question
 
 
 class QuestionModel(Base):
@@ -51,3 +52,12 @@ class QuestionModel(Base):
             the user's answers
         """
         self.answers.append(answer)
+
+    def as_question_entity(self) -> Question:
+        return Question(
+            self.id,
+            self.regular_user_id,
+            self.message,
+            self.tg_message_id,
+            self.date,
+        )

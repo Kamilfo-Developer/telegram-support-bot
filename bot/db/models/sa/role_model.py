@@ -5,6 +5,7 @@ from sqlalchemy import Column, Boolean, String, DateTime, Text
 from sqlalchemy_utils import UUIDType
 from bot.db.db_settings import Base, BINARY_UUID
 from bot.db.models.sa.support_user_model import SupportUserModel
+from bot.entities.role import Role
 
 
 class RoleModel(Base):
@@ -23,7 +24,7 @@ class RoleModel(Base):
 
     description = Column(Text, nullable=False, default="")
 
-    date = Column(DateTime, nullable=False, default=datetime.now)
+    created_date = Column(DateTime, nullable=False, default=datetime.now)
 
     # If False the support user cannot use answering
     # question interface
@@ -49,3 +50,16 @@ class RoleModel(Base):
             to users with this role
         """
         self.users.append(support_user)
+
+    def as_role_entity(self) -> Role:
+        return Role(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            can_answer_questions=self.can_answer_questions,
+            can_create_roles=self.can_create_roles,
+            can_romove_roles=self.can_romove_roles,
+            can_change_roles=self.can_change_roles,
+            can_assign_roles=self.can_assign_roles,
+            created_date=self.created_date,
+        )

@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.db_settings import Base, BINARY_UUID
+from bot.entities.answer import Answer
 
 
 class AnswerModel(Base):
@@ -35,3 +36,13 @@ class AnswerModel(Base):
     tg_message_id = Column(Integer, nullable=True, unique=True)
 
     date = Column(DateTime, nullable=False, default=datetime.now)
+
+    def as_answer_entity(self) -> Answer:
+        return Answer(
+            self.id,
+            self.support_user_id,
+            self.question_id,
+            self.message,
+            self.tg_message_id,
+            self.date,
+        )

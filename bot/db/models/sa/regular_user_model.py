@@ -5,6 +5,7 @@ from uuid import uuid4
 from bot.db.models.sa.question_model import QuestionModel
 from bot.db.models.sa.user_model import UserModel
 from bot.db.db_settings import BINARY_UUID
+from bot.entities.regular_user import RegularUser
 
 
 class RegularUserModel(UserModel):
@@ -36,3 +37,6 @@ class RegularUserModel(UserModel):
             added to questions of the user
         """
         self.questions.append(question)
+
+    def as_regular_user_entity(self) -> RegularUser:
+        return RegularUser(self.id, self.tg_bot_user_id, self.join_date)

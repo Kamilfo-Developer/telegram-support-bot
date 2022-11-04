@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer
+from datetime import datetime
+from sqlalchemy import Column, Integer, DateTime
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.db_settings import Base, BINARY_UUID
@@ -13,3 +14,5 @@ class UserModel(Base):
     # Unique telegram id that's given
     # to a user when chatting started
     tg_bot_user_id = Column(Integer, nullable=True, default=None, unique=True)
+
+    join_date = Column(DateTime, nullable=False, default=datetime.now)

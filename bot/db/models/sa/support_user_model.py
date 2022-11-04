@@ -6,6 +6,7 @@ from bot.db.models.sa.question_model import QuestionModel
 from bot.db.models.sa.answer_model import AnswerModel
 from bot.db.models.sa.user_model import UserModel
 from bot.db.db_settings import BINARY_UUID
+from bot.entities.support_user import SupportUser
 
 
 class SupportUserModel(UserModel):
@@ -71,3 +72,12 @@ class SupportUserModel(UserModel):
             the user's answers
         """
         self.answers.append(answer)
+
+    def as_support_user_entity(self) -> SupportUser:
+        return SupportUser(
+            id=self.id,
+            role_id=self.role_id,
+            tg_bot_user_id=self.tg_bot_user_id,
+            current_question_id=self.current_question_id,
+            join_date=self.join_date,
+        )
