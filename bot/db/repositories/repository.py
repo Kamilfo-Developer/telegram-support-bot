@@ -1,28 +1,40 @@
+from __future__ import annotations
 from typing import Iterable
 from uuid import UUID
 import abc
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bot.entities.support_user import SupportUser
+    from bot.entities.answer import Answer
+    from bot.entities.question import Question
+    from bot.entities.regular_user import RegularUser
+    from bot.entities.role import Role
 
 
 class Repo(abc.ABC):
     # Roles Methods
     @abc.abstractmethod
-    async def add_role(self, role) -> None:
+    async def add_role(self, role: Role) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_role_by_id(self, id: UUID):
+    async def get_role_by_id(self, id: UUID) -> Role:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_roles(self) -> Iterable:
+    async def get_all_roles(self) -> Iterable[Role]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_roles_sorted_by_date(self, desc_order: bool) -> Iterable:
+    async def get_all_roles_sorted_by_date(
+        self, desc_order: bool
+    ) -> Iterable[Role]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_role_with_id(self, id: UUID) -> None:
+    async def delete_role_with_id(self, role_id: UUID) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -35,19 +47,27 @@ class Repo(abc.ABC):
 
     # Regular Users Methods
     @abc.abstractmethod
-    async def add_regular_user(self, regular_user) -> None:
+    async def add_regular_user(self, regular_user: RegularUser) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_regular_user_by_id(self, id: UUID):
+    async def get_regular_user_by_id(self, id: UUID) -> RegularUser:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_regular_users(self):
+    async def get_regular_user_by_tg_bot_user_id(
+        self, tg_bot_user_id: int
+    ) -> RegularUser:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_regular_users_sorted_by_date(self, desc_order: bool):
+    async def get_all_regular_users(self) -> Iterable[RegularUser]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_all_regular_users_sorted_by_date(
+        self, desc_order: bool
+    ) -> Iterable[RegularUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -62,23 +82,41 @@ class Repo(abc.ABC):
     async def count_all_regular_users(self) -> int:
         raise NotImplementedError
 
-    @abc.abstractmethod
     # Regular Users Methods
-    async def add_support_user(self, support_user) -> None:
+    @abc.abstractmethod
+    async def add_support_user(self, support_user: SupportUser) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_support_user_by_id(self, id: UUID):
+    async def change_support_user_role(
+        self, support_user_id: UUID, new_role_id: UUID
+    ) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_support_users(self) -> Iterable:
+    async def get_support_user_by_id(self, id: UUID) -> SupportUser:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_support_user_by_tg_bot_user_id(
+        self, tg_bot_user_id: int
+    ) -> SupportUser:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_support_users_with_role_id(
+        self, role_id: UUID
+    ) -> Iterable[SupportUser]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_all_support_users(self) -> Iterable[SupportUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_all_support_users_sorted_by_date(
         self, desc_order: bool
-    ) -> Iterable:
+    ) -> Iterable[SupportUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -95,43 +133,59 @@ class Repo(abc.ABC):
 
     # Questions Methods
     @abc.abstractmethod
-    async def get_all_questions(self) -> Iterable:
+    async def get_all_questions(self) -> Iterable[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_question_by_id(self, answer_id: UUID):
+    async def get_question_by_id(self, question_id: UUID) -> Question:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_questions_with_regular_user_id(
         self, regular_user_id: UUID
-    ) -> Iterable:
+    ) -> Iterable[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_unbinded_questions(self) -> Iterable:
+    async def get_unbinded_questions(self) -> Iterable[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_unanswered_questions(self) -> Iterable:
+    async def get_unanswered_questions(self) -> Iterable[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_question_with_id(self, answer_id: UUID):
+    async def delete_question_with_id(self, question_id: UUID) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def delete_questions_with_regular_user_id(
         self, regular_user_id: UUID
-    ) -> Iterable:
+    ) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_all_questions(self):
+    async def delete_all_questions(self) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def add_question(self, question, regular_user):
+    async def add_question(self, question: Question) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def bind_question_to_support_user(
+        self, support_user_id, question_id
+    ) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def unbind_question_from_support_user(
+        self, support_user_id: UUID
+    ) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_answered_questions(self) -> int:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -144,17 +198,17 @@ class Repo(abc.ABC):
 
     # Answers Methods
     @abc.abstractmethod
-    async def get_all_answers(self) -> Iterable:
+    async def get_all_answers(self) -> Iterable[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_answer_by_id(self, answer_id: UUID):
+    async def get_answer_by_id(self, answer_id: UUID) -> Answer:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_answers_with_question_id(
         self, question_id: UUID
-    ) -> Iterable:
+    ) -> Iterable[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -174,7 +228,7 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def get_support_user_answers_with_id(
         self, support_user_id: UUID
-    ) -> Iterable:
+    ) -> Iterable[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -182,11 +236,9 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def add_answer_to_question(
+    async def add_answer(
         self,
-        answer,
-        question,
-        support_user,
+        answer: Answer,
     ) -> None:
         raise NotImplementedError
 
