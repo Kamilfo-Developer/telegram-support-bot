@@ -1,5 +1,8 @@
 .vscode
 
+# SQLite files
+*.db
+
 #Tokens, other pricate data
 config.py
 
