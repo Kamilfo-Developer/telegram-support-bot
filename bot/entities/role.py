@@ -1,9 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Type
-from uuid import UUID
-
-from bot.db.repositories.repository import Repo
+from uuid import UUID, uuid4
+from bot.typing import RepoType
 
 
 class Role:
@@ -50,7 +48,32 @@ class Role:
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Role) and self.id == __o.id
 
-    async def get_support_users_with_this_role(self, repo_class: Type[Repo]):
-        repo = repo_class()
-
+    async def get_support_users_with_this_role(self, repo: RepoType):
         return await repo.get_support_users_with_role_id(self.id)
+
+    @classmethod
+    async def add_role(
+        cls,
+        name: str,
+        description: str,
+        can_answer_questions: bool,
+        can_create_roles: bool,
+        can_romove_roles: bool,
+        can_change_roles: bool,
+        can_assign_roles: bool,
+        repo: RepoType,
+    ):
+        role = Role(
+            id=uuid4(),
+            name=name,
+            description=description,
+            can_answer_questions=can_answer_questions,
+            can_assign_roles=can_assign_roles,
+            can_change_roles=can_change_roles,
+            can_create_roles=can_create_roles,
+            can_romove_roles=can_romove_roles,
+        )
+
+        await repo.add_role(role)
+
+        return role

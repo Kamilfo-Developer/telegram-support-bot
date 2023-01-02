@@ -1,16 +1,22 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Iterable, Type
+from typing import Iterable
 from uuid import UUID, uuid4
-from bot.db.repositories.repository import Repo
 from bot.entities.question import Question
+from bot.typing import RepoType
 
 
 class RegularUser:
     id: UUID
     tg_bot_user_id: int
+    join_date: datetime
 
-    def __init__(self, id: UUID, tg_bot_user_id: int, join_date: datetime):
+    def __init__(
+        self,
+        id: UUID,
+        tg_bot_user_id: int,
+        join_date: datetime = datetime.now(),
+    ):
         self.id = id
         self.tg_bot_user_id = tg_bot_user_id
         self.join_date = join_date
@@ -19,27 +25,29 @@ class RegularUser:
         return isinstance(__o, RegularUser) and self.id == __o.id
 
     async def ask_question(
-        self, message: str, tg_message_id: int, repo_class: Type[Repo]
+        self, message: str, tg_message_id: int, repo: RepoType
     ) -> Question:
-        repo = repo_class()
-
         question = Question(uuid4(), self.id, message, tg_message_id)
 
         await repo.add_question(question)
 
         return question
 
-    async def get_asked_questions(
-        self, repo_class: Type[Repo]
-    ) -> Iterable[Question]:
-        repo = repo_class()
-
+    async def get_asked_questions(self, repo: RepoType) -> Iterable[Question]:
         return await repo.get_questions_with_regular_user_id(self.id)
 
     @classmethod
     async def get_regular_user_by_tg_bot_user_id(
-        cls, tg_bot_user_id: int, repo_class: Type[Repo]
+        cls, tg_bot_user_id: int, repo: RepoType
     ) -> RegularUser:
-        repo = repo_class()
-
         return await repo.get_regular_user_by_tg_bot_user_id(tg_bot_user_id)
+
+    @classmethod
+    async def add_regular_user(
+        cls, tg_bot_user_id: int, repo: RepoType
+    ) -> RegularUser:
+        regular_user = RegularUser(uuid4(), tg_bot_user_id, datetime.now())
+
+        await repo.add_regular_user(regular_user)
+
+        return regular_user

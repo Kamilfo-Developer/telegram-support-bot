@@ -1,8 +1,8 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Iterable, Type
+from typing import Iterable
 from uuid import UUID
-from bot.db.repositories.repository import Repo
+from bot.typing import RepoType
 
 from typing import TYPE_CHECKING
 
@@ -39,16 +39,10 @@ class Question:
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Question) and self.id == __o.id
 
-    async def get_regular_user_asked(
-        self, repo_class: Type[Repo]
-    ) -> RegularUser:
-        repo = repo_class()
+    async def get_regular_user_asked(self, repo: RepoType) -> RegularUser:
 
         return await repo.get_regular_user_by_id(self.regular_user_id)
 
-    async def get_question_answers(
-        self, repo_class: Type[Repo]
-    ) -> Iterable[Answer]:
-        repo = repo_class()
+    async def get_question_answers(self, repo: RepoType) -> Iterable[Answer]:
 
         return await repo.get_answers_with_question_id(self.id)
