@@ -13,21 +13,26 @@ class SupportUser:
     current_question_id: UUID | None
     role_id: UUID
     tg_bot_user_id: int
+    descriptive_name: str
     join_date: datetime = datetime.now()
 
     def __init__(
         self,
         id: UUID,
         role_id: UUID,
+        descriptive_name: str,
         tg_bot_user_id: int,
         current_question_id: UUID | None = None,
         join_date: datetime = datetime.now(),
+        is_owner=False,
     ):
         self.id = id
         self.current_question_id = current_question_id
         self.role_id = role_id
         self.tg_bot_user_id = tg_bot_user_id
+        self.descriptive_name = descriptive_name
         self.join_date = join_date
+        self.is_owner = is_owner
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, SupportUser) and self.id == __o.id
@@ -84,18 +89,21 @@ class SupportUser:
         self.current_question_id = None
 
     @classmethod
-    async def get_support_user_by_tg_bot_user_id(
-        cls, tg_bot_user_id: int, repo: RepoType
-    ) -> SupportUser:
-
-        return await repo.get_support_user_by_tg_bot_user_id(tg_bot_user_id)
-
-    @classmethod
     async def add_support_user(
-        cls, role_id: UUID, tg_bot_user_id: int, repo: RepoType
+        cls,
+        tg_bot_user_id: int,
+        descriptive_name: str,
+        repo: RepoType,
+        role_id: UUID | None = None,
+        is_owner: bool = False,
     ) -> SupportUser:
 
-        support_user = SupportUser(uuid4(), role_id, tg_bot_user_id)
+        support_user = SupportUser(
+            id=uuid4(),
+            role_id=role_id,
+            tg_bot_user_id=tg_bot_user_id,
+            descriptive_name=descriptive_name,
+        )
 
         await repo.add_support_user(support_user)
 
