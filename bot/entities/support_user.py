@@ -1,6 +1,5 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Iterable
 from uuid import UUID, uuid4
 from bot.typing import RepoType
 from bot.entities.answer import Answer
@@ -11,15 +10,16 @@ from bot.entities.role import Role
 class SupportUser:
     id: UUID
     current_question_id: UUID | None
-    role_id: UUID
+    role_id: UUID | None
     tg_bot_user_id: int
     descriptive_name: str
     join_date: datetime = datetime.now()
+    is_owner: bool = False
 
     def __init__(
         self,
         id: UUID,
-        role_id: UUID,
+        role_id: UUID | None,
         descriptive_name: str,
         tg_bot_user_id: int,
         current_question_id: UUID | None = None,
@@ -54,14 +54,23 @@ class SupportUser:
 
         return None
 
+    async def make_owner(self, repo: RepoType) -> None:
+        await repo.make_support_user_owner(self.id)
+
+        self.is_owner = True
+
+    async def remove_owner_rights(self, repo: RepoType) -> None:
+        await repo.remove_owner_rights_from_support_user(self.id)
+
+        self.is_owner = False
+
     async def get_current_question(self, repo: RepoType) -> Question | None:
         if self.current_question_id:
             return await repo.get_question_by_id(self.current_question_id)
 
         return None
 
-    async def get_anwers(self, repo: RepoType) -> Iterable[Answer]:
-
+    async def get_anwers(self, repo: RepoType) -> list[Answer]:
         return await repo.get_support_user_answers_with_id(self.id)
 
     async def get_role(self, repo: RepoType) -> Role | None:
@@ -103,6 +112,7 @@ class SupportUser:
             role_id=role_id,
             tg_bot_user_id=tg_bot_user_id,
             descriptive_name=descriptive_name,
+            is_owner=is_owner,
         )
 
         await repo.add_support_user(support_user)
