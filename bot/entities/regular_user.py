@@ -37,12 +37,6 @@ class RegularUser:
         return await repo.get_questions_with_regular_user_id(self.id)
 
     @classmethod
-    async def get_regular_user_by_tg_bot_user_id(
-        cls, tg_bot_user_id: int, repo: RepoType
-    ) -> RegularUser:
-        return await repo.get_regular_user_by_tg_bot_user_id(tg_bot_user_id)
-
-    @classmethod
     async def add_regular_user(
         cls, tg_bot_user_id: int, repo: RepoType
     ) -> RegularUser:
