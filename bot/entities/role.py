@@ -15,10 +15,7 @@ class Role:
 
     can_answer_questions: bool
 
-    can_create_roles: bool
-    can_romove_roles: bool
-    can_change_roles: bool
-    can_assign_roles: bool
+    can_manage_support_users: bool
 
     created_date: datetime = datetime.now()
 
@@ -28,10 +25,7 @@ class Role:
         name: str,
         description: str,
         can_answer_questions: bool,
-        can_create_roles: bool,
-        can_romove_roles: bool,
-        can_change_roles: bool,
-        can_assign_roles: bool,
+        can_manage_support_users: bool,
         created_date: datetime = datetime.now(),
     ) -> None:
         self.id = id
@@ -39,10 +33,7 @@ class Role:
         self.description = description
 
         self.can_answer_questions = can_answer_questions
-        self.can_assign_roles = can_assign_roles
-        self.can_change_roles = can_change_roles
-        self.can_create_roles = can_create_roles
-        self.can_romove_roles = can_romove_roles
+        self.can_manage_support_users = can_manage_support_users
         self.created_date = created_date
 
     def __eq__(self, __o: object) -> bool:
@@ -57,10 +48,7 @@ class Role:
         name: str,
         description: str,
         can_answer_questions: bool,
-        can_create_roles: bool,
-        can_romove_roles: bool,
-        can_change_roles: bool,
-        can_assign_roles: bool,
+        can_manage_support_users: bool,
         repo: RepoType,
     ):
         role = Role(
@@ -68,10 +56,7 @@ class Role:
             name=name,
             description=description,
             can_answer_questions=can_answer_questions,
-            can_assign_roles=can_assign_roles,
-            can_change_roles=can_change_roles,
-            can_create_roles=can_create_roles,
-            can_romove_roles=can_romove_roles,
+            can_manage_support_users=can_manage_support_users,
         )
 
         await repo.add_role(role)
