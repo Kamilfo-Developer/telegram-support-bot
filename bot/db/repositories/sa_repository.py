@@ -29,10 +29,7 @@ class SARepo(Repo):
                 name=role.name,
                 description=role.description,
                 can_answer_questions=role.can_answer_questions,
-                can_create_roles=role.can_create_roles,
-                can_romove_roles=role.can_romove_roles,
-                can_change_roles=role.can_change_roles,
-                can_assign_roles=role.can_assign_roles,
+                can_manage_support_users=role.can_manage_support_users,
                 created_date=role.created_date,
             )
 
@@ -65,6 +62,18 @@ class SARepo(Repo):
             q = (
                 select(RoleModel)
                 .where(RoleModel.id == id)
+                .options(selectinload(RoleModel.users))
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_role_entity()
+
+    async def get_role_by_name(self, name: str) -> Role:
+        async with self._session() as session:
+            q = (
+                select(RoleModel)
+                .where(RoleModel.name == name)
                 .options(selectinload(RoleModel.users))
             )
 
@@ -220,8 +229,10 @@ class SARepo(Repo):
                 id=support_user.id,
                 current_question_id=support_user.current_question_id,
                 role_id=support_user.role_id,
+                descriptive_name=support_user.descriptive_name,
                 tg_bot_user_id=support_user.tg_bot_user_id,
                 join_date=support_user.join_date,
+                is_owner=support_user.is_owner,
             )
 
             session.add(support_user_model)
@@ -368,6 +379,19 @@ class SARepo(Repo):
             return (await session.execute(q)).scalar()
 
     # Questions Methods
+    async def get_random_unbinded_question(self) -> Question:
+        async with self._session() as session:
+
+            q = select(QuestionModel).options(
+                selectinload(QuestionModel.regular_user),
+                selectinload(QuestionModel.current_support_user),
+                selectinload(QuestionModel.answers),
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_entity()
+
     async def get_all_questions(self) -> Iterable[Question]:
         async with self._session() as session:
 
@@ -387,6 +411,25 @@ class SARepo(Repo):
             q = (
                 select(QuestionModel)
                 .where(QuestionModel.id == question_id)
+                .options(
+                    selectinload(QuestionModel.regular_user),
+                    selectinload(QuestionModel.current_support_user),
+                    selectinload(QuestionModel.answers),
+                )
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_entity()
+
+    async def get_question_by_tg_message_id(
+        self, tg_message_id: int
+    ) -> Question:
+        async with self._session() as session:
+
+            q = (
+                select(QuestionModel)
+                .where(QuestionModel.tg_message_id == tg_message_id)
                 .options(
                     selectinload(QuestionModel.regular_user),
                     selectinload(QuestionModel.current_support_user),

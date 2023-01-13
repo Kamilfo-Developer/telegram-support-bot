@@ -24,6 +24,10 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def get_role_by_name(self, name: str) -> Role:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def get_all_roles(self) -> Iterable[Role]:
         raise NotImplementedError
 
@@ -133,11 +137,21 @@ class Repo(abc.ABC):
 
     # Questions Methods
     @abc.abstractmethod
+    async def get_random_unbinded_question(self) -> Question:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def get_all_questions(self) -> Iterable[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_question_by_id(self, question_id: UUID) -> Question:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_question_by_tg_message_id(
+        self, tg_message_id: int
+    ) -> Question:
         raise NotImplementedError
 
     @abc.abstractmethod
