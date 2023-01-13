@@ -3,7 +3,7 @@ from uuid import uuid4
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Boolean, String, DateTime, Text
 from sqlalchemy_utils import UUIDType
-from bot.db.db_settings import Base, BINARY_UUID
+from bot.db.db_sa_settings import Base, BINARY_UUID
 from bot.db.models.sa.support_user_model import SupportUserModel
 from bot.entities.role import Role
 
@@ -26,17 +26,13 @@ class RoleModel(Base):
 
     created_date = Column(DateTime, nullable=False, default=datetime.now)
 
-    # If False the support user cannot use answering
+    # If False a support user cannot use answering
     # question interface
     can_answer_questions = Column(Boolean, default=True)
 
-    can_create_roles = Column(Boolean, default=False)
-    can_romove_roles = Column(Boolean, default=False)
-    can_change_roles = Column(Boolean, default=False)
-
-    # If False the support user cannot assing roles
-    # to other users
-    can_assign_roles = Column(Boolean, default=False)
+    # If False a support user cannot manage other support users and roles
+    # Also they won't be able to get information about other support users
+    can_manage_support_users = Column(Boolean, default=True)
 
     # METHODS
 
@@ -57,9 +53,6 @@ class RoleModel(Base):
             name=self.name,
             description=self.description,
             can_answer_questions=self.can_answer_questions,
-            can_create_roles=self.can_create_roles,
-            can_romove_roles=self.can_romove_roles,
-            can_change_roles=self.can_change_roles,
-            can_assign_roles=self.can_assign_roles,
+            can_manage_support_users=self.can_manage_support_users,
             created_date=self.created_date,
         )
