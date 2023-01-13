@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
-from bot.db.db_settings import Base, BINARY_UUID
+from bot.db.db_sa_settings import Base, BINARY_UUID
 from bot.entities.answer import Answer
 
 
