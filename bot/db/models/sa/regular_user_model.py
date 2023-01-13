@@ -1,23 +1,26 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.models.sa.question_model import QuestionModel
-from bot.db.models.sa.user_model import UserModel
-from bot.db.db_settings import BINARY_UUID
+from bot.db.db_sa_settings import BINARY_UUID, Base
 from bot.entities.regular_user import RegularUser
+from datetime import datetime
 
 
-class RegularUserModel(UserModel):
+class RegularUserModel(Base):
     __tablename__ = "regular_users"
 
     # User id
-    id = Column(
-        UUIDType(binary=BINARY_UUID),
-        ForeignKey("users.id"),
-        primary_key=True,
-        default=uuid4,
-    )
+    id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
+
+    # PROPERTIES
+
+    # Unique telegram id that's given
+    # to a user when chatting started
+    tg_bot_user_id = Column(Integer, nullable=True, default=None, unique=True)
+
+    join_date = Column(DateTime, nullable=False, default=datetime.now)
 
     # RELATIONSHIPS
 
@@ -39,4 +42,4 @@ class RegularUserModel(UserModel):
         self.questions.append(question)
 
     def as_regular_user_entity(self) -> RegularUser:
-        return RegularUser(self.id, self.tg_bot_user_id, self.join_date)
+        return RegularUser(self.id, self.tg_bot_user_id, self.join_date)  # type: ignore
