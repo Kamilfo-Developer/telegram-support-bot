@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Iterable
 from uuid import UUID
 import abc
 
@@ -28,13 +27,13 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_roles(self) -> Iterable[Role]:
+    async def get_all_roles(self) -> list[Role]:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_all_roles_sorted_by_date(
         self, desc_order: bool
-    ) -> Iterable[Role]:
+    ) -> list[Role]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -65,13 +64,13 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_regular_users(self) -> Iterable[RegularUser]:
+    async def get_all_regular_users(self) -> list[RegularUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_all_regular_users_sorted_by_date(
         self, desc_order: bool
-    ) -> Iterable[RegularUser]:
+    ) -> list[RegularUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -98,6 +97,16 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def make_support_user_owner(self, support_user_id: UUID) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def remove_owner_rights_from_support_user(
+        self, support_user_id: UUID
+    ) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def get_support_user_by_id(self, id: UUID) -> SupportUser:
         raise NotImplementedError
 
@@ -110,17 +119,17 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def get_support_users_with_role_id(
         self, role_id: UUID
-    ) -> Iterable[SupportUser]:
+    ) -> list[SupportUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_support_users(self) -> Iterable[SupportUser]:
+    async def get_all_support_users(self) -> list[SupportUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_all_support_users_sorted_by_date(
         self, desc_order: bool
-    ) -> Iterable[SupportUser]:
+    ) -> list[SupportUser]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -141,7 +150,7 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all_questions(self) -> Iterable[Question]:
+    async def get_all_questions(self) -> list[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -157,15 +166,15 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def get_questions_with_regular_user_id(
         self, regular_user_id: UUID
-    ) -> Iterable[Question]:
+    ) -> list[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_unbinded_questions(self) -> Iterable[Question]:
+    async def get_unbinded_questions(self) -> list[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_unanswered_questions(self) -> Iterable[Question]:
+    async def get_unanswered_questions(self) -> list[Question]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -212,7 +221,7 @@ class Repo(abc.ABC):
 
     # Answers Methods
     @abc.abstractmethod
-    async def get_all_answers(self) -> Iterable[Answer]:
+    async def get_all_answers(self) -> list[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -222,7 +231,7 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def get_answers_with_question_id(
         self, question_id: UUID
-    ) -> Iterable[Answer]:
+    ) -> list[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -242,7 +251,7 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def get_support_user_answers_with_id(
         self, support_user_id: UUID
-    ) -> Iterable[Answer]:
+    ) -> list[Answer]:
         raise NotImplementedError
 
     @abc.abstractmethod
