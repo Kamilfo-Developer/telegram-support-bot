@@ -19,11 +19,11 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_role_by_id(self, id: UUID) -> Role:
+    async def get_role_by_id(self, id: UUID) -> Role | None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_role_by_name(self, name: str) -> Role:
+    async def get_role_by_name(self, name: str) -> Role | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -32,7 +32,7 @@ class Repo(abc.ABC):
 
     @abc.abstractmethod
     async def get_all_roles_sorted_by_date(
-        self, desc_order: bool
+        self, desc_order: bool = False
     ) -> list[Role]:
         raise NotImplementedError
 
@@ -54,13 +54,13 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_regular_user_by_id(self, id: UUID) -> RegularUser:
+    async def get_regular_user_by_id(self, id: UUID) -> RegularUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_regular_user_by_tg_bot_user_id(
         self, tg_bot_user_id: int
-    ) -> RegularUser:
+    ) -> RegularUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -107,13 +107,13 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_support_user_by_id(self, id: UUID) -> SupportUser:
+    async def get_support_user_by_id(self, id: UUID) -> SupportUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_support_user_by_tg_bot_user_id(
         self, tg_bot_user_id: int
-    ) -> SupportUser:
+    ) -> SupportUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -146,7 +146,7 @@ class Repo(abc.ABC):
 
     # Questions Methods
     @abc.abstractmethod
-    async def get_random_unbinded_question(self) -> Question:
+    async def get_random_unbinded_question(self) -> Question | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -154,13 +154,13 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_question_by_id(self, question_id: UUID) -> Question:
+    async def get_question_by_id(self, question_id: UUID) -> Question | None:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def get_question_by_tg_message_id(
         self, tg_message_id: int
-    ) -> Question:
+    ) -> Question | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -225,7 +225,7 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_answer_by_id(self, answer_id: UUID) -> Answer:
+    async def get_answer_by_id(self, answer_id: UUID) -> Answer | None:
         raise NotImplementedError
 
     @abc.abstractmethod
