@@ -35,18 +35,24 @@ class RUMessages(Messages):
     async def get_start_owner_message(
         self,
         telegram_user: User,
-        user_entity: SupportUser | None = None,
+        user_entity: SupportUser,
         *args,
         **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
-        if user_entity:
-            return [
-                f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы являетесь владельцем бота. Если возникли трудности, введите команду /help.",
-            ]
 
         return [
-            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы являетесь владельцем бота, однако Вы не завершили настройку бота. Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
+            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы являетесь владельцем бота. Если возникли трудности, введите команду /help.",
+        ]
+
+    async def get_not_inited_owner_message(
+        self,
+        telegram_user: User,
+        *args,
+        **kwargs,
+    ) -> list[str]:
+        return [
+            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота. Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
         ]
 
     async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
@@ -83,10 +89,10 @@ class RUMessages(Messages):
         return ["ID указан неверно, попробуйте снова"]
 
     async def get_question_info_message(
-        self, question: Question, regular_user: RegularUser, *args, **kwargs
+        self, question: Question, *args, **kwargs
     ) -> list[str]:
         return [
-            f"ID: {question.tg_message_id}\nID задавшего вопрос пользователя: {regular_user.tg_bot_user_id}\nВопрос был задан: {question.date}",
+            f"ID: {question.id}\nID задавшего вопрос пользователя: {question.regular_user_id}\nВопрос был задан: {question.date}",
             f"Текст вопроса:\n{question.message}",
         ]
 
@@ -140,4 +146,16 @@ class RUMessages(Messages):
     ) -> list[str]:
         return [
             "Мы просим прощения, но данный формат сообщений на данный момент не поддерживается"
+        ]
+
+    async def get_no_object_with_this_id_message(
+        self, *args, **kwargs
+    ) -> list[str]:
+        return ["Нет объекта с таким ID"]
+
+    async def get_no_unbinded_quetstions_left_message(
+        self, *args, **kwargs
+    ) -> list[str]:
+        return [
+            "Больше неотвеченных непрекреплённых ни к кому вопросов не осталось"
         ]

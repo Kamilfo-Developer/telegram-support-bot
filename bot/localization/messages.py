@@ -31,11 +31,7 @@ class Messages(abc.ABC):
 
     @abc.abstractmethod
     async def get_start_owner_message(
-        self,
-        telegram_user: User,
-        user_entity: SupportUser | None = None,
-        *args,
-        **kwargs
+        self, telegram_user: User, user_entity: SupportUser, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 
@@ -65,7 +61,7 @@ class Messages(abc.ABC):
 
     @abc.abstractmethod
     async def get_question_info_message(
-        self, question: Question, regular_user: RegularUser, *args, **kwargs
+        self, question: Question, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 
@@ -84,12 +80,6 @@ class Messages(abc.ABC):
     @abc.abstractmethod
     async def get_answer_info_message(
         self, answer: Answer, support_user: SupportUser, *args, **kwargs
-    ) -> list[str]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def get_owner_start_message(
-        self, user: User, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 
@@ -120,5 +110,23 @@ class Messages(abc.ABC):
     @abc.abstractmethod
     async def get_answer_for_regular_user_message(
         self, answer: Answer, question: Question, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_not_inited_owner_message(
+        self, telegram_user: User, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_no_object_with_this_id_message(
+        self, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_no_unbinded_quetstions_left_message(
+        self, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
