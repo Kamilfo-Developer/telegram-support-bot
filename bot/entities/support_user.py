@@ -55,11 +55,17 @@ class SupportUser:
         return None
 
     async def make_owner(self, repo: RepoType) -> None:
+        if self.is_owner:
+            return
+
         await repo.make_support_user_owner(self.id)
 
         self.is_owner = True
 
     async def remove_owner_rights(self, repo: RepoType) -> None:
+        if not self.is_owner:
+            return
+
         await repo.remove_owner_rights_from_support_user(self.id)
 
         self.is_owner = False
@@ -86,12 +92,16 @@ class SupportUser:
         self.role_id = new_role_id
 
     async def bind_question(self, question_id: UUID, repo: RepoType) -> None:
+        if question_id == self.current_question_id:
+            return
 
         await repo.bind_question_to_support_user(self.id, question_id)
 
         self.current_question_id = question_id
 
     async def unbind_question(self, repo: RepoType) -> None:
+        if not self.current_question_id:
+            return
 
         await repo.unbind_question_from_support_user(self.id)
 

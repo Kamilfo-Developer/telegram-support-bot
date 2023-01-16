@@ -37,10 +37,10 @@ class Answer:
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Answer) and self.id == __o.id
 
-    async def get_support_user(self, repo: RepoType) -> SupportUser:
+    async def get_support_user(self, repo: RepoType) -> SupportUser | None:
 
         return await repo.get_support_user_by_id(self.support_user_id)
 
-    async def get_question(self, repo: RepoType) -> Question:
+    async def get_question(self, repo: RepoType) -> Question | None:
 
         return await repo.get_question_by_id(self.question_id)
