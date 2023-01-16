@@ -8,6 +8,8 @@ from bot.entities.role import Role
 
 
 class RUMessages(Messages):
+    user_id_argument_name = "ID пользователя"
+
     async def get_start_reg_user_message(
         self,
         telegram_user: User,
@@ -157,5 +159,17 @@ class RUMessages(Messages):
         self, *args, **kwargs
     ) -> list[str]:
         return [
-            "Больше неотвеченных непрекреплённых ни к кому вопросов не осталось"
+            "Больше неотвеченных и непрекреплённых ни к кому вопросов не осталось"
+        ]
+
+    async def get_not_enough_arguments_message(
+        self, arguments_list: list[str], *args, **kwargs
+    ) -> list[str]:
+        return [
+            "".join(
+                [
+                    "Недостаточно аргументов для данной команды. Необходимые аргументы: ",
+                    *arguments_list,
+                ],
+            ),
         ]

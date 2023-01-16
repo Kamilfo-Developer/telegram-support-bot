@@ -9,6 +9,8 @@ import abc
 
 
 class Messages(abc.ABC):
+    user_id_argument_name: str
+
     @abc.abstractmethod
     async def get_start_reg_user_message(
         self,
@@ -128,5 +130,11 @@ class Messages(abc.ABC):
     @abc.abstractmethod
     async def get_no_unbinded_quetstions_left_message(
         self, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_not_enough_arguments_message(
+        self, arguments_list: list[str], *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
