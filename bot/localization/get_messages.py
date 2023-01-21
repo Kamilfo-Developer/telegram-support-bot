@@ -5,7 +5,7 @@ from bot.localization.ru_messages import RUMessages
 
 
 def get_messages(lang_code: str) -> Messages:
-    all_messages = {"en": ENMessages, "ru": RUMessages}
+    all_messages = {"ru": RUMessages}
 
     messages = all_messages.get(lang_code)
 
