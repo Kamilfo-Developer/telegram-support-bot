@@ -5,7 +5,7 @@ from bot.typing import RepoType
 
 
 class Role:
-    id: UUID
+    id: int
 
     name: str
 
@@ -21,7 +21,7 @@ class Role:
 
     def __init__(
         self,
-        id: UUID,
+        id: int,
         name: str,
         description: str,
         can_answer_questions: bool,
@@ -46,19 +46,19 @@ class Role:
     async def add_role(
         cls,
         name: str,
-        description: str,
         can_answer_questions: bool,
         can_manage_support_users: bool,
         repo: RepoType,
+        description: str = "",
+        adding_date: datetime = datetime.now(),
     ):
         role = Role(
-            id=uuid4(),
+            id=0,
             name=name,
             description=description,
             can_answer_questions=can_answer_questions,
             can_manage_support_users=can_manage_support_users,
+            created_date=adding_date,
         )
 
-        await repo.add_role(role)
-
-        return role
+        return await repo.add_role(role)

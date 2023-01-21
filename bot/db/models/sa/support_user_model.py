@@ -24,7 +24,7 @@ class SupportUserModel(Base):
 
     join_date = Column(DateTime, nullable=False, default=datetime.now)
 
-    is_owner = Column(Boolean, default=True)
+    is_owner = Column(Boolean, nullable=False, default=False)
 
     # RELATIONSHIPS
 

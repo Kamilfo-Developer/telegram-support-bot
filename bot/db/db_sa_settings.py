@@ -7,8 +7,6 @@ from sqlalchemy import event
 import os
 import pathlib
 
-# SQLAlchemy base
-Base = declarative_base()
 
 # Should the uuids stored as bytes?
 BINARY_UUID = False
@@ -27,7 +25,11 @@ db_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
     curr_dir, f"{DB_NAME}.db"
 )
 
-engine = create_async_engine(db_URL)
+engine = create_async_engine(db_URL, echo=True)
+
+# SQLAlchemy base
+Base = declarative_base()
+
 
 # expire_on_commit=False will prevent attributes from being expired
 # after commit.

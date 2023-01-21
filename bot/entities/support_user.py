@@ -38,7 +38,11 @@ class SupportUser:
         return isinstance(__o, SupportUser) and self.id == __o.id
 
     async def answer_current_question(
-        self, message: str, tg_message_id: int, repo: RepoType
+        self,
+        message: str,
+        tg_message_id: int,
+        repo: RepoType,
+        answer_date: datetime = datetime.now(),
     ) -> Answer | None:
         if self.current_question_id:
             answer = Answer(
@@ -47,7 +51,9 @@ class SupportUser:
                 self.current_question_id,
                 message,
                 tg_message_id,
+                date=answer_date,
             )
+
             await repo.add_answer(answer)
 
             return answer
@@ -115,6 +121,7 @@ class SupportUser:
         repo: RepoType,
         role_id: UUID | None = None,
         is_owner: bool = False,
+        addition_time: datetime = datetime.now(),
     ) -> SupportUser:
 
         support_user = SupportUser(
@@ -123,6 +130,7 @@ class SupportUser:
             tg_bot_user_id=tg_bot_user_id,
             descriptive_name=descriptive_name,
             is_owner=is_owner,
+            join_date=addition_time,
         )
 
         await repo.add_support_user(support_user)

@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 class Repo(abc.ABC):
     # Roles Methods
     @abc.abstractmethod
-    async def add_role(self, role: Role) -> None:
+    async def add_role(self, role: Role) -> Role:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_role_by_id(self, id: UUID) -> Role | None:
+    async def get_role_by_id(self, id: int) -> Role | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -37,7 +37,7 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_role_with_id(self, role_id: UUID) -> None:
+    async def delete_role_with_id(self, role_id: int) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -118,7 +118,7 @@ class Repo(abc.ABC):
 
     @abc.abstractmethod
     async def get_support_users_with_role_id(
-        self, role_id: UUID
+        self, role_id: int
     ) -> list[SupportUser]:
         raise NotImplementedError
 
@@ -147,6 +147,9 @@ class Repo(abc.ABC):
     # Questions Methods
     @abc.abstractmethod
     async def get_random_unbinded_question(self) -> Question | None:
+        raise NotImplementedError
+
+    async def get_random_unanswered_unbinded_question(self) -> Question | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -252,6 +255,12 @@ class Repo(abc.ABC):
     async def get_support_user_answers_with_id(
         self, support_user_id: UUID
     ) -> list[Answer]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_answer_by_tg_bot_user_id(
+        self, tg_message_id: int
+    ) -> Answer | None:
         raise NotImplementedError
 
     @abc.abstractmethod

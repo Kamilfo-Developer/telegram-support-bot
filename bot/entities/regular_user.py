@@ -25,9 +25,15 @@ class RegularUser:
         return isinstance(__o, RegularUser) and self.id == __o.id
 
     async def ask_question(
-        self, message: str, tg_message_id: int, repo: RepoType
+        self,
+        message: str,
+        tg_message_id: int,
+        repo: RepoType,
+        question_date: datetime = datetime.now(),
     ) -> Question:
-        question = Question(uuid4(), self.id, message, tg_message_id)
+        question = Question(
+            uuid4(), self.id, message, tg_message_id, date=question_date
+        )
 
         await repo.add_question(question)
 
