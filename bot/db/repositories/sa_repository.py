@@ -51,7 +51,7 @@ class SARepo(Repo):
             return role
 
     async def change_support_user_role(
-        self, support_user_id: UUID, new_role_id: UUID
+        self, support_user_id: UUID, new_role_id: int
     ) -> None:
         async with self._session() as session:  # type: ignore
             q = (
@@ -238,10 +238,14 @@ class SARepo(Repo):
     # Regular Users Methods
     async def add_support_user(self, support_user: SupportUser) -> None:
         async with self._session() as session:  # type: ignore
+
             support_user_model = SupportUserModel(
                 id=support_user.id,
-                current_question_id=support_user.current_question_id,
-                role_id=support_user.role_id,
+                current_question_id=(
+                    support_user.current_question
+                    and support_user.current_question.id
+                ),
+                role_id=(support_user.role and support_user.role.id),
                 descriptive_name=support_user.descriptive_name,
                 tg_bot_user_id=support_user.tg_bot_user_id,
                 join_date=support_user.join_date,
@@ -284,6 +288,34 @@ class SARepo(Repo):
 
             await session.commit()
 
+    async def deactivate_support_user(self, support_user_id: UUID) -> None:
+        async with self._session() as session:  # type: ignore
+            q = select(SupportUserModel).where(
+                SupportUserModel.id == support_user_id
+            )
+
+            support_user: SupportUserModel = (
+                (await session.execute(q)).scalars().first()
+            )
+
+            support_user.is_active = False
+
+            await session.commit()
+
+    async def activate_support_user(self, support_user_id: UUID) -> None:
+        async with self._session() as session:  # type: ignore
+            q = select(SupportUserModel).where(
+                SupportUserModel.id == support_user_id
+            )
+
+            support_user: SupportUserModel = (
+                (await session.execute(q)).scalars().first()
+            )
+
+            support_user.is_active = True
+
+            await session.commit()
+
     async def make_support_user_owner(self, support_user_id: UUID) -> None:
         async with self._session() as session:  # type: ignore
             q = select(SupportUserModel).where(
@@ -323,6 +355,9 @@ class SARepo(Repo):
                     selectinload(SupportUserModel.answers),
                     selectinload(SupportUserModel.current_question),
                     selectinload(SupportUserModel.role),
+                    selectinload(
+                        SupportUserModel.current_question
+                    ).selectinload(QuestionModel.regular_user),
                 )
             )
 
@@ -341,6 +376,9 @@ class SARepo(Repo):
                     selectinload(SupportUserModel.answers),
                     selectinload(SupportUserModel.current_question),
                     selectinload(SupportUserModel.role),
+                    selectinload(
+                        SupportUserModel.current_question
+                    ).selectinload(QuestionModel.regular_user),
                 )
             )
 
@@ -359,6 +397,9 @@ class SARepo(Repo):
                     selectinload(SupportUserModel.answers),
                     selectinload(SupportUserModel.current_question),
                     selectinload(SupportUserModel.role),
+                    selectinload(
+                        SupportUserModel.current_question
+                    ).selectinload(QuestionModel.regular_user),
                 )
             )
 
@@ -372,6 +413,9 @@ class SARepo(Repo):
                 selectinload(SupportUserModel.answers),
                 selectinload(SupportUserModel.current_question),
                 selectinload(SupportUserModel.role),
+                selectinload(SupportUserModel.current_question).selectinload(
+                    QuestionModel.regular_user
+                ),
             )
 
             result = (await session.execute(q)).scalars().all()
@@ -393,6 +437,9 @@ class SARepo(Repo):
                     selectinload(SupportUserModel.answers),
                     selectinload(SupportUserModel.current_question),
                     selectinload(SupportUserModel.role),
+                    selectinload(
+                        SupportUserModel.current_question
+                    ).selectinload(QuestionModel.regular_user),
                 )
             )
 
@@ -597,7 +644,7 @@ class SARepo(Repo):
         async with self._session() as session:  # type: ignore
             question_model = QuestionModel(
                 id=question.id,
-                regular_user_id=question.regular_user_id,
+                regular_user_id=question.regular_user.id,
                 message=question.message,
                 tg_message_id=question.tg_message_id,
                 date=question.date,
@@ -667,8 +714,15 @@ class SARepo(Repo):
                 select(AnswerModel)
                 .where(AnswerModel.support_user_id == support_user_id)
                 .options(
-                    selectinload(AnswerModel.support_user),
-                    selectinload(AnswerModel.question),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.current_question
+                    ),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.role
+                    ),
+                    selectinload(AnswerModel.question).selectinload(
+                        QuestionModel.regular_user,
+                    ),
                 )
             )
 
@@ -685,8 +739,15 @@ class SARepo(Repo):
                 select(AnswerModel)
                 .where(AnswerModel.question_id == question_id)
                 .options(
-                    selectinload(AnswerModel.support_user),
-                    selectinload(AnswerModel.question),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.current_question
+                    ),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.role
+                    ),
+                    selectinload(AnswerModel.question).selectinload(
+                        QuestionModel.regular_user,
+                    ),
                 )
             )
 
@@ -694,7 +755,7 @@ class SARepo(Repo):
 
             return [elem.as_answer_entity() for elem in result]
 
-    async def get_answer_by_tg_bot_user_id(
+    async def get_answer_by_tg_message_id(
         self, tg_mesage_id: int
     ) -> Answer | None:
         async with self._session() as session:  # type: ignore
@@ -702,8 +763,15 @@ class SARepo(Repo):
                 select(AnswerModel)
                 .where(AnswerModel.tg_message_id == tg_mesage_id)
                 .options(
-                    selectinload(AnswerModel.support_user),
-                    selectinload(AnswerModel.question),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.current_question
+                    ),
+                    selectinload(AnswerModel.support_user).selectinload(
+                        SupportUserModel.role
+                    ),
+                    selectinload(AnswerModel.question).selectinload(
+                        QuestionModel.regular_user,
+                    ),
                 )
             )
 
@@ -753,6 +821,34 @@ class SARepo(Repo):
 
             await session.commit()
 
+    async def estimate_answer_as_useful(self, answer_id: UUID) -> None:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(AnswerModel)
+                .where(AnswerModel.id == answer_id)
+                .options(selectinload(AnswerModel.support_user))
+            )
+
+            answer = (await session.execute(q)).scalars().first()
+
+            answer.is_useful = True
+
+            await session.commit()
+
+    async def estimate_answer_as_unuseful(self, answer_id: UUID) -> None:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(AnswerModel)
+                .where(AnswerModel.id == answer_id)
+                .options(selectinload(AnswerModel.support_user))
+            )
+
+            answer = (await session.execute(q)).scalars().first()
+
+            answer.is_useful = False
+
+            await session.commit()
+
     async def add_answer(
         self,
         answer: Answer,
@@ -760,8 +856,8 @@ class SARepo(Repo):
         async with self._session() as session:  # type: ignore
             answer_model = AnswerModel(
                 id=answer.id,
-                support_user_id=answer.support_user_id,
-                question_id=answer.question_id,
+                support_user_id=answer.support_user.id,
+                question_id=answer.question.id,
                 message=answer.message,
                 tg_message_id=answer.tg_message_id,
                 date=answer.date,

@@ -92,8 +92,16 @@ class Repo(abc.ABC):
 
     @abc.abstractmethod
     async def change_support_user_role(
-        self, support_user_id: UUID, new_role_id: UUID
+        self, support_user_id: UUID, new_role_id: int
     ) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def deactivate_support_user(self, support_user_id: UUID) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def activate_support_user(self, support_user_id: UUID) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -258,13 +266,21 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_answer_by_tg_bot_user_id(
+    async def get_answer_by_tg_message_id(
         self, tg_message_id: int
     ) -> Answer | None:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def delete_answers_with_question_id(self, question_id: UUID) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def estimate_answer_as_useful(self, answer_id: UUID) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def estimate_answer_as_unuseful(self, answer_id: UUID) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
