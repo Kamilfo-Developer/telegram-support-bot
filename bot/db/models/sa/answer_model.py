@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime
+from sqlalchemy import Column, ForeignKey, Text, Integer, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
@@ -33,16 +33,25 @@ class AnswerModel(Base):
 
     message = Column(Text)
 
+    is_useful = Column(Boolean, default=None)
+
     tg_message_id = Column(Integer, nullable=True, unique=True)
 
     date = Column(DateTime, nullable=False, default=datetime.now)
 
     def as_answer_entity(self) -> Answer:
+        support_user = (
+            self.support_user and self.support_user.as_support_user_entity()
+        )
+
+        question = self.question and self.question.as_question_entity()
+
         return Answer(
-            self.id,
-            self.support_user_id,
-            self.question_id,
-            self.message,
-            self.tg_message_id,
-            self.date,
+            id=self.id,
+            support_user=support_user,
+            question=question,
+            message=self.message,
+            tg_message_id=self.tg_message_id,
+            is_useful=self.is_useful,
+            date=self.date,
         )
