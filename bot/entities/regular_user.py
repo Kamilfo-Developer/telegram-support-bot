@@ -32,7 +32,7 @@ class RegularUser:
         question_date: datetime = datetime.now(),
     ) -> Question:
         question = Question(
-            uuid4(), self.id, message, tg_message_id, date=question_date
+            uuid4(), self, message, tg_message_id, date=question_date
         )
 
         await repo.add_question(question)

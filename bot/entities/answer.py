@@ -1,9 +1,8 @@
 from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
-from bot.typing import RepoType
-
 from typing import TYPE_CHECKING
+from bot.typing import RepoType
 
 if TYPE_CHECKING:
     from bot.entities.question import Question
@@ -12,35 +11,42 @@ if TYPE_CHECKING:
 
 class Answer:
     id: UUID
-    support_user_id: UUID
-    question_id: UUID
+    support_user: SupportUser
+    question: Question
     message: str
     tg_message_id: int
+    is_useful: bool | None
     date: datetime
 
     def __init__(
         self,
         id: UUID,
-        support_user_id: UUID,
-        question_id: UUID,
+        support_user: SupportUser,
+        question: Question,
         message: str,
         tg_message_id: int,
+        is_useful: bool | None = None,
         date: datetime = datetime.now(),
     ):
         self.id = id
-        self.support_user_id = support_user_id
-        self.question_id = question_id
+        self.support_user = support_user
+        self.question = question
         self.message = message
         self.tg_message_id = tg_message_id
+        self.is_useful = is_useful
         self.date = date
+
+    async def estimate_as_useful(self, repo: RepoType) -> None:
+        if not (self.is_useful is None):
+            return None
+
+        await repo.estimate_answer_as_useful(self.id)
+
+    async def estimate_as_unuseful(self, repo: RepoType) -> None:
+        if not (self.is_useful is None):
+            return None
+
+        await repo.estimate_answer_as_unuseful(self.id)
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Answer) and self.id == __o.id
-
-    async def get_support_user(self, repo: RepoType) -> SupportUser | None:
-
-        return await repo.get_support_user_by_id(self.support_user_id)
-
-    async def get_question(self, repo: RepoType) -> Question | None:
-
-        return await repo.get_question_by_id(self.question_id)

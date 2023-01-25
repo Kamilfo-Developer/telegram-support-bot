@@ -9,8 +9,8 @@ from bot.entities.role import Role
 
 class SupportUser:
     id: UUID
-    current_question_id: UUID | None
-    role_id: UUID | None
+    current_question: Question | None
+    role: Role | None
     tg_bot_user_id: int
     descriptive_name: str
     join_date: datetime = datetime.now()
@@ -19,20 +19,22 @@ class SupportUser:
     def __init__(
         self,
         id: UUID,
-        role_id: UUID | None,
         descriptive_name: str,
         tg_bot_user_id: int,
-        current_question_id: UUID | None = None,
+        role: Role | None = None,
+        current_question: Question | None = None,
         join_date: datetime = datetime.now(),
-        is_owner=False,
+        is_owner: bool = False,
+        is_active: bool = True,
     ):
         self.id = id
-        self.current_question_id = current_question_id
-        self.role_id = role_id
+        self.current_question = current_question
+        self.role = role
         self.tg_bot_user_id = tg_bot_user_id
         self.descriptive_name = descriptive_name
         self.join_date = join_date
         self.is_owner = is_owner
+        self.is_active = is_active
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, SupportUser) and self.id == __o.id
@@ -44,11 +46,11 @@ class SupportUser:
         repo: RepoType,
         answer_date: datetime = datetime.now(),
     ) -> Answer | None:
-        if self.current_question_id:
+        if self.current_question:
             answer = Answer(
                 uuid4(),
-                self.id,
-                self.current_question_id,
+                self,
+                self.current_question,
                 message,
                 tg_message_id,
                 date=answer_date,
@@ -76,42 +78,48 @@ class SupportUser:
 
         self.is_owner = False
 
-    async def get_current_question(self, repo: RepoType) -> Question | None:
-        if self.current_question_id:
-            return await repo.get_question_by_id(self.current_question_id)
-
-        return None
-
     async def get_anwers(self, repo: RepoType) -> list[Answer]:
         return await repo.get_support_user_answers_with_id(self.id)
 
-    async def get_role(self, repo: RepoType) -> Role | None:
-        if self.role_id:
-            return await repo.get_role_by_id(self.role_id)
+    async def change_role(self, new_role: Role, repo: RepoType) -> None:
 
-        return None
+        await repo.change_support_user_role(self.id, new_role.id)
 
-    async def change_role(self, new_role_id: UUID, repo: RepoType) -> None:
+        self.role = new_role
 
-        await repo.change_support_user_role(self.id, new_role_id)
-
-        self.role_id = new_role_id
-
-    async def bind_question(self, question_id: UUID, repo: RepoType) -> None:
-        if question_id == self.current_question_id:
+    async def bind_question(self, question: Question, repo: RepoType) -> None:
+        if question == self.current_question:
             return
 
-        await repo.bind_question_to_support_user(self.id, question_id)
+        await repo.bind_question_to_support_user(self.id, question.id)
 
-        self.current_question_id = question_id
+        self.current_question = question
 
     async def unbind_question(self, repo: RepoType) -> None:
-        if not self.current_question_id:
+        if not self.current_question:
             return
 
         await repo.unbind_question_from_support_user(self.id)
 
-        self.current_question_id = None
+        self.current_question = None
+
+    async def deactivate(self, repo: RepoType) -> None:
+        if not self.is_active:
+            return
+
+        await self.unbind_question(repo)
+
+        await repo.deactivate_support_user(self.id)
+
+        self.is_active = False
+
+    async def activate(self, repo: RepoType) -> None:
+        if self.is_active:
+            return
+
+        await repo.activate_support_user(self.id)
+
+        self.is_active = True
 
     @classmethod
     async def add_support_user(
@@ -119,18 +127,19 @@ class SupportUser:
         tg_bot_user_id: int,
         descriptive_name: str,
         repo: RepoType,
-        role_id: UUID | None = None,
+        role: Role | None = None,
         is_owner: bool = False,
         addition_time: datetime = datetime.now(),
     ) -> SupportUser:
 
         support_user = SupportUser(
             id=uuid4(),
-            role_id=role_id,
+            role=role,
             tg_bot_user_id=tg_bot_user_id,
             descriptive_name=descriptive_name,
             is_owner=is_owner,
             join_date=addition_time,
+            is_active=True,
         )
 
         await repo.add_support_user(support_user)
