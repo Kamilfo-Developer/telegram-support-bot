@@ -54,10 +54,14 @@ class QuestionModel(Base):
         self.answers.append(answer)
 
     def as_question_entity(self) -> Question:
+        regular_user = (
+            self.regular_user and self.regular_user.as_regular_user_entity()
+        )
+
         return Question(
-            self.id,
-            self.regular_user_id,
-            self.message,
-            self.tg_message_id,
-            self.date,
+            id=self.id,
+            regular_user=regular_user,
+            message=self.message,
+            tg_message_id=self.tg_message_id,
+            date=self.date,
         )

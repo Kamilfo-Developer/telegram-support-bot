@@ -26,6 +26,8 @@ class SupportUserModel(Base):
 
     is_owner = Column(Boolean, nullable=False, default=False)
 
+    is_active = Column(Boolean, nullable=False, default=True)
+
     # RELATIONSHIPS
 
     # Current question relationship
@@ -42,7 +44,7 @@ class SupportUserModel(Base):
 
     # Role relationship
     role_id = Column(
-        UUIDType(binary=BINARY_UUID),
+        Integer(),
         ForeignKey("roles.id", ondelete="SET DEFAULT"),
         nullable=True,
         default=None,
@@ -80,12 +82,19 @@ class SupportUserModel(Base):
         self.answers.append(answer)
 
     def as_support_user_entity(self) -> SupportUser:
+        role = self.role and self.role.as_role_entity()
+        current_question = (
+            self.current_question
+            and self.current_question.as_question_entity()
+        )
+
         return SupportUser(
             id=self.id,  # type: ignore
-            role_id=self.role_id,  # type: ignore
+            role=role,  # type: ignore
             tg_bot_user_id=self.tg_bot_user_id,  # type: ignore
             descriptive_name=self.descriptive_name,  # type: ignore
-            current_question_id=self.current_question_id,  # type: ignore
+            current_question=current_question,  # type: ignore
             join_date=self.join_date,  # type: ignore
             is_owner=self.is_owner,  # type: ignore
+            is_active=self.is_active,  # type: ignore
         )
