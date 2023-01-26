@@ -183,6 +183,16 @@ class RUMessages(Messages):
             f"Пользователь с таким ID уже является пользователем поддержки"
         ]
 
+    # DELETING OBJECTS MESSAGES
+
+    async def role_deleted_message(
+        self,
+        role: Role,
+        *args,
+        **kwargs,
+    ) -> list[str]:
+        return [f"Роль с ID: {role.id} успешно удалена"]
+
     # ONE OBJECT INFO MESSAGES
 
     async def get_role_info_message(

@@ -164,6 +164,16 @@ class Messages(abc.ABC):
     ) -> list[str]:
         raise NotImplementedError
 
+    # DELETING OBJECTS MESSAGES
+    @abc.abstractmethod
+    async def role_deleted_message(
+        self,
+        role: Role,
+        *args,
+        **kwargs,
+    ) -> list[str]:
+        raise NotImplementedError
+
     # ONE OBJECT INFO MESSAGES
 
     @abc.abstractmethod

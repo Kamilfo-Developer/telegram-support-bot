@@ -54,6 +54,13 @@ class RegularUserManager:
             answer_tg_message_id
         )
 
+        if not answer:
+            return Message(
+                await self.messages.get_no_object_with_this_id_message(
+                    str(answer_tg_message_id)
+                )
+            )
+
         if answer.is_useful is not None:
             return MessageToSend(
                 await self.messages.get_answer_already_estimated_message(
@@ -78,6 +85,13 @@ class RegularUserManager:
         answer = await self.repo.get_answer_by_tg_message_id(
             answer_tg_message_id
         )
+
+        if not answer:
+            return Message(
+                await self.messages.get_no_object_with_this_id_message(
+                    str(answer_tg_message_id)
+                )
+            )
 
         if answer.is_useful is not None:
             return MessageToSend(

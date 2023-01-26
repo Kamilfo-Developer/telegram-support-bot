@@ -128,6 +128,7 @@ class SupportUser:
         descriptive_name: str,
         repo: RepoType,
         role: Role | None = None,
+        is_active: bool | None = True,
         is_owner: bool = False,
         addition_time: datetime = datetime.now(),
     ) -> SupportUser:
@@ -139,7 +140,7 @@ class SupportUser:
             descriptive_name=descriptive_name,
             is_owner=is_owner,
             join_date=addition_time,
-            is_active=True,
+            is_active=is_active,
         )
 
         await repo.add_support_user(support_user)

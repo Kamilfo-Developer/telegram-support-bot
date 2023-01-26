@@ -13,12 +13,12 @@ DB_PROVIDER_NAME = "sqlite"
 
 DB_DRIVER_NAME = "aiosqlite"
 
-db_name = "data"
+db_name = "test_data"
 
 
 curr_dir = pathlib.Path().resolve()
 
-# URL for your database
+# SQLAlechemy URL for your database
 db_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
     curr_dir, f"{db_name}.db"
 )

@@ -8,21 +8,25 @@ from bot.db.models.sa.question_model import QuestionModel
 from bot.db.models.sa.regular_user_model import RegularUserModel
 from bot.db.models.sa.role_model import RoleModel
 from bot.db.models.sa.support_user_model import SupportUserModel
-from bot.db.db_settings import Base
+from bot.db.db_sa_settings import Base
 from tests.db_test_config import engine
 import pytest_asyncio
 
 
 async def add_data(async_session: AsyncSession):
     async with async_session() as session:
-        role1 = RoleModel(name="support")
+        role1 = RoleModel(name="support", description="A regular support user")
 
         regular_user1 = RegularUserModel(tg_bot_user_id=1234567809)
         regular_user2 = RegularUserModel(tg_bot_user_id=1234566342)
         regular_user3 = RegularUserModel(tg_bot_user_id=5626172212)
 
-        support_user1 = SupportUserModel(tg_bot_user_id=1234257322)
-        support_user2 = SupportUserModel(tg_bot_user_id=5321899523)
+        support_user1 = SupportUserModel(
+            tg_bot_user_id=1234257322, descriptive_name="Jake"
+        )
+        support_user2 = SupportUserModel(
+            tg_bot_user_id=5321899523, descriptive_name="Finn"
+        )
 
         role1.add_user(support_user1)
         role1.add_user(support_user2)

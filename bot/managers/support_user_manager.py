@@ -141,6 +141,29 @@ class SupportUserManager:
 
         return MessageToSend(await self.messages.get_roles_list_message(roles))
 
+    async def delete_role(self, role_id: int):
+        if self.is_manage_permission_denied():
+            return MessageToSend(
+                await self.messages.get_permission_denied_message(
+                    self.tg_user
+                ),
+                None,
+            )
+
+        role = await self.repo.get_role_by_id(role_id)
+
+        if not role:
+            return MessageToSend(
+                await self.messages.get_no_object_with_this_id_message(
+                    str(role_id)
+                ),
+                None,
+            )
+
+        await self.repo.delete_role_with_id(role.id)
+
+        return MessageToSend(await self.messages.get_role_info_message(role))
+
     async def add_support_user(
         self,
         regular_user_tg_bot_id: int,
@@ -482,10 +505,16 @@ class SupportUserManager:
     def is_manage_permission_denied(self) -> bool:
         support_user = self.support_user
 
-        if not support_user or not (
-            (support_user.role and support_user.role.can_manage_support_users)
-            or support_user.is_owner
-            or support_user.is_active
+        if (
+            not support_user
+            or not support_user.is_active
+            or not (
+                (
+                    support_user.role
+                    and support_user.role.can_manage_support_users
+                )
+                and not support_user.is_owner
+            )
         ):
 
             return True
@@ -497,10 +526,16 @@ class SupportUserManager:
     ) -> bool:
         support_user = self.support_user
 
-        if not support_user or not (
-            (support_user.role and support_user.role.can_manage_support_users)
-            or support_user.is_owner
-            or support_user.is_active
+        if (
+            not support_user
+            or not support_user.is_active
+            or not (
+                (
+                    support_user.role
+                    and support_user.role.can_manage_support_users
+                )
+                and not support_user.is_owner
+            )
         ):
 
             return True

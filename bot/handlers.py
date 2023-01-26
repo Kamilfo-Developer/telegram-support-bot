@@ -27,7 +27,7 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE):
 
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if support_user:
+    if support_user and support_user.is_active:
         if support_user.is_owner:
             await send_text_messages(
                 MessageToSend(
@@ -127,11 +127,6 @@ async def handle_init_owner(update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
-
-    if regular_user:
-        await repo.delete_regular_user_with_id(regular_user.id)
-
     support_user = await SupportUser.add_support_user(
         user.id, OWNER_DEFAULT_DESCRIPTIVE_NAME, repo, is_owner=True
     )
@@ -155,7 +150,7 @@ async def handle_help_command(update, context: ContextTypes.DEFAULT_TYPE):
 
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if support_user:
+    if support_user and support_user.is_active:
         if support_user.is_owner:
             await send_text_messages(
                 MessageToSend(
@@ -317,6 +312,43 @@ async def handle_get_all_roles(update, context: ContextTypes.DEFAULT_TYPE):
     manager = SupportUserManager(user, support_user, messages, repo)
 
     message = await manager.get_all_roles()
+
+    await send_text_messages(message, update)
+
+
+async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    messages = get_messages(user.language_code)
+
+    repo = RepositoryClass()
+
+    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+
+    if not context.args:
+        await send_text_messages(
+            MessageToSend(
+                await messages.get_incorrect_num_of_arguments_message(
+                    [messages.answer_id_argument_name]
+                )
+            ),
+            update,
+        )
+
+        return
+
+    if not is_string_int(context.args[0]):
+        await update.message.reply_text(
+            messages.get_incorrect_arguments_passed_message()
+        )
+
+        return
+
+    id = int(context.args[0])
+
+    manager = SupportUserManager(user, support_user, messages, repo)
+
+    message = await manager.get_role(id)
 
     await send_text_messages(message, update)
 
