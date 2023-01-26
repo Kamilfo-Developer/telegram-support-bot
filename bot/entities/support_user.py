@@ -128,7 +128,7 @@ class SupportUser:
         descriptive_name: str,
         repo: RepoType,
         role: Role | None = None,
-        is_active: bool | None = True,
+        is_active: bool = True,
         is_owner: bool = False,
         addition_time: datetime = datetime.now(),
     ) -> SupportUser:

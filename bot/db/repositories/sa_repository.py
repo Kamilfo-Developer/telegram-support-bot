@@ -32,6 +32,8 @@ class SARepo(Repo):
                     can_manage_support_users=role.can_manage_support_users,
                     created_date=role.created_date,
                 )
+                # If role.id equals to zero.
+                # It means that a new id will be created on the DB's side
                 if role.id
                 else RoleModel(
                     name=role.name,
@@ -298,7 +300,7 @@ class SARepo(Repo):
                 (await session.execute(q)).scalars().first()
             )
 
-            support_user.is_active = False
+            support_user.is_active = False  # type: ignore
 
             await session.commit()
 
@@ -312,7 +314,7 @@ class SARepo(Repo):
                 (await session.execute(q)).scalars().first()
             )
 
-            support_user.is_active = True
+            support_user.is_active = True  # type: ignore
 
             await session.commit()
 

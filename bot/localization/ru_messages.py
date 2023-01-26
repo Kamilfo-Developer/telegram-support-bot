@@ -94,13 +94,13 @@ class RUMessages(Messages):
     async def get_regular_user_help_message(
         self, user: User, *args, **kwargs
     ) -> list[str]:
-        return [f"Уважаемый пользователь, эта команда пока не реализована"]
+        return ["Уважаемый пользователь, эта команда пока не реализована"]
 
     async def get_support_user_help_message(
         self, user: User, user_entity: SupportUser, *args, **kwargs
     ) -> list[str]:
         return [
-            f"Уважаемый пользователь поддержки, эта команда пока не реализована"
+            "Уважаемый пользователь поддержки, эта команда пока не реализована"
         ]
 
     # ARGUMENTS MESSAGES
@@ -142,7 +142,7 @@ class RUMessages(Messages):
         *args,
         **kwargs,
     ) -> list[str]:
-        return [f"Роль с таким именем уже существует"]
+        return ["Роль с таким именем уже существует"]
 
     async def get_successful_support_user_addition_message(
         self,
@@ -152,7 +152,7 @@ class RUMessages(Messages):
     ) -> list[str]:
 
         return [
-            f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name}` успешно добавлен!\nЕго ID: `{support_user.tg_bot_user_id}`"
+            f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name}` успешно добавлен!\nЕго ID: `{support_user.tg_bot_user_id}`"  # type: ignore
         ]
 
     async def get_successful_answering_message(
@@ -173,15 +173,13 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            f"Вопрос успешно задан. Как только сотрудник поддержки ответит на Ваш вопрос, Вам придёт сообщение в этот чат. Ответ на вопрос может занять некоторое время"
+            "Вопрос успешно задан. Как только сотрудник поддержки ответит на Ваш вопрос, Вам придёт сообщение в этот чат. Ответ на вопрос может занять некоторое время"
         ]
 
     async def get_support_user_already_exists_message(
         self, support_user: SupportUser, *args, **kwargs
     ) -> list[str]:
-        return [
-            f"Пользователь с таким ID уже является пользователем поддержки"
-        ]
+        return ["Пользователь с таким ID уже является пользователем поддержки"]
 
     # DELETING OBJECTS MESSAGES
 
@@ -212,7 +210,10 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         role_desctiption = "Роль: " + (
-            (support_user.role and f"`{role.name}` (ID Роли: `{role.id}`)")
+            (
+                support_user.role
+                and f"`{support_user.role.name}` (ID Роли: `{support_user.role.id}`)"
+            )
             or (support_user.is_owner and "пользователь является владельцем")
             or "роль не назначена"
         )

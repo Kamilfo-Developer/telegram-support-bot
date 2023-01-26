@@ -48,7 +48,7 @@ class SupportUserManager:
                 None,
             )
 
-        await self.support_user.bind_question(question, self.repo)
+        await self.support_user.bind_question(question, self.repo)  # type: ignore
 
         return MessageToSend(
             await self.messages.get_successful_binding_message(question), None
@@ -63,12 +63,12 @@ class SupportUserManager:
                 None,
             )
 
-        if not self.support_user.current_question:
+        if not self.support_user.current_question:  # type: ignore
             return MessageToSend(
                 await self.messages.get_no_binded_question_message(), None
             )
 
-        await self.support_user.unbind_question(self.repo)
+        await self.support_user.unbind_question(self.repo)  # type: ignore
 
         return MessageToSend(
             await self.messages.get_successful_unbinding_message(), None
@@ -457,21 +457,27 @@ class SupportUserManager:
                 None,
             )
 
-        question = self.support_user.current_question
+        question = self.support_user.current_question  # type: ignore
 
         if not question:
             return (
                 MessageToSend(
-                    await self.messages.get_no_binded_question_message(
-                        self.tg_user
-                    )
+                    await self.messages.get_no_binded_question_message()
                 ),
                 None,
             )
 
-        answer = await self.support_user.answer_current_question(
+        answer = await self.support_user.answer_current_question(  # type: ignore
             answer_text, message_id, self.repo, answer_date=message_date
         )
+
+        if not answer:
+            return (
+                MessageToSend(
+                    await self.messages.get_no_binded_question_message()
+                ),
+                None,
+            )
 
         return (
             MessageToSend(
@@ -488,13 +494,13 @@ class SupportUserManager:
                 markup=self.markup.get_answer_estimation_buttons_markup(
                     json.dumps(
                         {
-                            "id": answer.tg_message_id,
+                            "id": answer.tg_message_id,  # type: ignore
                             "action": States.ESTIMATE_AS_USEFUL_ACTION,
                         }
                     ),
                     json.dumps(
                         {
-                            "id": answer.tg_message_id,
+                            "id": answer.tg_message_id,  # type: ignore
                             "action": States.ESTIMATE_AS_UNUSEFUL_ACTION,
                         }
                     ),

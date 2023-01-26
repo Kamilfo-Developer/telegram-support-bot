@@ -8,7 +8,6 @@ from bot.typing import RepoType
 from telegram import User
 from datetime import datetime
 from bot.utils import MessageToSend
-import json
 
 
 class RegularUserManager:
@@ -33,7 +32,7 @@ class RegularUserManager:
                 await self.messages.get_regular_user_not_authorized_message()
             )
 
-        question = await self.regular_user.ask_question(
+        question = await self.regular_user.ask_question(  # type: ignore
             question_text, message_id, self.repo, message_date
         )
 
@@ -87,7 +86,7 @@ class RegularUserManager:
         )
 
         if not answer:
-            return Message(
+            return MessageToSend(
                 await self.messages.get_no_object_with_this_id_message(
                     str(answer_tg_message_id)
                 )

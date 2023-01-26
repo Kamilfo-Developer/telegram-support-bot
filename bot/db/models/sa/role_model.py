@@ -27,7 +27,7 @@ class RoleModel(Base):
     created_date = Column(DateTime, nullable=False, default=datetime.now)
 
     # If False a support user cannot use answering
-    # question interface
+    # questions interface
     can_answer_questions = Column(Boolean, default=True)
 
     # If False a support user cannot manage other support users and roles
@@ -39,7 +39,7 @@ class RoleModel(Base):
     def add_user(self, support_user: SupportUserModel):
         """Binds question to the support_user
 
-        Needed to be commited using session.commit()
+        Should be commited using session.commit()
 
         Args:
             support_user (SupportUserModel): a user, which will be added
