@@ -257,7 +257,7 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE):
         update.message.date,
     )
 
-    await send_text_messages(MessageToSend(message), update)
+    await send_text_messages(message, update)
 
 
 async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE):
@@ -356,9 +356,7 @@ async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
 # SUPPORT USERS
 
 
-async def handle_add_support_user(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-):
+async def handle_add_support_user(update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
 
     messages = get_messages(update.effective_user.language_code)
