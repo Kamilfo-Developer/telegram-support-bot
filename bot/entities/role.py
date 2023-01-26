@@ -1,6 +1,5 @@
 from __future__ import annotations
 from datetime import datetime
-from uuid import UUID, uuid4
 from bot.typing import RepoType
 
 
@@ -53,6 +52,8 @@ class Role:
         adding_date: datetime = datetime.now(),
     ):
         role = Role(
+            # If id equals to zero, it means that
+            # the id must be created on the DB side
             id=0,
             name=name,
             description=description,
