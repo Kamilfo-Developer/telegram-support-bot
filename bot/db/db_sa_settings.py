@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-from bot.settings import DEBUG
 import os
 import pathlib
 
@@ -26,7 +25,7 @@ db_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
     curr_dir, f"{DB_NAME}.db"
 )
 
-engine = create_async_engine(db_URL, echo=DEBUG)
+engine = create_async_engine(db_URL, echo=False)
 
 # SQLAlchemy base
 Base = declarative_base()
