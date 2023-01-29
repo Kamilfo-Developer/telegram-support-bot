@@ -1,7 +1,9 @@
 from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
+from bot.entities.question_attachment import QuestionAttachment
 from bot.typing import RepoType
+from bot.utils import IdComparable
 
 from typing import TYPE_CHECKING
 
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
     from bot.entities.regular_user import RegularUser
 
 
-class Question:
+class Question(IdComparable):
     id: UUID
 
     regular_user: RegularUser
@@ -35,9 +37,10 @@ class Question:
         self.tg_message_id = tg_message_id
         self.date = date
 
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Question) and self.id == __o.id
+    async def get_attachments(
+        self, repo: RepoType
+    ) -> list[QuestionAttachment]:
+        return await repo.get_question_attachments(self.id)
 
-    async def get_question_answers(self, repo: RepoType) -> list[Answer]:
-
+    async def get_answers(self, repo: RepoType) -> list[Answer]:
         return await repo.get_answers_with_question_id(self.id)

@@ -3,13 +3,16 @@ from datetime import datetime
 from uuid import UUID
 from typing import TYPE_CHECKING
 from bot.typing import RepoType
+from bot.utils import IdComparable
+from bot.entities.answer_attachment import AnswerAttachment
+
 
 if TYPE_CHECKING:
     from bot.entities.question import Question
     from bot.entities.support_user import SupportUser
 
 
-class Answer:
+class Answer(IdComparable):
     id: UUID
     support_user: SupportUser
     question: Question
@@ -48,5 +51,5 @@ class Answer:
 
         await repo.estimate_answer_as_unuseful(self.id)
 
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Answer) and self.id == __o.id
+    async def get_attachments(self, repo: RepoType) -> list[AnswerAttachment]:
+        return await repo.get_answer_attachments(self.id)

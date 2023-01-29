@@ -5,9 +5,10 @@ from bot.typing import RepoType
 from bot.entities.answer import Answer
 from bot.entities.question import Question
 from bot.entities.role import Role
+from bot.utils import IdComparable
 
 
-class SupportUser:
+class SupportUser(IdComparable):
     id: UUID
     current_question: Question | None
     role: Role | None
@@ -35,9 +36,6 @@ class SupportUser:
         self.join_date = join_date
         self.is_owner = is_owner
         self.is_active = is_active
-
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, SupportUser) and self.id == __o.id
 
     async def answer_current_question(
         self,

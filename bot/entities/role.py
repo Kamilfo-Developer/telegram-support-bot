@@ -1,9 +1,10 @@
 from __future__ import annotations
 from datetime import datetime
 from bot.typing import RepoType
+from bot.utils import IdComparable
 
 
-class Role:
+class Role(IdComparable):
     id: int
 
     name: str
@@ -34,9 +35,6 @@ class Role:
         self.can_answer_questions = can_answer_questions
         self.can_manage_support_users = can_manage_support_users
         self.created_date = created_date
-
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Role) and self.id == __o.id
 
     async def get_support_users_with_this_role(self, repo: RepoType):
         return await repo.get_support_users_with_role_id(self.id)
