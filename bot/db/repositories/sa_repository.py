@@ -3,7 +3,9 @@ from sqlalchemy import delete, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.future import select
 from bot.entities.answer import Answer
+from bot.entities.answer_attachment import AnswerAttachment
 from bot.entities.question import Question
+from bot.entities.question_attachment import QuestionAttachment
 from bot.entities.regular_user import RegularUser
 from bot.entities.role import Role
 from bot.entities.support_user import SupportUser
@@ -13,6 +15,8 @@ from bot.db.models.sa.regular_user_model import RegularUserModel
 from bot.db.models.sa.answer_model import AnswerModel
 from bot.db.models.sa.support_user_model import SupportUserModel
 from bot.db.models.sa.role_model import RoleModel
+from bot.db.models.sa.question_attachment_model import QuestionAttachmentModel
+from bot.db.models.sa.answer_attachment_model import AnswerAttachmentModel
 from bot.db.repositories.repository import Repo
 
 
@@ -20,7 +24,8 @@ class SARepo(Repo):
     def __init__(self) -> None:
         self._session = async_session
 
-    # Roles Methods
+    # ROLES METHODS
+
     async def add_role(self, role: Role) -> Role:
         async with self._session() as session:  # type: ignore
             role_model = (
@@ -145,16 +150,36 @@ class SARepo(Repo):
 
             return (await session.execute(q)).scalar()
 
-    # Regular Users Methods
-    async def add_regular_user(self, regular_user: RegularUser) -> None:
+    # REGULAR USERS METHODS
+
+    async def add_regular_user(self, regular_user: RegularUser) -> RegularUser:
         async with self._session() as session:  # type: ignore
             regular_user_model = RegularUserModel(
                 id=regular_user.id,
+                lask_asked_question=regular_user.last_asked_question,
                 tg_bot_user_id=regular_user.tg_bot_user_id,
                 join_date=regular_user.join_date,
             )
 
             session.add(regular_user_model)
+
+            await session.commit()
+
+            return regular_user
+
+    async def change_regular_user_last_asked_question(
+        self, regular_user_id: UUID, question_id: UUID
+    ) -> None:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(RegularUserModel)
+                .where(RegularUserModel.id == regular_user_id)
+                .options(selectinload(RegularUserModel.last_asked_question))
+            )
+
+            regular_user = (await session.execute(q)).scalars().first()
+
+            regular_user.last_asked_question_id = question_id
 
             await session.commit()
 
@@ -237,8 +262,9 @@ class SARepo(Repo):
 
             return (await session.execute(q)).scalar()
 
-    # Regular Users Methods
-    async def add_support_user(self, support_user: SupportUser) -> None:
+    # SUPPORT USERS METHODS
+
+    async def add_support_user(self, support_user: SupportUser) -> SupportUser:
         async with self._session() as session:  # type: ignore
 
             support_user_model = SupportUserModel(
@@ -257,6 +283,8 @@ class SARepo(Repo):
             session.add(support_user_model)
 
             await session.commit()
+
+            return support_user
 
     async def bind_question_to_support_user(
         self, support_user_id: UUID, question_id: UUID
@@ -472,7 +500,8 @@ class SARepo(Repo):
 
             return (await session.execute(q)).scalar()
 
-    # Questions Methods
+    # QUESTIONS METHODS
+
     async def get_random_unbinded_question(self) -> Question | None:
         async with self._session() as session:  # type: ignore
 
@@ -642,7 +671,7 @@ class SARepo(Repo):
 
             await session.commit()
 
-    async def add_question(self, question: Question):
+    async def add_question(self, question: Question) -> Question:
         async with self._session() as session:  # type: ignore
             question_model = QuestionModel(
                 id=question.id,
@@ -655,6 +684,8 @@ class SARepo(Repo):
             session.add(question_model)
 
             await session.commit()
+
+            return question
 
     async def count_all_questions(self) -> int:
         async with self._session() as session:  # type: ignore
@@ -680,7 +711,7 @@ class SARepo(Repo):
 
             return (await session.execute(q)).scalar()
 
-    # Answers Methods
+    # ANSWERS METHODS
     async def get_all_answers(self) -> list[Answer]:
         async with self._session() as session:  # type: ignore
             q = select(AnswerModel).options(
@@ -854,7 +885,7 @@ class SARepo(Repo):
     async def add_answer(
         self,
         answer: Answer,
-    ) -> None:
+    ) -> Answer:
         async with self._session() as session:  # type: ignore
             answer_model = AnswerModel(
                 id=answer.id,
@@ -869,9 +900,194 @@ class SARepo(Repo):
 
             await session.commit()
 
+            return answer
+
     async def count_all_answers(self) -> int:
         async with self._session() as session:  # type: ignore
 
             q = select(func.count(AnswerModel.id))
 
             return (await session.execute(q)).scalar()
+
+    # QUESTION ATTACHMENTS METHODS
+    async def add_question_attachment(
+        self, question_attachment: QuestionAttachment
+    ) -> QuestionAttachment:
+        async with self._session() as session:  # type: ignore
+            question_attachment_model = QuestionAttachmentModel(
+                id=question_attachment.id,
+                question_id=question_attachment.question_id,
+                tg_file_id=question_attachment.tg_file_id,
+                attachment_type=question_attachment.attachment_type,
+                date=question_attachment.date,
+            )
+
+            session.add(question_attachment_model)
+
+            await session.commit()
+
+            return question_attachment
+
+    async def get_question_attachment_by_id(
+        self, id: UUID
+    ) -> QuestionAttachment:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(QuestionAttachmentModel)
+                .where(QuestionAttachmentModel.id == id)
+                .options(selectinload(QuestionAttachmentModel.question))
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_attachment_entity()
+
+    async def get_question_attachments(
+        self, question_id: UUID
+    ) -> list[QuestionAttachment]:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(QuestionAttachmentModel)
+                .where(QuestionAttachmentModel.question_id == question_id)
+                .options(selectinload(QuestionAttachmentModel.question))
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_attachment_entity()
+
+    async def get_all_questions_attachments(self) -> list[QuestionAttachment]:
+        async with self._session() as session:  # type: ignore
+            q = select(QuestionAttachmentModel).options(
+                selectinload(QuestionAttachmentModel.question)
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_attachment_entity()
+
+    async def delete_question_attachment_with_id(
+        self, answer_attachment_id: UUID
+    ) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(QuestionAttachmentModel).where(
+                QuestionAttachmentModel.id == answer_attachment_id
+            )
+
+            await session.execute(q)
+
+            await session.commit()
+
+    async def delete_question_attachment_with_question_id(
+        self, question_id: UUID
+    ) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(QuestionAttachmentModel).where(
+                QuestionAttachmentModel.question_id == question_id
+            )
+
+            await session.execute(q)
+
+            await session.commit()
+
+    async def delete_all_questions_attachments(self) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(QuestionAttachmentModel)
+
+            await session.execute(q)
+
+            await session.commit()
+
+    # ANSWERS ATTACHMENTS METHODS
+
+    async def add_answer_attachment(
+        self, answer_attachment: AnswerAttachment
+    ) -> AnswerAttachment:
+        async with self._session() as session:  # type: ignore
+            answer_attachment_model = AnswerAttachmentModel(
+                id=answer_attachment.id,
+                answer_id=answer_attachment.answer_id,
+                tg_file_id=answer_attachment.tg_file_id,
+                attachment_type=answer_attachment.attachment_type,
+                date=answer_attachment.date,
+            )
+
+            session.add(answer_attachment_model)
+
+            await session.commit()
+
+            return answer_attachment
+
+    async def get_answer_attachment_by_id(self, id: UUID) -> AnswerAttachment:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(AnswerAttachmentModel)
+                .where(AnswerAttachmentModel.id == id)
+                .options(selectinload(AnswerAttachmentModel.question))
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_answer_attachment_entity()
+
+    async def get_answer_attachments(
+        self, answer_id: UUID
+    ) -> list[AnswerAttachment]:
+        async with self._session() as session:  # type: ignore
+            q = (
+                select(AnswerAttachmentModel)
+                .where(AnswerAttachmentModel.answer_id == answer_id)
+                .options(selectinload(AnswerAttachmentModel.question))
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_answer_attachment_entity()
+
+    async def get_all_answers_attachments(self) -> list[AnswerAttachment]:
+        async with self._session() as session:  # type: ignore
+            q = select(AnswerAttachmentModel).options(
+                selectinload(AnswerAttachmentModel.answer)
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_answer_attachment_entity()
+
+    async def delete_answer_attachment_with_id(
+        self, answer_attachment_id: UUID
+    ) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(AnswerAttachmentModel).where(
+                AnswerAttachmentModel.id == answer_attachment_id
+            )
+
+            await session.execute(q)
+
+            await session.commit()
+
+    async def delete_answer_attachment_with_answer_id(
+        self, answer_id: UUID
+    ) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(AnswerAttachmentModel).where(
+                AnswerAttachmentModel.answer_id == answer_id
+            )
+
+            await session.execute(q)
+
+            await session.commit()
+
+    async def delete_all_answer_attachments(self) -> None:
+        async with self._session() as session:  # type: ignore
+
+            q = delete(AnswerAttachmentModel)
+
+            await session.execute(q)
+
+            await session.commit()

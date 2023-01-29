@@ -7,13 +7,17 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot.entities.support_user import SupportUser
     from bot.entities.answer import Answer
+    from bot.entities.answer_attachment import AnswerAttachment
     from bot.entities.question import Question
+    from bot.entities.question_attachment import QuestionAttachment
     from bot.entities.regular_user import RegularUser
     from bot.entities.role import Role
 
 
 class Repo(abc.ABC):
-    # Roles Methods
+
+    # ROLES METHODS
+
     @abc.abstractmethod
     async def add_role(self, role: Role) -> Role:
         raise NotImplementedError
@@ -48,9 +52,16 @@ class Repo(abc.ABC):
     async def count_all_roles(self) -> int:
         raise NotImplementedError
 
-    # Regular Users Methods
+    # REGULAR USERS METHODS
+
     @abc.abstractmethod
-    async def add_regular_user(self, regular_user: RegularUser) -> None:
+    async def add_regular_user(self, regular_user: RegularUser) -> RegularUser:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def change_regular_user_user_last_asked_question(
+        self, regular_user_id: UUID, question_id: UUID
+    ) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -85,9 +96,10 @@ class Repo(abc.ABC):
     async def count_all_regular_users(self) -> int:
         raise NotImplementedError
 
-    # Regular Users Methods
+    # SUPPORT USERS METHODS
+
     @abc.abstractmethod
-    async def add_support_user(self, support_user: SupportUser) -> None:
+    async def add_support_user(self, support_user: SupportUser) -> SupportUser:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -152,7 +164,8 @@ class Repo(abc.ABC):
     async def count_all_support_users(self) -> int:
         raise NotImplementedError
 
-    # Questions Methods
+    # QUESTIONS METHODS
+
     @abc.abstractmethod
     async def get_random_unbinded_question(self) -> Question | None:
         raise NotImplementedError
@@ -203,7 +216,7 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def add_question(self, question: Question) -> None:
+    async def add_question(self, question: Question) -> Question:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -230,7 +243,8 @@ class Repo(abc.ABC):
     async def count_all_questions(self) -> int:
         raise NotImplementedError
 
-    # Answers Methods
+    # ANSWERS METHODS
+
     @abc.abstractmethod
     async def get_all_answers(self) -> list[Answer]:
         raise NotImplementedError
@@ -287,9 +301,65 @@ class Repo(abc.ABC):
     async def add_answer(
         self,
         answer: Answer,
-    ) -> None:
+    ) -> Answer:
         raise NotImplementedError
 
     @abc.abstractmethod
     async def count_all_answers(self) -> int:
+        raise NotImplementedError
+
+    # QUESTION ATTACHMENTS METHODS
+    @abc.abstractmethod
+    async def add_question_attachment(
+        self, question_attachment: QuestionAttachment
+    ) -> QuestionAttachment:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_question_attachment_by_id(
+        self, id: UUID
+    ) -> QuestionAttachment:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_question_attachments(
+        self, question_id: UUID
+    ) -> list[QuestionAttachment]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_all_questions_attachments(self) -> list[QuestionAttachment]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete_question_attachment_with_id(
+        self, question_attachment_id: UUID
+    ) -> None:
+        raise NotImplementedError
+
+    # ANSWERS ATTACHMENTS METHODS
+    @abc.abstractmethod
+    async def add_answer_attachment(
+        self, answer_attachment: AnswerAttachment
+    ) -> AnswerAttachment:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_answer_attachment_by_id(self, id: UUID) -> AnswerAttachment:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_answer_attachments(
+        self, answer_id: UUID
+    ) -> list[AnswerAttachment]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_all_answers_attachments(self) -> list[AnswerAttachment]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete_answer_attachment_with_id(
+        self, answer_attachment_id: UUID
+    ) -> None:
         raise NotImplementedError
