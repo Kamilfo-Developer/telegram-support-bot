@@ -9,7 +9,7 @@ from bot.utils import AttachmentType
 
 
 class AnswerAttachmentModel(Base):
-    __tablename__ = "questions_attachmets"
+    __tablename__ = "answers_attachmets"
 
     # RELATIONSHIPS
 
