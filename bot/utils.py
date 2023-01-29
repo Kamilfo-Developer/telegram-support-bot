@@ -5,6 +5,8 @@ from telegram import (
     ReplyKeyboardRemove,
 )
 from uuid import UUID
+from enum import Enum
+from typing import Any
 
 
 class MessageToSend:
@@ -84,3 +86,16 @@ def is_string_int(string: str):
 
     except ValueError:
         return False
+
+
+class AttachmentType(Enum):
+    IMAGE = "image"
+    VIDEO = "video"
+    DOCUMENT = "document"
+
+
+class IdComparable:
+    id: Any
+
+    def __eq__(self, __o: object) -> bool:
+        return isinstance(__o, self.__class__) and self.id == __o.id
