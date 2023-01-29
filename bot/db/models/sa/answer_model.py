@@ -28,6 +28,11 @@ class AnswerModel(Base):
 
     question = relationship("QuestionModel", back_populates="answers")
 
+    # Answers attachments relationship
+    answer_attachments = relationship(
+        "AnswerAttachmentModel", back_populates="answer"
+    )
+
     # PROPERTIES
     id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
 
@@ -47,11 +52,11 @@ class AnswerModel(Base):
         question = self.question and self.question.as_question_entity()
 
         return Answer(
-            id=self.id,
-            support_user=support_user,
-            question=question,
-            message=self.message,
-            tg_message_id=self.tg_message_id,
-            is_useful=self.is_useful,
-            date=self.date,
+            id=self.id,  # type: ignore
+            support_user=support_user,  # type: ignore
+            question=question,  # type: ignore
+            message=self.message,  # type: ignore
+            tg_message_id=self.tg_message_id,  # type: ignore
+            is_useful=self.is_useful,  # type: ignore
+            date=self.date,  # type: ignore
         )

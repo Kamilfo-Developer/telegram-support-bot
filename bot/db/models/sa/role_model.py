@@ -1,9 +1,7 @@
 from datetime import datetime
-from uuid import uuid4
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Boolean, String, DateTime, Text, Integer
-from sqlalchemy_utils import UUIDType
-from bot.db.db_sa_settings import Base, BINARY_UUID
+from bot.db.db_sa_settings import Base
 from bot.db.models.sa.support_user_model import SupportUserModel
 from bot.entities.role import Role
 
@@ -49,10 +47,10 @@ class RoleModel(Base):
 
     def as_role_entity(self) -> Role:
         return Role(
-            id=self.id,
-            name=self.name,
-            description=self.description,
-            can_answer_questions=self.can_answer_questions,
-            can_manage_support_users=self.can_manage_support_users,
-            created_date=self.created_date,
+            id=self.id,  # type: ignore
+            name=self.name,  # type: ignore
+            description=self.description,  # type: ignore
+            can_answer_questions=self.can_answer_questions,  # type: ignore
+            can_manage_support_users=self.can_manage_support_users,  # type: ignore
+            created_date=self.created_date,  # type: ignore
         )

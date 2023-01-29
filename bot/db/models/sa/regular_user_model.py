@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4
 from bot.db.models.sa.question_model import QuestionModel
@@ -29,6 +29,15 @@ class RegularUserModel(Base):
         "QuestionModel", passive_deletes=True, back_populates="regular_user"
     )
 
+    last_asked_question_id = Column(
+        UUIDType(binary=BINARY_UUID),
+        ForeignKey("questions.id"),
+        nullable=True,
+        default=None,
+    )
+
+    last_asked_question = relationship("QuestionModel", uselist=False)
+
     # METHODS
     def add_question(self, question: QuestionModel):
         """Adds question to this user
@@ -42,4 +51,6 @@ class RegularUserModel(Base):
         self.questions.append(question)
 
     def as_regular_user_entity(self) -> RegularUser:
-        return RegularUser(self.id, self.tg_bot_user_id, self.join_date)  # type: ignore
+        return RegularUser(
+            self.id, self.tg_bot_user_id, self.join_date  # type: ignore
+        )

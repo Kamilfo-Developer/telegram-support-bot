@@ -31,6 +31,11 @@ class QuestionModel(Base):
         "SupportUserModel", uselist=False, back_populates="current_question"
     )
 
+    # Attachments for the question relationship
+    question_attachments = relationship(
+        "QuestionModel", passive_deletes=True, back_populates="question"
+    )
+
     # PROPERTIES
     id = Column(UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4)
 
@@ -59,9 +64,9 @@ class QuestionModel(Base):
         )
 
         return Question(
-            id=self.id,
-            regular_user=regular_user,
-            message=self.message,
-            tg_message_id=self.tg_message_id,
-            date=self.date,
+            id=self.id,  # type: ignore
+            regular_user=regular_user,  # type: ignore
+            message=self.message,  # type: ignore
+            tg_message_id=self.tg_message_id,  # type: ignore
+            date=self.date,  # type: ignore
         )
