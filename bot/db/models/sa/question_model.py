@@ -19,7 +19,11 @@ class QuestionModel(Base):
         ForeignKey("regular_users.id", ondelete="CASCADE"),
     )
 
-    regular_user = relationship("RegularUserModel", back_populates="questions")
+    regular_user = relationship(
+        "RegularUserModel",
+        back_populates="questions",
+        foreign_keys=[regular_user_id],
+    )
 
     # Answers for the question relationship
     answers = relationship(
@@ -33,7 +37,9 @@ class QuestionModel(Base):
 
     # Attachments for the question relationship
     question_attachments = relationship(
-        "QuestionModel", passive_deletes=True, back_populates="question"
+        "QuestionAttachmentModel",
+        passive_deletes=True,
+        back_populates="question",
     )
 
     # PROPERTIES

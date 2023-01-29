@@ -26,17 +26,10 @@ class RegularUserModel(Base):
 
     # Questions relationship
     questions = relationship(
-        "QuestionModel", passive_deletes=True, back_populates="regular_user"
+        "QuestionModel",
+        passive_deletes=True,
+        back_populates="regular_user",
     )
-
-    last_asked_question_id = Column(
-        UUIDType(binary=BINARY_UUID),
-        ForeignKey("questions.id"),
-        nullable=True,
-        default=None,
-    )
-
-    last_asked_question = relationship("QuestionModel", uselist=False)
 
     # METHODS
     def add_question(self, question: QuestionModel):
