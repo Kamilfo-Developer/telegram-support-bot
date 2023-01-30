@@ -59,9 +59,9 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def change_regular_user_user_last_asked_question(
-        self, regular_user_id: UUID, question_id: UUID
-    ) -> None:
+    async def get_regular_user_last_asked_question(
+        self, regular_user_id: UUID
+    ) -> Question | None:
         raise NotImplementedError
 
     @abc.abstractmethod
