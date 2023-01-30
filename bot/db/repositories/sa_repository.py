@@ -10,13 +10,15 @@ from bot.entities.regular_user import RegularUser
 from bot.entities.role import Role
 from bot.entities.support_user import SupportUser
 from bot.db.db_sa_settings import async_session
-from bot.db.models.sa.question_model import QuestionModel
-from bot.db.models.sa.regular_user_model import RegularUserModel
-from bot.db.models.sa.answer_model import AnswerModel
-from bot.db.models.sa.support_user_model import SupportUserModel
-from bot.db.models.sa.role_model import RoleModel
-from bot.db.models.sa.question_attachment_model import QuestionAttachmentModel
-from bot.db.models.sa.answer_attachment_model import AnswerAttachmentModel
+from bot.db.models.sa_models import (
+    QuestionModel,
+    QuestionAttachmentModel,
+    AnswerModel,
+    AnswerAttachmentModel,
+    RegularUserModel,
+    SupportUserModel,
+    RoleModel,
+)
 from bot.db.repositories.repository import Repo
 
 
@@ -156,7 +158,6 @@ class SARepo(Repo):
         async with self._session() as session:  # type: ignore
             regular_user_model = RegularUserModel(
                 id=regular_user.id,
-                lask_asked_question=regular_user.last_asked_question,
                 tg_bot_user_id=regular_user.tg_bot_user_id,
                 join_date=regular_user.join_date,
             )
@@ -298,7 +299,7 @@ class SARepo(Repo):
                 (await session.execute(q)).scalars().first()
             )
 
-            support_user.current_question = None
+            support_user.current_question = None  # type: ignore
 
             await session.commit()
 
