@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
-from bot.typing import RepoType
+from bot.typing import Repo
 from bot.entities.answer import Answer
 from bot.entities.question import Question
 from bot.entities.role import Role
@@ -41,7 +41,7 @@ class SupportUser(IdComparable):
         self,
         message: str,
         tg_message_id: int,
-        repo: RepoType,
+        repo: Repo,
         answer_date: datetime = datetime.now(),
     ) -> Answer | None:
         if self.current_question:
@@ -60,7 +60,7 @@ class SupportUser(IdComparable):
 
         return None
 
-    async def make_owner(self, repo: RepoType) -> None:
+    async def make_owner(self, repo: Repo) -> None:
         if self.is_owner:
             return
 
@@ -68,7 +68,7 @@ class SupportUser(IdComparable):
 
         self.is_owner = True
 
-    async def remove_owner_rights(self, repo: RepoType) -> None:
+    async def remove_owner_rights(self, repo: Repo) -> None:
         if not self.is_owner:
             return
 
@@ -76,16 +76,16 @@ class SupportUser(IdComparable):
 
         self.is_owner = False
 
-    async def get_anwers(self, repo: RepoType) -> list[Answer]:
+    async def get_anwers(self, repo: Repo) -> list[Answer]:
         return await repo.get_support_user_answers_with_id(self.id)
 
-    async def change_role(self, new_role: Role, repo: RepoType) -> None:
+    async def change_role(self, new_role: Role, repo: Repo) -> None:
 
         await repo.change_support_user_role(self.id, new_role.id)
 
         self.role = new_role
 
-    async def bind_question(self, question: Question, repo: RepoType) -> None:
+    async def bind_question(self, question: Question, repo: Repo) -> None:
         if question == self.current_question:
             return
 
@@ -93,7 +93,7 @@ class SupportUser(IdComparable):
 
         self.current_question = question
 
-    async def unbind_question(self, repo: RepoType) -> None:
+    async def unbind_question(self, repo: Repo) -> None:
         if not self.current_question:
             return
 
@@ -101,7 +101,7 @@ class SupportUser(IdComparable):
 
         self.current_question = None
 
-    async def deactivate(self, repo: RepoType) -> None:
+    async def deactivate(self, repo: Repo) -> None:
         if not self.is_active:
             return
 
@@ -111,7 +111,7 @@ class SupportUser(IdComparable):
 
         self.is_active = False
 
-    async def activate(self, repo: RepoType) -> None:
+    async def activate(self, repo: Repo) -> None:
         if self.is_active:
             return
 
@@ -124,7 +124,7 @@ class SupportUser(IdComparable):
         cls,
         tg_bot_user_id: int,
         descriptive_name: str,
-        repo: RepoType,
+        repo: Repo,
         role: Role | None = None,
         is_active: bool = True,
         is_owner: bool = False,

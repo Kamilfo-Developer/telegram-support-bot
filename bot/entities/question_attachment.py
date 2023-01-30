@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
-from bot.typing import RepoType
+from bot.typing import Repo
 from bot.utils import IdComparable, AttachmentType
 from bot.entities.attachment import Attachment
 
@@ -36,5 +36,5 @@ class QuestionAttachment(Attachment, IdComparable):
         self.attachment_type = attachment_type
         self.date = date
 
-    async def get_question(self, repo: RepoType) -> Question | None:
+    async def get_question(self, repo: Repo) -> Question | None:
         return await repo.get_question_by_id(self.question_id)

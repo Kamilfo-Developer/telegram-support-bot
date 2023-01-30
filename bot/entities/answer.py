@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 from typing import TYPE_CHECKING
-from bot.typing import RepoType
+from bot.typing import Repo
 from bot.utils import IdComparable
 from bot.entities.answer_attachment import AnswerAttachment
 
@@ -39,17 +39,17 @@ class Answer(IdComparable):
         self.is_useful = is_useful
         self.date = date
 
-    async def estimate_as_useful(self, repo: RepoType) -> None:
+    async def estimate_as_useful(self, repo: Repo) -> None:
         if not (self.is_useful is None):
             return None
 
         await repo.estimate_answer_as_useful(self.id)
 
-    async def estimate_as_unuseful(self, repo: RepoType) -> None:
+    async def estimate_as_unuseful(self, repo: Repo) -> None:
         if not (self.is_useful is None):
             return None
 
         await repo.estimate_answer_as_unuseful(self.id)
 
-    async def get_attachments(self, repo: RepoType) -> list[AnswerAttachment]:
+    async def get_attachments(self, repo: Repo) -> list[AnswerAttachment]:
         return await repo.get_answer_attachments(self.id)

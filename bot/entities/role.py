@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-from bot.typing import RepoType
+from bot.typing import Repo
 from bot.utils import IdComparable
 
 
@@ -36,7 +36,7 @@ class Role(IdComparable):
         self.can_manage_support_users = can_manage_support_users
         self.created_date = created_date
 
-    async def get_support_users_with_this_role(self, repo: RepoType):
+    async def get_support_users_with_this_role(self, repo: Repo):
         return await repo.get_support_users_with_role_id(self.id)
 
     @classmethod
@@ -45,7 +45,7 @@ class Role(IdComparable):
         name: str,
         can_answer_questions: bool,
         can_manage_support_users: bool,
-        repo: RepoType,
+        repo: Repo,
         description: str = "",
         adding_date: datetime = datetime.now(),
     ):
