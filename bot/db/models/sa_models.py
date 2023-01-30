@@ -89,9 +89,7 @@ class RegularUserModel(Base):
 
     # Unique telegram id that's given
     # to a user when chatting started
-    tg_bot_user_id: Mapped[int] = mapped_column(
-        Integer, nullable=True, default=None, unique=True
-    )
+    tg_bot_user_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     join_date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
@@ -100,7 +98,7 @@ class RegularUserModel(Base):
     # RELATIONSHIPS
 
     # Questions relationship
-    questions: Mapped[QuestionModel] = relationship(
+    questions: Mapped[list[QuestionModel]] = relationship(
         "QuestionModel",
         passive_deletes=True,
         back_populates="regular_user",
@@ -137,9 +135,7 @@ class SupportUserModel(Base):
 
     # Unique telegram id that's given
     # to a user when chatting started
-    tg_bot_user_id: Mapped[int] = mapped_column(
-        Integer, nullable=True, default=None, unique=True
-    )
+    tg_bot_user_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     join_date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
@@ -156,26 +152,28 @@ class SupportUserModel(Base):
     # RELATIONSHIPS
 
     # Current question relationship
-    current_question_id: Mapped[UUID] = mapped_column(
+    current_question_id: Mapped[UUID | None] = mapped_column(
         UUIDType(binary=BINARY_UUID),
         ForeignKey("questions.id"),
         nullable=True,
         default=None,
     )
 
-    current_question: Mapped[QuestionModel] = relationship(
+    current_question: Mapped[QuestionModel | None] = relationship(
         "QuestionModel", uselist=False, back_populates="current_support_user"
     )
 
     # Role relationship
-    role_id: Mapped[int] = mapped_column(
+    role_id: Mapped[int | None] = mapped_column(
         Integer(),
         ForeignKey("roles.id", ondelete="SET DEFAULT"),
         nullable=True,
         default=None,
     )
 
-    role: Mapped[RoleModel] = relationship("RoleModel", back_populates="users")
+    role: Mapped[RoleModel | None] = relationship(
+        "RoleModel", back_populates="users"
+    )
 
     # Answers relationship
 
@@ -248,7 +246,7 @@ class QuestionModel(Base):
     )
 
     # Support User that binded the question relationship
-    current_support_user: Mapped[SupportUserModel] = relationship(
+    current_support_user: Mapped[SupportUserModel | None] = relationship(
         "SupportUserModel", uselist=False, back_populates="current_question"
     )
 
@@ -264,11 +262,9 @@ class QuestionModel(Base):
         UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
     )
 
-    message: Mapped[str] = mapped_column(Text)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
 
-    tg_message_id: Mapped[int] = mapped_column(
-        Integer, nullable=True, unique=True
-    )
+    tg_message_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
@@ -338,11 +334,11 @@ class AnswerModel(Base):
 
     message: Mapped[str] = mapped_column(Text)
 
-    is_useful: Mapped[bool] = mapped_column(Boolean, default=None)
-
-    tg_message_id: Mapped[int] = mapped_column(
-        Integer, nullable=True, unique=True
+    is_useful: Mapped[bool | None] = mapped_column(
+        Boolean, nullable=True, default=None
     )
+
+    tg_message_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
