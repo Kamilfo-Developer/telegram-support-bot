@@ -59,12 +59,6 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_regular_user_last_asked_question(
-        self, regular_user_id: UUID
-    ) -> Question | None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
     async def get_regular_user_by_id(self, id: UUID) -> RegularUser | None:
         raise NotImplementedError
 
@@ -182,6 +176,12 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def get_regular_user_last_asked_question(
+        self, regular_user_id: UUID
+    ) -> Question | None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def get_question_by_tg_message_id(
         self, tg_message_id: int
     ) -> Question | None:
@@ -251,6 +251,12 @@ class Repo(abc.ABC):
 
     @abc.abstractmethod
     async def get_answer_by_id(self, answer_id: UUID) -> Answer | None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_support_user_last_answer(
+        self, support_user_id: UUID
+    ) -> Answer | None:
         raise NotImplementedError
 
     @abc.abstractmethod
