@@ -167,22 +167,6 @@ class SARepo(Repo):
 
             return regular_user
 
-    async def change_regular_user_last_asked_question(
-        self, regular_user_id: UUID, question_id: UUID
-    ) -> None:
-        async with self._session() as session:  # type: ignore
-            q = (
-                select(RegularUserModel)
-                .where(RegularUserModel.id == regular_user_id)
-                .options(selectinload(RegularUserModel.last_asked_question))
-            )
-
-            regular_user = (await session.execute(q)).scalars().first()
-
-            regular_user.last_asked_question_id = question_id
-
-            await session.commit()
-
     async def get_regular_user_by_id(self, id: UUID) -> RegularUser | None:
         async with self._session() as session:  # type: ignore
             q = (
@@ -505,13 +489,9 @@ class SARepo(Repo):
     async def get_random_unbinded_question(self) -> Question | None:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(QuestionModel)
-                .where(QuestionModel.current_support_user == None)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(
+                    QuestionModel.current_support_user == None
                 )
             )
 
@@ -522,15 +502,10 @@ class SARepo(Repo):
     async def get_random_unanswered_unbinded_question(self) -> Question | None:
         async with self._session() as session:  # type: ignore
 
-            q = (
+            q = self._get_question_query_with_options(
                 select(QuestionModel)
                 .where(QuestionModel.current_support_user == None)
                 .where(QuestionModel.answers == None)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
-                )
             )
 
             result = (await session.execute(q)).scalars().first()
@@ -540,11 +515,7 @@ class SARepo(Repo):
     async def get_all_questions(self) -> list[Question]:
         async with self._session() as session:  # type: ignore
 
-            q = select(QuestionModel).options(
-                selectinload(QuestionModel.regular_user),
-                selectinload(QuestionModel.current_support_user),
-                selectinload(QuestionModel.answers),
-            )
+            q = self._get_question_query_with_options(select(QuestionModel))
 
             result = (await session.execute(q)).scalars().all()
 
@@ -553,14 +524,22 @@ class SARepo(Repo):
     async def get_question_by_id(self, question_id: UUID) -> Question | None:
         async with self._session() as session:  # type: ignore
 
-            q = (
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(QuestionModel.id == question_id)
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_entity()
+
+    async def get_regular_user_last_asked_question(
+        self, regular_user_id: UUID
+    ) -> Question | None:
+        async with self._session() as session:  # type: ignore
+            q = self._get_question_query_with_options(
                 select(QuestionModel)
-                .where(QuestionModel.id == question_id)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
-                )
+                .where(QuestionModel.regular_user_id == regular_user_id)
+                .order_by(QuestionModel.date.desc())
             )
 
             result = (await session.execute(q)).scalars().first()
@@ -572,13 +551,9 @@ class SARepo(Repo):
     ) -> Question | None:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(QuestionModel)
-                .where(QuestionModel.tg_message_id == tg_message_id)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(
+                    QuestionModel.tg_message_id == tg_message_id
                 )
             )
 
@@ -591,13 +566,9 @@ class SARepo(Repo):
     ) -> list[Question]:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(QuestionModel)
-                .where(QuestionModel.regular_user_id == regular_user_id)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(
+                    QuestionModel.regular_user_id == regular_user_id
                 )
             )
 
@@ -608,13 +579,9 @@ class SARepo(Repo):
     async def get_unbinded_questions(self) -> list[Question]:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(QuestionModel)
-                .where(QuestionModel.current_support_user == None)
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(
+                    QuestionModel.current_support_user == None
                 )
             )
 
@@ -625,16 +592,10 @@ class SARepo(Repo):
     async def get_unanswered_questions(self) -> list[Question]:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(QuestionModel)
-                .where(
+            q = self._get_question_query_with_options(
+                select(QuestionModel).where(
                     QuestionModel.current_support_user == None
                     and QuestionModel.answers == []
-                )
-                .options(
-                    selectinload(QuestionModel.regular_user),
-                    selectinload(QuestionModel.current_support_user),
-                    selectinload(QuestionModel.answers),
                 )
             )
 
@@ -711,13 +672,18 @@ class SARepo(Repo):
 
             return (await session.execute(q)).scalar()
 
+    def _get_question_query_with_options(self, q):
+        return q.options(
+            selectinload(QuestionModel.regular_user),
+            selectinload(QuestionModel.current_support_user),
+            selectinload(QuestionModel.question_attachments),
+        )
+
     # ANSWERS METHODS
+
     async def get_all_answers(self) -> list[Answer]:
         async with self._session() as session:  # type: ignore
-            q = select(AnswerModel).options(
-                selectinload(AnswerModel.support_user),
-                selectinload(AnswerModel.question),
-            )
+            q = self._get_answer_query_with_options(select(AnswerModel))
 
             result = (await session.execute(q)).scalars().all()
 
@@ -726,36 +692,35 @@ class SARepo(Repo):
     async def get_answer_by_id(self, answer_id: UUID) -> Answer | None:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(AnswerModel)
-                .where(AnswerModel.id == answer_id)
-                .options(
-                    selectinload(AnswerModel.support_user),
-                    selectinload(AnswerModel.question),
-                )
+            q = self._get_answer_query_with_options(
+                select(AnswerModel).where(AnswerModel.id == answer_id)
             )
 
             result = (await session.execute(q)).scalars().first()
 
             return result and result.as_answer_entity()
 
+    async def get_support_user_last_answer(
+        self, support_user_id: UUID
+    ) -> Answer | None:
+        async with self._session() as session:  # type: ignore
+            q = self._get_answer_query_with_options(
+                select(AnswerModel)
+                .where(AnswerModel.support_user_id == support_user_id)
+                .order_by(AnswerModel.date.desc())
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_question_entity()
+
     async def get_support_user_answers_with_id(
         self, support_user_id: UUID
     ) -> list[Answer]:
         async with self._session() as session:  # type: ignore
-            q = (
-                select(AnswerModel)
-                .where(AnswerModel.support_user_id == support_user_id)
-                .options(
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.current_question
-                    ),
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.role
-                    ),
-                    selectinload(AnswerModel.question).selectinload(
-                        QuestionModel.regular_user,
-                    ),
+            q = self._get_answer_query_with_options(
+                select(AnswerModel).where(
+                    AnswerModel.support_user_id == support_user_id
                 )
             )
 
@@ -768,19 +733,9 @@ class SARepo(Repo):
     ) -> list[Answer]:
         async with self._session() as session:  # type: ignore
 
-            q = (
-                select(AnswerModel)
-                .where(AnswerModel.question_id == question_id)
-                .options(
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.current_question
-                    ),
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.role
-                    ),
-                    selectinload(AnswerModel.question).selectinload(
-                        QuestionModel.regular_user,
-                    ),
+            q = self._get_answer_query_with_options(
+                select(AnswerModel).where(
+                    AnswerModel.question_id == question_id
                 )
             )
 
@@ -792,19 +747,9 @@ class SARepo(Repo):
         self, tg_mesage_id: int
     ) -> Answer | None:
         async with self._session() as session:  # type: ignore
-            q = (
-                select(AnswerModel)
-                .where(AnswerModel.tg_message_id == tg_mesage_id)
-                .options(
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.current_question
-                    ),
-                    selectinload(AnswerModel.support_user).selectinload(
-                        SupportUserModel.role
-                    ),
-                    selectinload(AnswerModel.question).selectinload(
-                        QuestionModel.regular_user,
-                    ),
+            q = self._get_answer_query_with_options(
+                select(AnswerModel).where(
+                    AnswerModel.tg_message_id == tg_mesage_id
                 )
             )
 
@@ -908,6 +853,27 @@ class SARepo(Repo):
             q = select(func.count(AnswerModel.id))
 
             return (await session.execute(q)).scalar()
+
+    def _get_answer_query_with_options(self, q):
+        return q.options(
+            selectinload(AnswerModel.question).selectinload(
+                QuestionModel.regular_user
+            ),
+            selectinload(AnswerModel.question).selectinload(
+                QuestionModel.question_attachments
+            ),
+            # SUPPORT USER AND ITS CURRENT QUESTIONS PROPERTIES
+            selectinload(AnswerModel.support_user)
+            .selectinload(SupportUserModel.current_question)
+            .selectinload(QuestionModel.regular_user),
+            selectinload(AnswerModel.support_user)
+            .selectinload(SupportUserModel.current_question)
+            .selectinload(QuestionModel.question_attachments),
+            # SUPPORT USER ROLE
+            selectinload(AnswerModel.support_user).selectinload(
+                SupportUserModel.role
+            ),
+        )
 
     # QUESTION ATTACHMENTS METHODS
     async def add_question_attachment(
