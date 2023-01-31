@@ -1,6 +1,11 @@
 from __future__ import annotations
 from datetime import datetime
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    relationship,
+    Mapped,
+    mapped_column,
+)
 from sqlalchemy import (
     ForeignKey,
     DateTime,
@@ -12,7 +17,7 @@ from sqlalchemy import (
 )
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4, UUID
-from bot.db.db_sa_settings import Base, BINARY_UUID
+from bot.db.db_sa_settings import BINARY_UUID
 from bot.entities.answer import AnswerAttachment
 from bot.utils import AttachmentType
 from bot.entities.answer import Answer
@@ -23,7 +28,11 @@ from bot.entities.question_attachment import QuestionAttachment
 from bot.entities.question import Question
 
 
-class RoleModel(Base):
+class ModelBase(DeclarativeBase):
+    pass
+
+
+class RoleModel(ModelBase):
     __tablename__ = "roles"
 
     # RELATIONSHIPS
@@ -77,7 +86,7 @@ class RoleModel(Base):
         )
 
 
-class RegularUserModel(Base):
+class RegularUserModel(ModelBase):
     __tablename__ = "regular_users"
 
     # User id
@@ -120,7 +129,7 @@ class RegularUserModel(Base):
         return RegularUser(self.id, self.tg_bot_user_id, self.join_date)
 
 
-class SupportUserModel(Base):
+class SupportUserModel(ModelBase):
     __tablename__ = "support_users"
 
     # User id
@@ -205,10 +214,12 @@ class SupportUserModel(Base):
         self.answers.append(answer)
 
     def as_support_user_entity(self) -> SupportUser:
-        role = self.role and self.role.as_role_entity()
+        role = self.role.as_role_entity() if self.role else None
+
         current_question = (
-            self.current_question
-            and self.current_question.as_question_entity()
+            self.current_question.as_question_entity()
+            if self.current_question
+            else None
         )
 
         return SupportUser(
@@ -223,7 +234,7 @@ class SupportUserModel(Base):
         )
 
 
-class QuestionModel(Base):
+class QuestionModel(ModelBase):
     __tablename__ = "questions"
 
     # RELATIONSHIPS
@@ -241,7 +252,7 @@ class QuestionModel(Base):
     )
 
     # Answers for the question relationship
-    answers: Mapped[AnswerModel] = relationship(
+    answers: Mapped[list[AnswerModel]] = relationship(
         "AnswerModel", passive_deletes=True, back_populates="question"
     )
 
@@ -285,7 +296,9 @@ class QuestionModel(Base):
 
     def as_question_entity(self) -> Question:
         regular_user = (
-            self.regular_user and self.regular_user.as_regular_user_entity()
+            self.regular_user.as_regular_user_entity()
+            if self.regular_user
+            else None
         )
 
         return Question(
@@ -297,7 +310,7 @@ class QuestionModel(Base):
         )
 
 
-class AnswerModel(Base):
+class AnswerModel(ModelBase):
     __tablename__ = "answers"
 
     # RELATIONSHIP
@@ -346,10 +359,14 @@ class AnswerModel(Base):
 
     def as_answer_entity(self) -> Answer:
         support_user = (
-            self.support_user and self.support_user.as_support_user_entity()
+            self.support_user.as_support_user_entity()
+            if self.support_user
+            else None
         )
 
-        question = self.question and self.question.as_question_entity()
+        question = (
+            self.question.as_question_entity() if self.question else None
+        )
 
         return Answer(
             id=self.id,
@@ -362,7 +379,7 @@ class AnswerModel(Base):
         )
 
 
-class QuestionAttachmentModel(Base):
+class QuestionAttachmentModel(ModelBase):
     __tablename__ = "questions_attachmets"
 
     # RELATIONSHIPS
@@ -402,7 +419,7 @@ class QuestionAttachmentModel(Base):
         )
 
 
-class AnswerAttachmentModel(Base):
+class AnswerAttachmentModel(ModelBase):
     __tablename__ = "answers_attachmets"
 
     # RELATIONSHIPS
