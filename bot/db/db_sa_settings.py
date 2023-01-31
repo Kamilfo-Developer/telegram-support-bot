@@ -17,14 +17,14 @@ DB_DRIVER_NAME = "aiosqlite"
 DB_NAME = "data"
 
 
-curr_dir = pathlib.Path().resolve()
+root_dir = pathlib.Path(__file__).parent.parent.parent.resolve()
 
 # URL for your database
-db_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
-    curr_dir, f"{DB_NAME}.db"
+DB_URL = f"{DB_PROVIDER_NAME}+{DB_DRIVER_NAME}:///" + os.path.join(
+    root_dir, f"{DB_NAME}.db"
 )
 
-engine = create_async_engine(db_URL, echo=False)
+engine = create_async_engine(DB_URL, echo=False)
 
 
 async_session = sessionmaker(  # type: ignore
