@@ -7,7 +7,10 @@ class Markup:
         self.messages = messages
 
     def get_question_binding_buttons_markup(
-        self, bind_button_callback_data: str, unbind_button_callback_data: str
+        self,
+        bind_button_callback_data: str,
+        unbind_button_callback_data: str,
+        show_attachments_button_callback_data: str,
     ) -> InlineKeyboardMarkup:
         inline_keyboard = InlineKeyboardMarkup(
             [
@@ -19,6 +22,10 @@ class Markup:
                     InlineKeyboardButton(
                         self.messages.unbind_question_button_text,
                         callback_data=unbind_button_callback_data,
+                    ),
+                    InlineKeyboardButton(
+                        self.messages.show_attachments_button_text,
+                        callback_data=show_attachments_button_callback_data,
                     ),
                 ]
             ]

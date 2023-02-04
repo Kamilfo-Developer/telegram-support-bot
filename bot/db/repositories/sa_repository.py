@@ -895,9 +895,9 @@ class SARepo(Repo):
                 )
             )
 
-            result = (await session.execute(q)).scalars().first()
+            result = (await session.execute(q)).scalars().all()
 
-            return result and result.as_question_attachment_entity()
+            return [elem.as_question_attachment_entity() for elem in result]
 
     async def get_all_questions_attachments(self) -> list[QuestionAttachment]:
         async with self._session() as session:  # type: ignore
@@ -907,7 +907,7 @@ class SARepo(Repo):
 
             result = (await session.execute(q)).scalars().first()
 
-            return result and result.as_question_attachment_entity()
+            return [elem.as_question_attachment_entity() for elem in result]
 
     async def delete_question_attachment_with_id(
         self, answer_attachment_id: UUID

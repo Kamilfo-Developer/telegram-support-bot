@@ -1,13 +1,13 @@
 from bot.localization.messages import Messages
 from bot.entities.support_user import SupportUser
 from bot.entities.regular_user import RegularUser
-from bot.entities.role import Role
+from bot.entities.question_attachment import QuestionAttachment
 from bot.entities.question import Question
 from bot.markup import Markup
-from bot.typing import RepoType
+from bot.typing import Repo
 from telegram import User
 from datetime import datetime
-from bot.utils import MessageToSend
+from bot.utils import MessageToSend, AttachmentType, ImageToSend, VideoToSend
 
 
 class RegularUserManager:
@@ -16,7 +16,7 @@ class RegularUserManager:
         tg_user: User,
         regular_user: RegularUser | None,
         messages: Messages,
-        repo: RepoType,
+        repo: Repo,
     ):
         self.tg_user = tg_user
         self.regular_user = regular_user
@@ -54,7 +54,7 @@ class RegularUserManager:
         )
 
         if not answer:
-            return Message(
+            return MessageToSend(
                 await self.messages.get_no_object_with_this_id_message(
                     str(answer_tg_message_id)
                 )
@@ -107,7 +107,36 @@ class RegularUserManager:
             )
         )
 
-    def is_regular_user_authorized(self):
+    async def add_attachment_to_last_asked_question(
+        self, tg_file_id: str, attachment_type: AttachmentType, date: datetime
+    ) -> MessageToSend:
+        if not self.is_regular_user_authorized():
+            return MessageToSend(
+                await self.messages.get_regular_user_not_authorized_message()
+            )
+
+        last_question = await self.repo.get_regular_user_last_asked_question(
+            self.regular_user.id
+        )
+
+        if not last_question:
+            return MessageToSend(
+                await self.messages.get_no_last_asked_question_message(
+                    self.regular_user
+                )
+            )
+
+        await last_question.add_attachment(
+            tg_file_id, attachment_type, date, self.repo
+        )
+
+        return MessageToSend(
+            await self.messages.get_question_attachment_addition_message(
+                self.regular_user
+            )
+        )
+
+    def is_regular_user_authorized(self) -> bool:
         if not self.regular_user:
             return False
 

@@ -2,8 +2,12 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 from bot.typing import Repo
-from bot.utils import IdComparable, AttachmentType
+from bot.utils import (
+    IdComparable,
+    AttachmentType,
+)
 from bot.entities.attachment import Attachment
+
 
 from typing import TYPE_CHECKING
 

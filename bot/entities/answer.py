@@ -1,9 +1,9 @@
 from __future__ import annotations
 from datetime import datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import TYPE_CHECKING
 from bot.typing import Repo
-from bot.utils import IdComparable
+from bot.utils import IdComparable, AttachmentType
 from bot.entities.answer_attachment import AnswerAttachment
 
 
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 class Answer(IdComparable):
     id: UUID
-    support_user: SupportUser
-    question: Question
+    support_user: SupportUser | None
+    question: Question | None
     message: str
     tg_message_id: int
     is_useful: bool | None
@@ -24,8 +24,8 @@ class Answer(IdComparable):
     def __init__(
         self,
         id: UUID,
-        support_user: SupportUser,
-        question: Question,
+        support_user: SupportUser | None,
+        question: Question | None,
         message: str,
         tg_message_id: int,
         is_useful: bool | None = None,
@@ -53,3 +53,16 @@ class Answer(IdComparable):
 
     async def get_attachments(self, repo: Repo) -> list[AnswerAttachment]:
         return await repo.get_answer_attachments(self.id)
+
+    async def add_attachment(
+        self,
+        tg_file_id: str,
+        attachment_type: AttachmentType,
+        date: datetime,
+        repo: Repo,
+    ) -> AnswerAttachment:
+        return await repo.add_answer_attachment(
+            AnswerAttachment(
+                uuid4(), self.id, tg_file_id, attachment_type, date
+            )
+        )

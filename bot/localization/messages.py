@@ -24,6 +24,7 @@ class Messages(abc.ABC):
     unbind_question_button_text: str
     estimate_answer_as_useful_button_text: str
     estimate_answer_as_unuseful_button_text: str
+    show_attachments_button_text: str
 
     # START MESSAGES
 
@@ -107,6 +108,12 @@ class Messages(abc.ABC):
     @abc.abstractmethod
     async def get_no_object_with_this_id_message(
         self, id: str, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_unavailable_or_deleted_object_message(
+        self, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 
@@ -342,6 +349,37 @@ class Messages(abc.ABC):
         support_user: SupportUser,
         *args,
         **kwargs,
+    ) -> list[str]:
+        raise NotImplementedError
+
+    # ATTACHMENTS MESSAGES
+    @abc.abstractmethod
+    async def get_no_last_asked_question_message(
+        self, regular_user: RegularUser
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_no_last_answer_message(
+        self, support_user: SupportUser
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_question_attachment_addition_message(
+        self, support_user: RegularUser
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_answer_attachment_addition_message(
+        self, support_user: SupportUser
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_no_question_attachments_message(
+        self, question: Question
     ) -> list[str]:
         raise NotImplementedError
 

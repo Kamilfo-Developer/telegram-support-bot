@@ -29,6 +29,7 @@ class RUMessages(Messages):
     unbind_question_button_text = "Отвязать"
     estimate_answer_as_useful_button_text = "Ответ полезен"
     estimate_answer_as_unuseful_button_text = "Ответ бесполезен"
+    show_attachments_button_text = "Показать приложения к вопросу"
 
     # START MESSAGES
     async def get_start_regular_user_message(
@@ -124,6 +125,11 @@ class RUMessages(Messages):
         self, id: str, *args, **kwargs
     ) -> list[str]:
         return [f"Нет объекта с таким ID: {id}"]
+
+    async def get_unavailable_or_deleted_object_message(
+        self, *args, **kwargs
+    ) -> list[str]:
+        return [f"Данный объект недоступен или был удалён"]
 
     # ADDITION MESSAGES
 
@@ -257,6 +263,9 @@ class RUMessages(Messages):
         *args,
         **kwargs,
     ) -> list[str]:
+        if not roles_list:
+            return ["Ни одной роли пока не было добавлено"]
+
         message = "Список ролей:"
         for role in roles_list:
             message += f"\nИмя: `{role.name}`; ID: `{role.id}`"
@@ -406,6 +415,28 @@ class RUMessages(Messages):
             f"Пользователь с ID: {support_user.tg_bot_user_id} успешно активирован"
         ]
 
+    # ATTACHMENTS MESSAGES
+
+    async def get_no_last_asked_question_message(
+        self, regular_user: RegularUser
+    ) -> list[str]:
+        return ["У Вас нет последнего заданного вопроса или он был удалён"]
+
+    async def get_no_last_answer_message(
+        self, support_user: SupportUser
+    ) -> list[str]:
+        return ["Вы пока ни на что не отвечали или Ваш ответ был удалён"]
+
+    async def get_question_attachment_addition_message(
+        self, support_user: RegularUser
+    ) -> list[str]:
+        return ["Приложение в последнему вопросу успешно добавлено"]
+
+    async def get_answer_attachment_addition_message(
+        self, support_user: SupportUser
+    ) -> list[str]:
+        return ["Приложение в последнему ответу успешно добавлено"]
+
     # OTHER MESSAGES
 
     async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
@@ -434,6 +465,11 @@ class RUMessages(Messages):
             f"На Ваш вопрос от {answer.question.date} был дан ответ: ",
             f"Ответ:\n\n{answer.message}",
         ]
+
+    async def get_no_question_attachments_message(
+        self, question: Question
+    ) -> list[str]:
+        return ["К этому вопросу нет приложений"]
 
     async def get_unsupported_message_type_message(
         self, *args, **kwargs

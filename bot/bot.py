@@ -4,7 +4,16 @@ from telegram.ext import (
     MessageHandler,
     CallbackQueryHandler,
 )
-from telegram.ext.filters import Text, ALL, Command
+from telegram.ext.filters import (
+    Text,
+    ALL,
+    Command,
+    PHOTO,
+    VIDEO,
+    AUDIO,
+    VOICE,
+    Document,
+)
 import bot.handlers as handlers
 from bot.settings import BOT_TOKEN
 from bot.states import States
@@ -12,7 +21,7 @@ import json
 import logging
 
 if not BOT_TOKEN:
-    raise ValueError(
+    raise EnvironmentError(
         "You must provide a Telegram bot token. "
         + "You can get a token using this bot: https://t.me/botfather"
     )
@@ -78,21 +87,28 @@ app.add_handler(
 app.add_handler(
     CallbackQueryHandler(
         handlers.handle_bind_question_button,
-        lambda x: json.loads(x)["action"] == States.BIND_ACTION,  # type: ignore
+        lambda x: (
+            json.loads(x)["action"] == States.BIND_ACTION  # type: ignore
+        ),
     )
 )
 
 app.add_handler(
     CallbackQueryHandler(
         handlers.handle_unbind_question_button,
-        lambda x: json.loads(x)["action"] == States.UNBIND_ACTION,  # type: ignore
+        lambda x: (
+            json.loads(x)["action"] == States.UNBIND_ACTION  # type: ignore
+        ),
     )
 )
 
 app.add_handler(
     CallbackQueryHandler(
         handlers.handle_estimate_question_as_useful_button,
-        lambda x: json.loads(x)["action"] == States.ESTIMATE_AS_USEFUL_ACTION,  # type: ignore
+        lambda x: (
+            json.loads(x)["action"]  # type: ignore
+            == States.ESTIMATE_AS_USEFUL_ACTION
+        ),
     )
 )
 
@@ -100,7 +116,17 @@ app.add_handler(
     CallbackQueryHandler(
         handlers.handle_estimate_question_as_unuseful_button,
         lambda x: (
-            json.loads(x)["action"] == States.ESTIMATE_AS_UNUSEFUL_ACTION  # type: ignore
+            json.loads(x)["action"]  # type: ignore
+            == States.ESTIMATE_AS_UNUSEFUL_ACTION
+        ),
+    )
+)
+
+app.add_handler(
+    CallbackQueryHandler(
+        handlers.handle_show_attachments_button,
+        lambda x: (
+            json.loads(x)["action"] == States.SHOW_ATTACHMENTS_ACTION  # type: ignore
         ),
     )
 )
@@ -109,6 +135,11 @@ app.add_handler(
     MessageHandler(Command(False), handlers.handle_unknown_command)
 )
 
+app.add_handler(
+    MessageHandler(
+        PHOTO | VIDEO | AUDIO | VOICE | Document.ALL, handlers.handle_file
+    )
+)
 
 app.add_handler(MessageHandler(Text(), handlers.handle_message))
 

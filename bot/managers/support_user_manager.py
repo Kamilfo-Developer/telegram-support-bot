@@ -2,12 +2,18 @@ from bot.localization.messages import Messages
 from bot.entities.support_user import SupportUser
 from bot.entities.role import Role
 from bot.entities.question import Question
+from bot.entities.attachment import Attachment
 from bot.states import States
 from bot.markup import Markup
-from bot.typing import RepoType
+from bot.typing import Repo
 from telegram import User, Message
 from datetime import datetime
-from bot.utils import MessageToSend
+from bot.utils import (
+    MessageToSend,
+    AttachmentType,
+    FileToSend,
+    get_file_to_send_from_attachment_entity,
+)
 import json
 
 
@@ -17,7 +23,7 @@ class SupportUserManager:
         tg_user: User,
         support_user: SupportUser | None,
         messages: Messages,
-        repo: RepoType,
+        repo: Repo,
     ):
         self.tg_user = tg_user
         self.support_user = support_user
@@ -286,17 +292,24 @@ class SupportUserManager:
 
         return MessageToSend(
             await self.messages.get_question_info_message(question),
+            # JSON used here to pass an object as the callback data
             self.markup.get_question_binding_buttons_markup(
                 json.dumps(
                     {
-                        "question_tg_message_id": question.tg_message_id,
+                        "id": question.tg_message_id,
                         "action": States.BIND_ACTION,
                     }
                 ),
                 json.dumps(
                     {
-                        "question_tg_message_id": question.tg_message_id,
+                        "id": question.tg_message_id,
                         "action": States.UNBIND_ACTION,
+                    }
+                ),
+                json.dumps(
+                    {
+                        "id": question.tg_message_id,
+                        "action": States.SHOW_ATTACHMENTS_ACTION,
                     }
                 ),
             ),
@@ -331,6 +344,12 @@ class SupportUserManager:
                     {
                         "id": question.tg_message_id,
                         "action": States.UNBIND_ACTION,
+                    }
+                ),
+                json.dumps(
+                    {
+                        "id": question.tg_message_id,
+                        "action": States.SHOW_ATTACHMENTS_ACTION,
                     }
                 ),
             ),
@@ -508,42 +527,111 @@ class SupportUserManager:
             ),
         )
 
+    async def add_attachment_to_last_answer(
+        self, tg_file_id: str, attachment_type: AttachmentType, date: datetime
+    ) -> tuple[MessageToSend | None, FileToSend | None,]:
+        if not self.is_answer_questions_permission_denied():
+
+            return (
+                MessageToSend(
+                    await self.messages.get_permission_denied_message(
+                        self.tg_user
+                    )
+                ),
+                None,
+            )
+
+        last_answer = await self.repo.get_support_user_last_answer(
+            self.support_user.id
+        )
+
+        if not last_answer:
+            return (
+                MessageToSend(
+                    await self.messages.get_no_last_answer_message(
+                        self.support_user
+                    )
+                ),
+                None,
+            )
+
+        attachment = await last_answer.add_attachment(
+            tg_file_id, attachment_type, date, self.repo
+        )
+
+        message_for_support_user = MessageToSend(
+            await self.messages.get_answer_attachment_addition_message(
+                self.support_user
+            )
+        )
+
+        message_for_regular_user = get_file_to_send_from_attachment_entity(
+            attachment,
+            chat_id=last_answer.question.regular_user.tg_bot_user_id,
+            reply_to=last_answer.question.tg_message_id,
+        )
+
+        return (message_for_support_user, message_for_regular_user)
+
+    async def get_attachments_for_question(
+        self, question_tg_message_id: int
+    ) -> MessageToSend | list[FileToSend]:
+        if self.is_answer_questions_permission_denied():
+            return MessageToSend(
+                await self.messages.get_permission_denied_message(self.tg_user)
+            )
+
+        question = await self.repo.get_question_by_tg_message_id(
+            question_tg_message_id
+        )
+
+        if not question:
+            return MessageToSend(
+                await self.messages.get_unavailable_or_deleted_object_message()
+            )
+
+        attachments = await question.get_attachments(self.repo)
+
+        if not attachments:
+            return MessageToSend(
+                await self.messages.get_no_question_attachments_message(
+                    question
+                )
+            )
+
+        return list(
+            map(
+                lambda x: get_file_to_send_from_attachment_entity(x),
+                attachments,
+            )
+        )
+
     def is_manage_permission_denied(self) -> bool:
         support_user = self.support_user
 
-        if (
-            not support_user
-            or not support_user.is_active
-            or not (
-                (
+        return not (
+            (support_user and support_user.is_active)
+            and (
+                support_user.is_owner
+                or (
                     support_user.role
                     and support_user.role.can_manage_support_users
                 )
-                and not support_user.is_owner
             )
-        ):
-
-            return True
-
-        return False
+        )
 
     def is_answer_questions_permission_denied(
         self,
     ) -> bool:
         support_user = self.support_user
 
-        if (
-            not support_user
-            or not support_user.is_active
-            or not (
-                (
+        return not (
+            (support_user and support_user.is_active)
+            and (
+                support_user.is_owner
+                or (
                     support_user.role
-                    and support_user.role.can_manage_support_users
+                    and support_user.role.can_answer_questions
                 )
-                and not support_user.is_owner
             )
-        ):
-
-            return True
-
-        return False
+        )
