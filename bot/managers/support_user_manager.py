@@ -530,8 +530,7 @@ class SupportUserManager:
     async def add_attachment_to_last_answer(
         self, tg_file_id: str, attachment_type: AttachmentType, date: datetime
     ) -> tuple[MessageToSend | None, FileToSend | None,]:
-        if not self.is_answer_questions_permission_denied():
-
+        if self.is_answer_questions_permission_denied():
             return (
                 MessageToSend(
                     await self.messages.get_permission_denied_message(

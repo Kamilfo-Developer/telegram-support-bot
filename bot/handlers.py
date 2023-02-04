@@ -852,23 +852,6 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
-
-    if regular_user:
-        regular_user_manager = RegularUserManager(
-            user, regular_user, messages, repo
-        )
-
-        message = (
-            await regular_user_manager.add_attachment_to_last_asked_question(
-                file_id, file_type, update.message.date
-            )
-        )
-
-        await send_text_messages(message, update)
-
-        return
-
     suppport_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if suppport_user:
@@ -887,7 +870,23 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
             await send_text_messages(message_for_support_user, update)
 
         if message_for_regular_user:
-            await send_file(message_for_regular_user, update)
+
+            await message_for_regular_user.send(update)
+
+    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
+
+    if regular_user:
+        regular_user_manager = RegularUserManager(
+            user, regular_user, messages, repo
+        )
+
+        message = (
+            await regular_user_manager.add_attachment_to_last_asked_question(
+                file_id, file_type, update.message.date
+            )
+        )
+
+        await send_text_messages(message, update)
 
 
 async def handle_unsuppported_message_type(
