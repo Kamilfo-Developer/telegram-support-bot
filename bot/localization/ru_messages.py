@@ -430,12 +430,12 @@ class RUMessages(Messages):
     async def get_question_attachment_addition_message(
         self, support_user: RegularUser
     ) -> list[str]:
-        return ["Приложение в последнему вопросу успешно добавлено"]
+        return ["Приложение к последнему вопросу успешно добавлено"]
 
     async def get_answer_attachment_addition_message(
         self, support_user: SupportUser
     ) -> list[str]:
-        return ["Приложение в последнему ответу успешно добавлено"]
+        return ["Приложение к последнему ответу успешно добавлено"]
 
     # OTHER MESSAGES
 
