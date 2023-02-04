@@ -737,7 +737,7 @@ class SARepo(Repo):
 
             result = (await session.execute(q)).scalars().first()
 
-            return result and result.as_question_entity()
+            return result and result.as_answer_entity()
 
     async def get_support_user_answers_with_id(
         self, support_user_id: UUID
