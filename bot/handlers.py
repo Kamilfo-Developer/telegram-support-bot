@@ -2,7 +2,12 @@ from bot.entities.regular_user import RegularUser
 from bot.settings import RepositoryClass
 from bot.entities.support_user import SupportUser
 from bot.localization.get_messages import get_messages
-from bot.utils import send_text_messages, is_string_int, MessageToSend
+from bot.utils import (
+    send_text_messages,
+    get_file_type_and_file_id,
+    is_string_int,
+    MessageToSend,
+)
 from bot.settings import (
     OWNER_ID,
     OWNER_DEFAULT_DESCRIPTIVE_NAME,
@@ -828,6 +833,63 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE):
     return
 
 
+async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    messages = get_messages(user.language_code)
+
+    repo = RepositoryClass()
+
+    file_type, file_id = get_file_type_and_file_id(update)
+
+    if not (file_type and file_id):
+        await send_text_messages(
+            MessageToSend(
+                await messages.get_unsupported_message_type_message()
+            ),
+            update,
+        )
+
+        return
+
+    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
+
+    if regular_user:
+        regular_user_manager = RegularUserManager(
+            user, regular_user, messages, repo
+        )
+
+        message = (
+            await regular_user_manager.add_attachment_to_last_asked_question(
+                file_id, file_type, update.message.date
+            )
+        )
+
+        await send_text_messages(message, update)
+
+        return
+
+    suppport_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+
+    if suppport_user:
+        support_user_manager = SupportUserManager(
+            user, suppport_user, messages, repo
+        )
+
+        (
+            message_for_support_user,
+            message_for_regular_user,
+        ) = await support_user_manager.add_attachment_to_last_answer(
+            file_id, file_type, update.message.date
+        )
+
+        if message_for_support_user:
+            await send_text_messages(message_for_support_user, update)
+
+        if message_for_regular_user:
+            await send_file(message_for_regular_user, update)
+
+
 async def handle_unsuppported_message_type(
     update, context: ContextTypes.DEFAULT_TYPE
 ):
@@ -920,6 +982,8 @@ async def handle_estimate_question_as_useful_button(
 
     message = await manager.estimate_answer_as_useful(data["id"])
 
+    await query.answer()
+
     await send_text_messages(message, update)
 
 
@@ -942,4 +1006,36 @@ async def handle_estimate_question_as_unuseful_button(
 
     message = await manager.estimate_answer_as_unuseful(data["id"])
 
+    await query.answer()
+
     await send_text_messages(message, update)
+
+
+async def handle_show_attachments_button(update, context: CallbackContext):
+    user = update.effective_user
+
+    messages = get_messages(user.language_code)
+
+    repo = RepositoryClass()
+
+    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+
+    manager = SupportUserManager(user, support_user, messages, repo)
+
+    query = update.callback_query
+
+    data = json.loads(query.data)
+
+    message = await manager.get_attachments_for_question(data["id"])
+
+    await query.answer()
+
+    if message.__class__ == MessageToSend:
+        await send_text_messages(message, update)
+
+        return
+
+    for file in message:
+        await file.send(update)
+
+    return
