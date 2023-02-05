@@ -24,6 +24,8 @@ class QuestionAttachment(Attachment, IdComparable):
 
     attachment_type: AttachmentType
 
+    caption: str | None
+
     date: datetime
 
     def __init__(
@@ -32,12 +34,14 @@ class QuestionAttachment(Attachment, IdComparable):
         question_id: UUID,
         tg_file_id: str,
         attachment_type: AttachmentType,
+        caption: str | None = None,
         date: datetime = datetime.now(),
     ):
         self.id = id
         self.question_id = question_id
         self.tg_file_id = tg_file_id
         self.attachment_type = attachment_type
+        self.caption = caption
         self.date = date
 
     async def get_question(self, repo: Repo) -> Question | None:

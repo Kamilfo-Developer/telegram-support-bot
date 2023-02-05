@@ -12,4 +12,6 @@ class Attachment(abc.ABC):
 
     attachment_type: AttachmentType
 
+    caption: str | None
+
     date: datetime
