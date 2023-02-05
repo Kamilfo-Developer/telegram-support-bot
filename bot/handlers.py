@@ -6,7 +6,7 @@ from bot.utils import (
     send_text_messages,
     get_file_type_and_file_id,
     is_string_int,
-    MessageToSend,
+    TextToSend,
 )
 from bot.settings import (
     OWNER_ID,
@@ -15,7 +15,6 @@ from bot.settings import (
 from bot.managers.support_user_manager import SupportUserManager
 from bot.managers.regular_user_manager import RegularUserManager
 from telegram import Update
-from telegram.error import BadRequest
 from telegram.ext import ContextTypes, CallbackContext
 import json
 
@@ -34,40 +33,26 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE):
 
     if support_user and support_user.is_active:
         if support_user.is_owner:
-            await send_text_messages(
-                MessageToSend(
-                    await messages.get_start_owner_message(user, support_user)
-                ),
-                update,
-            )
+            await TextToSend(
+                await messages.get_start_owner_message(user, support_user)
+            ).send(update)
 
             return
 
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_start_support_user_message(
-                    user, support_user
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_start_support_user_message(user, support_user)
+        ).send(update)
 
         return
 
     if user.id == OWNER_ID:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_start_support_user_message(
-                    user, support_user
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_start_support_user_message(user, support_user)
+        ).send(update)
 
-        await send_text_messages(
-            MessageToSend(await messages.get_not_inited_owner_message(user)),
-            update,
-        )
+        await TextToSend(
+            await messages.get_not_inited_owner_message(user)
+        ).send(update)
 
         return
 
@@ -76,14 +61,9 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE):
     ) or await RegularUser.add_regular_user(user.id, repo)
 
     if regular_user:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_start_regular_user_message(
-                    user, regular_user
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_start_regular_user_message(user, regular_user)
+        ).send(update)
 
         return
 
@@ -97,10 +77,9 @@ async def handle_init_owner(update, context: ContextTypes.DEFAULT_TYPE):
     repo = RepositoryClass()
 
     if user.id != OWNER_ID:
-        await send_text_messages(
-            MessageToSend(await messages.get_permission_denied_message(user)),
-            update,
-        )
+        await TextToSend(
+            await messages.get_permission_denied_message(user)
+        ).send(update)
 
         return
 
@@ -108,27 +87,21 @@ async def handle_init_owner(update, context: ContextTypes.DEFAULT_TYPE):
 
     if support_user:
         if support_user.is_owner:
-            await send_text_messages(
-                MessageToSend(
-                    await messages.get_already_inited_owner_message(
-                        user, support_user
-                    )
-                ),
-                update,
-            )
+            await TextToSend(
+                await messages.get_already_inited_owner_message(
+                    user, support_user
+                )
+            ).send(update)
 
             return
 
         await support_user.make_owner(repo)
 
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_successful_owner_init_message(
-                    user, support_user
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_successful_owner_init_message(
+                user, support_user
+            )
+        ).send(update)
 
         return
 
@@ -136,14 +109,9 @@ async def handle_init_owner(update, context: ContextTypes.DEFAULT_TYPE):
         user.id, OWNER_DEFAULT_DESCRIPTIVE_NAME, repo, is_owner=True
     )
 
-    await send_text_messages(
-        MessageToSend(
-            await messages.get_successful_owner_init_message(
-                user, support_user
-            )
-        ),
-        update,
-    )
+    await TextToSend(
+        await messages.get_successful_owner_init_message(user, support_user)
+    ).send(update)
 
 
 async def handle_help_command(update, context: ContextTypes.DEFAULT_TYPE):
@@ -157,45 +125,33 @@ async def handle_help_command(update, context: ContextTypes.DEFAULT_TYPE):
 
     if support_user and support_user.is_active:
         if support_user.is_owner:
-            await send_text_messages(
-                MessageToSend(
-                    await messages.get_inited_owner_help_message(
-                        user, support_user
-                    )
-                ),
-                update,
-            )
+            await TextToSend(
+                await messages.get_inited_owner_help_message(
+                    user, support_user
+                )
+            ).send(update)
 
             return
 
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_support_user_help_message(
-                    user, support_user
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_support_user_help_message(user, support_user)
+        ).send(update)
 
         return
 
     if user.id == OWNER_ID:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_not_inited_owner_help_message(user)
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_not_inited_owner_help_message(user)
+        ).send(update)
 
         return
 
     regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
 
     if regular_user:
-        await send_text_messages(
-            MessageToSend(await messages.get_regular_user_help_message(user)),
-            update,
-        )
+        await TextToSend(
+            await messages.get_regular_user_help_message(user)
+        ).send(update)
 
         return
 
@@ -208,7 +164,7 @@ async def handle_get_id(update, context: ContextTypes.DEFAULT_TYPE):
 
     get_id_messages = await messages.get_id_message(update.effective_user.id)
 
-    await send_text_messages(MessageToSend(get_id_messages), update)
+    await TextToSend(get_id_messages).send(update)
 
 
 # ROLES
@@ -224,28 +180,22 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE):
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if not context.args or len(context.args) < 3 or len(context.args) > 3:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [
-                        messages.role_name_argument_name,
-                        messages.can_manage_support_users_role_argument_name,
-                        messages.can_answer_questions_argument_name,
-                    ]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [
+                    messages.role_name_argument_name,
+                    messages.can_manage_support_users_role_argument_name,
+                    messages.can_answer_questions_argument_name,
+                ]
+            )
+        ).send(update)
 
         return
 
     if not (is_string_int(context.args[1]) and is_string_int(context.args[2])):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
@@ -255,14 +205,15 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE):
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.add_role(
+    messages_to_send = await manager.add_role(
         role_name,
         can_answer_questions,
         can_manage_support_users,
         update.message.date,
     )
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE):
@@ -276,7 +227,7 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE):
 
     if not context.args:
         await send_text_messages(
-            MessageToSend(
+            TextToSend(
                 await messages.get_incorrect_num_of_arguments_message(
                     [messages.answer_id_argument_name]
                 )
@@ -297,9 +248,10 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE):
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.get_role(id)
+    messages_to_send = await manager.get_role(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_get_all_roles(update, context: ContextTypes.DEFAULT_TYPE):
@@ -316,9 +268,10 @@ async def handle_get_all_roles(update, context: ContextTypes.DEFAULT_TYPE):
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.get_all_roles()
+    messages_to_send = await manager.get_all_roles()
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
@@ -332,7 +285,7 @@ async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
 
     if not context.args:
         await send_text_messages(
-            MessageToSend(
+            TextToSend(
                 await messages.get_incorrect_num_of_arguments_message(
                     [messages.answer_id_argument_name]
                 )
@@ -353,9 +306,10 @@ async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.get_role(id)
+    messages_to_send = await manager.get_role(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 # SUPPORT USERS
@@ -373,28 +327,22 @@ async def handle_add_support_user(update, context: ContextTypes.DEFAULT_TYPE):
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args or len(context.args) < 3 or len(context.args) > 3:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [
-                        messages.regular_user_id_argument_name,
-                        messages.role_id_argument_name,
-                        messages.support_user_descriptive_name,
-                    ]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [
+                    messages.regular_user_id_argument_name,
+                    messages.role_id_argument_name,
+                    messages.support_user_descriptive_name,
+                ]
+            )
+        ).send(update)
 
         return
 
     if not (is_string_int(context.args[0]) and is_string_int(context.args[1])):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
@@ -402,14 +350,12 @@ async def handle_add_support_user(update, context: ContextTypes.DEFAULT_TYPE):
     role_id = int(context.args[1])
     descriptive_name = context.args[2]
 
-    message = await manager.add_support_user(
+    messages_to_send = await manager.add_support_user(
         regular_user_tg_bot_id, role_id, descriptive_name, update.message.date
     )
 
-    await send_text_messages(
-        message,
-        update,
-    )
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_activate_support_user(
@@ -426,32 +372,26 @@ async def handle_activate_support_user(
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args or not len(context.args) == 1:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.support_user_id_argument_name]
-                )
-            ),
-            update,
-        )
-
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.support_user_id_argument_name]
+            )
+        ).send(update)
         return
 
     if not is_string_int(context.args[0]):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
     id = int(context.args[0])
 
-    message = await manager.activate_support_user(id)
+    messages_to_send = await manager.activate_support_user(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_deactivate_support_user(
@@ -468,32 +408,27 @@ async def handle_deactivate_support_user(
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args or not len(context.args) == 1:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.support_user_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.support_user_id_argument_name]
+            )
+        ).send(update)
 
         return
 
     if not is_string_int(context.args[0]):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
     id = int(context.args[0])
 
-    message = await manager.deactivate_support_user(id)
+    messages_to_send = await manager.deactivate_support_user(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_get_support_user(update, context: ContextTypes.DEFAULT_TYPE):
@@ -511,32 +446,27 @@ async def handle_get_support_user(update, context: ContextTypes.DEFAULT_TYPE):
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args or not len(context.args) == 1:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.support_user_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.support_user_id_argument_name]
+            )
+        ).send(update)
 
         return
 
     if not is_string_int(context.args[0]):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
     id = int(context.args[0])
 
-    message = await manager.get_support_user(id)
+    messages_to_send = await manager.get_support_user(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_get_all_suppurt_users(
@@ -555,9 +485,10 @@ async def handle_get_all_suppurt_users(
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.get_all_support_users()
+    messages_to_send = await manager.get_all_support_users()
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 # QUESTIONS
@@ -579,32 +510,25 @@ async def handle_get_question(update, context: ContextTypes.DEFAULT_TYPE):
 
     if context.args:
         if not is_string_int(context.args[0]):
-            await send_text_messages(
-                MessageToSend(
-                    await messages.get_incorrect_arguments_passed_message()
-                ),
-                update,
-            )
+            await TextToSend(
+                await messages.get_incorrect_arguments_passed_message()
+            ).send(update)
 
             return
 
         id = int(context.args[0])
 
-        message = await manager.get_question_by_id(id)
+        messages_to_send = await manager.get_question_by_id(id)
 
-        await send_text_messages(
-            message,
-            update,
-        )
+        for message in messages_to_send:
+            await message.send(update)
 
         return
 
-    message = await manager.get_random_unanswered_question()
+    messages_to_send = await manager.get_random_unanswered_question()
 
-    await send_text_messages(
-        message,
-        update,
-    )
+    for message in messages_to_send:
+        await message.send(update)
 
     return
 
@@ -626,32 +550,27 @@ async def handle_get_question_answers(
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.question_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.question_id_argument_name]
+            )
+        ).send(update)
 
         return
 
     if not is_string_int(context.args[0]):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
     id = int(context.args[0])
 
-    message = await manager.get_question_answers(id)
+    messages_to_send = await manager.get_question_answers(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_bind_question(update, context: ContextTypes.DEFAULT_TYPE):
@@ -669,32 +588,27 @@ async def handle_bind_question(update, context: ContextTypes.DEFAULT_TYPE):
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args or len(context.args) > 1:
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.question_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.question_id_argument_name]
+            )
+        ).send(update)
 
         return
 
     if not is_string_int(context.args[0]):
-        await send_text_messages(
-            MessageToSend(
-                await messages.get_incorrect_arguments_passed_message()
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_arguments_passed_message()
+        ).send(update)
 
         return
 
     id = int(context.args[0])
 
-    message = await manager.bind_question(id)
+    messages_to_send = await manager.bind_question(id)
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 async def handle_unbind_question(update, context: ContextTypes.DEFAULT_TYPE):
@@ -711,9 +625,10 @@ async def handle_unbind_question(update, context: ContextTypes.DEFAULT_TYPE):
 
     manager = SupportUserManager(user, support_user, messages, repo)
 
-    message = await manager.unbind_question()
+    messages_to_send = await manager.unbind_question()
 
-    await send_text_messages(message, update)
+    for message in messages_to_send:
+        await message.send(update)
 
 
 # ANSWERS
@@ -735,7 +650,7 @@ async def handle_get_answer(update, context: ContextTypes.DEFAULT_TYPE):
 
     if not context.args:
         await send_text_messages(
-            MessageToSend(
+            TextToSend(
                 await messages.get_incorrect_num_of_arguments_message(
                     [messages.answer_id_argument_name]
                 )
@@ -754,12 +669,10 @@ async def handle_get_answer(update, context: ContextTypes.DEFAULT_TYPE):
 
     id = int(context.args[0])
 
-    message = await manager.get_answer_by_id(id)
+    messages_to_send = await manager.get_answer_by_id(id)
 
-    await send_text_messages(
-        message,
-        update,
-    )
+    for message in messages_to_send:
+        await message.send(update)
 
     return
 
@@ -787,31 +700,12 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE):
             user, support_user, messages, repo
         )
 
-        (
-            message_for_support_user,
-            message_for_regular_user,
-        ) = await support_user_manager.answer_binded_question(
+        messages_to_send = await support_user_manager.answer_binded_question(
             message.text, message.id, message.date
         )
 
-        if message_for_support_user:
-            await send_text_messages(
-                message_for_support_user,
-                update,
-            )
-
-        if message_for_regular_user:
-            try:
-                await send_text_messages(
-                    message_for_regular_user,
-                    update,
-                )
-
-            except BadRequest:
-                await send_text_messages(
-                    message_for_regular_user,
-                    update,
-                )
+        for message in messages_to_send:
+            await message.send(update)
 
         return
 
@@ -821,14 +715,12 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE):
         user, regular_user, messages, repo
     )
 
-    message_for_regular_user = await regular_user_manager.ask_question(
+    messages_for_regular_user = await regular_user_manager.ask_question(
         message.text, message.id, message.date
     )
 
-    await send_text_messages(
-        message_for_regular_user,
-        update,
-    )
+    for message in messages_for_regular_user:
+        await message.send(update)
 
     return
 
@@ -844,9 +736,7 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
 
     if not (file_type and file_id):
         await send_text_messages(
-            MessageToSend(
-                await messages.get_unsupported_message_type_message()
-            ),
+            TextToSend(await messages.get_unsupported_message_type_message()),
             update,
         )
 
@@ -859,19 +749,16 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
             user, suppport_user, messages, repo
         )
 
-        (
-            message_for_support_user,
-            message_for_regular_user,
-        ) = await support_user_manager.add_attachment_to_last_answer(
-            file_id, file_type, update.message.date
+        messages_to_send = (
+            await support_user_manager.add_attachment_to_last_answer(
+                file_id, file_type, update.message.date
+            )
         )
 
-        if message_for_support_user:
-            await send_text_messages(message_for_support_user, update)
+        for message in messages_to_send:
+            await message.send(update)
 
-        if message_for_regular_user:
-
-            await message_for_regular_user.send(update)
+        return
 
     regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
 
@@ -880,13 +767,16 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
             user, regular_user, messages, repo
         )
 
-        message = (
+        messages_to_send = (
             await regular_user_manager.add_attachment_to_last_asked_question(
                 file_id, file_type, update.message.date
             )
         )
 
-        await send_text_messages(message, update)
+        for message in messages_to_send:
+            await message.send(update)
+
+        return
 
 
 async def handle_unsuppported_message_type(
@@ -896,10 +786,9 @@ async def handle_unsuppported_message_type(
 
     messages = get_messages(user.language_code)
 
-    await send_text_messages(
-        MessageToSend(await messages.get_unsupported_message_type_message()),
-        update,
-    )
+    await TextToSend(
+        await messages.get_unsupported_message_type_message()
+    ).send(update)
 
 
 async def handle_unknown_command(update, context: ContextTypes.DEFAULT_TYPE):
@@ -907,9 +796,7 @@ async def handle_unknown_command(update, context: ContextTypes.DEFAULT_TYPE):
 
     messages = get_messages(user.language_code)
 
-    await send_text_messages(
-        MessageToSend(await messages.get_unknown_command_message()), update
-    )
+    await TextToSend(await messages.get_unknown_command_message()).send(update)
 
 
 # BUTTONS HANDLERS
@@ -930,11 +817,12 @@ async def handle_bind_question_button(update, context: CallbackContext):
 
     data = json.loads(update.callback_query.data)
 
-    message = await manager.bind_question(data["id"])
+    messages_to_send = await manager.bind_question(data["id"])
+
+    for message in messages_to_send:
+        await message.send(update)
 
     await query.answer()
-
-    await send_text_messages(message, update)
 
 
 async def handle_unbind_question_button(update, context: CallbackContext):
@@ -950,14 +838,12 @@ async def handle_unbind_question_button(update, context: CallbackContext):
 
     query = update.callback_query
 
-    message = await manager.unbind_question()
+    messages_to_send = await manager.unbind_question()
+
+    for message in messages_to_send:
+        await message.send(update)
 
     await query.answer()
-
-    await send_text_messages(
-        message,
-        update,
-    )
 
     return
 
@@ -979,11 +865,12 @@ async def handle_estimate_question_as_useful_button(
 
     data = json.loads(query.data)
 
-    message = await manager.estimate_answer_as_useful(data["id"])
+    messages_to_send = await manager.estimate_answer_as_useful(data["id"])
+
+    for message in messages_to_send:
+        await message.send(update)
 
     await query.answer()
-
-    await send_text_messages(message, update)
 
 
 async def handle_estimate_question_as_unuseful_button(
@@ -1003,11 +890,12 @@ async def handle_estimate_question_as_unuseful_button(
 
     data = json.loads(query.data)
 
-    message = await manager.estimate_answer_as_unuseful(data["id"])
+    messages_to_send = await manager.estimate_answer_as_unuseful(data["id"])
+
+    for message in messages_to_send:
+        await message.send(update)
 
     await query.answer()
-
-    await send_text_messages(message, update)
 
 
 async def handle_show_attachments_button(update, context: CallbackContext):
@@ -1025,16 +913,11 @@ async def handle_show_attachments_button(update, context: CallbackContext):
 
     data = json.loads(query.data)
 
-    message = await manager.get_attachments_for_question(data["id"])
+    messages_to_send = await manager.get_attachments_for_question(data["id"])
+
+    for message in messages_to_send:
+        await message.send(update)
 
     await query.answer()
-
-    if message.__class__ == MessageToSend:
-        await send_text_messages(message, update)
-
-        return
-
-    for file in message:
-        await file.send(update)
 
     return

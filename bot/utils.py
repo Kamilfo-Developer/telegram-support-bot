@@ -14,7 +14,16 @@ if TYPE_CHECKING:
     from bot.entities.attachment import Attachment
 
 
-class MessageToSend:
+class MessageToSend(abc.ABC):
+    chat_id: int | None
+    reply_to: int | None
+
+    @abc.abstractmethod
+    async def send(self, update: Update) -> None:
+        raise NotImplementedError
+
+
+class TextToSend(MessageToSend):
     def __init__(
         self,
         messages: list[str],
@@ -32,15 +41,40 @@ class MessageToSend:
         self.reply_to = reply_to
         self.parse_mode = parse_mode
 
-
-class FileToSend(abc.ABC):
-    file_id: str
-    chat_id: int | None
-    reply_to: int | None
-
-    @abc.abstractmethod
     async def send(self, update: Update):
-        raise NotImplementedError
+        messages = self.messages
+
+        if len(messages) > 1:
+            for message in messages[:-1]:
+                await update.get_bot().send_message(
+                    self.chat_id or update.effective_chat.id,  # type: ignore
+                    message,
+                    parse_mode=self.parse_mode,
+                    reply_to_message_id=self.reply_to,  # type: ignore
+                )
+
+            await update.get_bot().send_message(
+                self.chat_id or update.effective_chat.id,  # type: ignore
+                messages[-1],
+                parse_mode=self.parse_mode,
+                reply_to_message_id=self.reply_to,  # type: ignore
+                reply_markup=self.markup,  # type: ignore
+            )
+
+            return
+
+        for message in messages:
+            await update.get_bot().send_message(
+                self.chat_id or update.effective_chat.id,  # type: ignore
+                message,
+                parse_mode=self.parse_mode,
+                reply_to_message_id=self.reply_to,  # type: ignore
+                reply_markup=self.markup,  # type: ignore
+            )
+
+
+class FileToSend(MessageToSend, abc.ABC):
+    file_id: str
 
 
 class ImageToSend(FileToSend):
@@ -198,7 +232,7 @@ def get_file_to_send_from_attachment_entity(
 
 
 async def send_text_messages(
-    message_to_send: MessageToSend, update: Update, *args, **kwargs
+    message_to_send: TextToSend, update: Update, *args, **kwargs
 ):
     messages = message_to_send.messages
 
