@@ -405,6 +405,10 @@ class QuestionAttachmentModel(ModelBase):
         Enum(AttachmentType), nullable=False
     )
 
+    caption: Mapped[str | None] = mapped_column(
+        Text, nullable=True, default=None
+    )
+
     date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
     )
@@ -415,6 +419,7 @@ class QuestionAttachmentModel(ModelBase):
             question_id=self.question.id,
             tg_file_id=self.tg_file_id,
             attachment_type=self.attachment_type,
+            caption=self.caption,
             date=self.date,
         )
 
@@ -445,6 +450,10 @@ class AnswerAttachmentModel(ModelBase):
         Enum(AttachmentType), nullable=False
     )
 
+    caption: Mapped[str | None] = mapped_column(
+        Text, nullable=True, default=None
+    )
+
     date: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.now
     )
@@ -455,5 +464,6 @@ class AnswerAttachmentModel(ModelBase):
             answer_id=self.answer.id,
             tg_file_id=self.tg_file_id,
             attachment_type=self.attachment_type,
+            caption=self.caption,
             date=self.date,
         )
