@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from bot.typing import Repo
 from bot.utils import IdComparable, AttachmentType
 from bot.entities.answer_attachment import AnswerAttachment
+from bot.services.statistics import AnswerStatistics
 
 
 if TYPE_CHECKING:
@@ -54,6 +55,9 @@ class Answer(IdComparable):
     async def get_attachments(self, repo: Repo) -> list[AnswerAttachment]:
         return await repo.get_answer_attachments(self.id)
 
+    async def get_statistics(self, repo: Repo) -> AnswerStatistics:
+        return await AnswerStatistics.get_statistics(self.id, repo)
+
     async def add_attachment(
         self,
         tg_file_id: str,
@@ -63,6 +67,6 @@ class Answer(IdComparable):
     ) -> AnswerAttachment:
         return await repo.add_answer_attachment(
             AnswerAttachment(
-                uuid4(), self.id, tg_file_id, attachment_type, date
+                uuid4(), self.id, tg_file_id, attachment_type, date=date
             )
         )

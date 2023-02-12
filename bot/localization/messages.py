@@ -4,6 +4,14 @@ from bot.entities.support_user import SupportUser
 from bot.entities.role import Role
 from bot.entities.question import Question
 from bot.entities.answer import Answer
+from bot.services.statistics import (
+    GlobalStatistics,
+    AnswerStatistics,
+    QuestionStatistics,
+    SupportUserStatistics,
+    RegularUserStatistics,
+    RoleStatistics,
+)
 
 import abc
 
@@ -187,6 +195,7 @@ class Messages(abc.ABC):
     async def get_role_info_message(
         self,
         role: Role,
+        role_statistics: RoleStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -196,6 +205,17 @@ class Messages(abc.ABC):
     async def get_support_user_info_message(
         self,
         support_user: SupportUser,
+        support_user_statistics: SupportUserStatistics,
+        *args,
+        **kwargs,
+    ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_regular_user_info_message(
+        self,
+        regular_user: RegularUser,
+        regular_user_statistics: RegularUserStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -205,6 +225,7 @@ class Messages(abc.ABC):
     async def get_question_info_message(
         self,
         question: Question,
+        question_statistics: QuestionStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -214,6 +235,7 @@ class Messages(abc.ABC):
     async def get_answer_info_message(
         self,
         answer: Answer,
+        answer_statistics: AnswerStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -353,6 +375,7 @@ class Messages(abc.ABC):
         raise NotImplementedError
 
     # ATTACHMENTS MESSAGES
+
     @abc.abstractmethod
     async def get_no_last_asked_question_message(
         self, regular_user: RegularUser

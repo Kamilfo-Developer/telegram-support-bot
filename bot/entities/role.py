@@ -2,6 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from bot.typing import Repo
 from bot.utils import IdComparable
+from bot.services.statistics import RoleStatistics
 
 
 class Role(IdComparable):
@@ -10,8 +11,6 @@ class Role(IdComparable):
     name: str
 
     description: str
-
-    date: datetime
 
     can_answer_questions: bool
 
@@ -38,6 +37,9 @@ class Role(IdComparable):
 
     async def get_support_users_with_this_role(self, repo: Repo):
         return await repo.get_support_users_with_role_id(self.id)
+
+    async def get_statistics(self, repo: Repo) -> RoleStatistics:
+        return await RoleStatistics.get_statistics(self.id, repo)
 
     @classmethod
     async def add_role(

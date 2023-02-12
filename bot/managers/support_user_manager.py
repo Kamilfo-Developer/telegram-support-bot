@@ -6,13 +6,12 @@ from bot.entities.attachment import Attachment
 from bot.states import States
 from bot.markup import Markup
 from bot.typing import Repo
-from telegram import User, Message
+from telegram import User
 from datetime import datetime
 from bot.utils import (
     MessageToSend,
     TextToSend,
     AttachmentType,
-    FileToSend,
     get_file_to_send_from_attachment_entity,
 )
 import json
@@ -150,7 +149,13 @@ class SupportUserManager:
                 )
             ]
 
-        return [TextToSend(await self.messages.get_role_info_message(role))]
+        return [
+            TextToSend(
+                await self.messages.get_role_info_message(
+                    role, await role.get_statistics(self.repo)
+                )
+            )
+        ]
 
     async def get_all_roles(self) -> list[MessageToSend]:
         if self.is_manage_permission_denied():
@@ -189,7 +194,13 @@ class SupportUserManager:
 
         await self.repo.delete_role_with_id(role.id)
 
-        return [TextToSend(await self.messages.get_role_info_message(role))]
+        return [
+            TextToSend(
+                await self.messages.get_role_info_message(
+                    role, await role.get_statistics(self.repo)
+                )
+            )
+        ]
 
     async def add_support_user(
         self,
@@ -287,7 +298,9 @@ class SupportUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_support_user_info_message(support_user)
+                await self.messages.get_support_user_info_message(
+                    support_user, await support_user.get_statistics(self.repo)
+                )
             )
         ]
 
@@ -338,7 +351,9 @@ class SupportUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_question_info_message(question),
+                await self.messages.get_question_info_message(
+                    question, await question.get_statistics(self.repo)
+                ),
                 # JSON used here to pass an object as the callback data
                 self.markup.get_question_info_buttons_markup(
                     json.dumps(
@@ -384,7 +399,9 @@ class SupportUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_question_info_message(question),
+                await self.messages.get_question_info_message(
+                    question, await question.get_statistics(self.repo)
+                ),
                 self.markup.get_question_info_buttons_markup(
                     json.dumps(
                         {
@@ -434,7 +451,11 @@ class SupportUserManager:
             ]
 
         return [
-            TextToSend(await self.messages.get_answer_info_message(answer))
+            TextToSend(
+                await self.messages.get_answer_info_message(
+                    answer, await answer.get_statistics(self.repo)
+                )
+            )
         ]
 
     async def get_question_answers(

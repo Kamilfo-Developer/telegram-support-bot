@@ -158,6 +158,18 @@ class Repo(abc.ABC):
     async def count_all_support_users(self) -> int:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    async def count_support_users_with_role(self, role_id: int) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_activated_support_users(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_deactivated_support_users(self) -> int:
+        raise NotImplementedError
+
     # QUESTIONS METHODS
 
     @abc.abstractmethod
@@ -238,6 +250,13 @@ class Repo(abc.ABC):
     @abc.abstractmethod
     async def count_unanswered_questions(self) -> int:
         raise NotImplementedError
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_regular_users_questions(
+        self, regular_user_id: UUID
+    ) -> int:
+        raise NotImplementedError
 
     @abc.abstractmethod
     async def count_all_questions(self) -> int:
@@ -314,6 +333,34 @@ class Repo(abc.ABC):
     async def count_all_answers(self) -> int:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    async def count_all_useful_answers(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_all_unuseful_answers(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_question_answers(self, question_id: UUID) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_support_user_answers(self, support_user_id: UUID) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_support_user_useful_answers(
+        self, support_user: UUID
+    ) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_support_user_unuseful_answers(
+        self, support_user: UUID
+    ) -> int:
+        raise NotImplementedError
+
     # QUESTION ATTACHMENTS METHODS
     @abc.abstractmethod
     async def add_question_attachment(
@@ -343,6 +390,14 @@ class Repo(abc.ABC):
     ) -> None:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    async def count_all_questions_attachments(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_question_attachments(self, question_id: UUID) -> int:
+        raise NotImplementedError
+
     # ANSWERS ATTACHMENTS METHODS
     @abc.abstractmethod
     async def add_answer_attachment(
@@ -368,4 +423,12 @@ class Repo(abc.ABC):
     async def delete_answer_attachment_with_id(
         self, answer_attachment_id: UUID
     ) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_all_answers_attachments(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_answer_attachments(self, answer_id: UUID) -> int:
         raise NotImplementedError

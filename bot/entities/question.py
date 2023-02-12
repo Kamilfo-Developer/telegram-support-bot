@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 from bot.entities.question_attachment import QuestionAttachment
 from bot.typing import Repo
 from bot.utils import IdComparable, AttachmentType
+from bot.services.statistics import QuestionStatistics
 
 from typing import TYPE_CHECKING
 
@@ -22,6 +23,8 @@ class Question(IdComparable):
     tg_message_id: int
 
     date: datetime
+
+    statistics: QuestionStatistics | None
 
     def __init__(
         self,
@@ -52,6 +55,9 @@ class Question(IdComparable):
     ) -> QuestionAttachment:
         return await repo.add_question_attachment(
             QuestionAttachment(
-                uuid4(), self.id, tg_file_id, attachment_type, date
+                uuid4(), self.id, tg_file_id, attachment_type, date=date
             )
         )
+
+    async def get_statistics(self, repo: Repo) -> QuestionStatistics:
+        return await QuestionStatistics.get_statistics(self.id, repo)

@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from bot.entities.question import Question
 from bot.utils import IdComparable
 from bot.typing import Repo
+from bot.services.statistics import RegularUserStatistics
 
 
 class RegularUser(IdComparable):
@@ -42,6 +43,9 @@ class RegularUser(IdComparable):
 
     async def get_last_asked_question(self, repo: Repo) -> Question | None:
         return await repo.get_regular_user_last_asked_question(self.id)
+
+    async def get_statistics(self, repo: Repo) -> RegularUserStatistics:
+        return await RegularUserStatistics.get_statistics(self.id, repo)
 
     @classmethod
     async def add_regular_user(

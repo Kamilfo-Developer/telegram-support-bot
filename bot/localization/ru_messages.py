@@ -5,6 +5,14 @@ from bot.entities.question import Question
 from bot.entities.answer import Answer
 from bot.localization.messages import Messages
 from bot.entities.role import Role
+from bot.services.statistics import (
+    GlobalStatistics,
+    RoleStatistics,
+    AnswerStatistics,
+    QuestionStatistics,
+    SupportUserStatistics,
+    RegularUserStatistics,
+)
 
 
 class RUMessages(Messages):
@@ -202,46 +210,85 @@ class RUMessages(Messages):
     async def get_role_info_message(
         self,
         role: Role,
+        role_statistics: RoleStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
         return [
-            f"ID роли: `{role.id}` Имя роли: `{role.name}`\n\nЕё права:\nМожет отвечать на вопросы: {'да' if role.can_answer_questions else 'нет'}\nМожет управлять пользователями поддержки: {'да' if role.can_manage_support_users else 'нет'}"
+            f"*ID роли*: `{role.id}`\n"
+            + f"*Имя роли*: `{role.name}`\n\n"
+            + "*Её права*:\n\n"
+            + "Может отвечать на вопросы: "
+            + f"{'*да*' if role.can_answer_questions else '*нет*'}\n"
+            + "Может управлять пользователями поддержки: "
+            + f"{'*да*' if role.can_manage_support_users else '*нет*'}\n\n"
+            + "Всего пользователей с ролью: "
+            + f"{role_statistics.total_users}"
         ]
 
     async def get_support_user_info_message(
         self,
         support_user: SupportUser,
+        support_user_statistics: SupportUserStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
-        role_desctiption = "Роль: " + (
+        role_desctiption = "*Роль*: " + (
             (
                 support_user.role
                 and f"`{support_user.role.name}` (ID Роли: `{support_user.role.id}`)"
             )
-            or (support_user.is_owner and "пользователь является владельцем")
-            or "роль не назначена"
+            or (support_user.is_owner and "*пользователь является владельцем*")
+            or "*роль не назначена*"
         )
 
         return [
-            f"Имя: `{support_user.descriptive_name}`\nID: `{support_user.tg_bot_user_id}`\n{role_desctiption}\nДата назначения: {support_user.join_date}"
+            f"*ID*: `{support_user.tg_bot_user_id}`\n"
+            + f"*Имя*: `{support_user.descriptive_name}`\n\n"
+            + f"{role_desctiption}\n\n"
+            + f"*Дата назначения*: {support_user.join_date}\n\n"
+            + "*Статистика*:\n"
+            + f"Всего ответов: {support_user_statistics.total_answers}\n"
+            + f"Полезных ответов: {support_user_statistics.useful_answers}\n"
+            + f"Бесполезных ответов: {support_user_statistics.unuseful_answers}\n"
+            + f"Неоценённых ответов: {support_user_statistics.unestimated_answers}"
+        ]
+
+    async def get_regular_user_info_message(
+        self,
+        regular_user: RegularUser,
+        regular_user_statistics: RegularUserStatistics,
+        *args,
+        **kwargs,
+    ) -> list[str]:
+        return [
+            f"ID: `{regular_user.tg_bot_user_id}`\n"
+            + f"Дата присоединения: {regular_user.join_date}\n"
+            + f"Задано вопросов: {regular_user_statistics.asked_questions}\n"
+            + f"Из них ответ получили: {regular_user_statistics.answered_questions}"
         ]
 
     async def get_question_info_message(
         self,
         question: Question,
+        question_statistics: QuestionStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
         return [
-            f"ID: `{question.tg_message_id}`\nID задавшего вопрос пользователя: `{question.regular_user.tg_bot_user_id}`\nВопрос был задан: {question.date}",
-            f"Текст вопроса:\n{question.message}",
+            f"ID: `{question.tg_message_id}`\n"
+            + f"ID задавшего вопрос пользователя: `{question.regular_user.tg_bot_user_id}`\n"
+            + f"Вопрос был задан: {question.date}"
+            + f"Ответов на вопрос: {question_statistics.total_answers}"
+            + f"Всего приложений: {question_statistics.total_attachments}",
+            "Текст вопроса:",
+            f"{question.message}",
         ]
 
     async def get_answer_info_message(
         self,
         answer: Answer,
+        answer_statistics: AnswerStatistics,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -251,8 +298,13 @@ class RUMessages(Messages):
             else f"{'Ответ был оценён как полезный' if answer.is_useful else 'Ответ был оценён как бесполезный'}"
         )
         return [
-            f"ID: `{answer.tg_message_id}`\nID вопроса: `{answer.question.tg_message_id}`\nАвтор ответа: {answer.support_user.descriptive_name} (ID пользователя: `{answer.support_user.tg_bot_user_id}`)\nДата ответа: {answer.date}\n{estimation_description}",
-            f"Текст ответа:\n{answer.message}",
+            f"ID: `{answer.tg_message_id}`\n"
+            + f"ID вопроса: `{answer.question.tg_message_id}`\n"
+            + f"Автор ответа: {answer.support_user.descriptive_name} (ID пользователя: `{answer.support_user.tg_bot_user_id}`)\n"
+            + f"Дата ответа: {answer.date}\n{estimation_description}\n"
+            + f"Всего приложений: {answer_statistics.total_attachments}",
+            "Текст ответа:",
+            f"{answer.message}",
         ]
 
     # OBJECTS LIST INFO MESSAGES
@@ -266,11 +318,11 @@ class RUMessages(Messages):
         if not roles_list:
             return ["Ни одной роли пока не было добавлено"]
 
-        message = "Список ролей:"
+        message = ""
         for role in roles_list:
-            message += f"\nИмя: `{role.name}`; ID: `{role.id}`"
+            message += f"Имя: `{role.name}`; ID: `{role.id}`; Дата создания: {role.created_date}\n"
 
-        return [message]
+        return ["Список ролей:", message]
 
     async def get_questions_list_message(
         self,
@@ -278,11 +330,11 @@ class RUMessages(Messages):
         *args,
         **kwargs,
     ) -> list[str]:
-        message = "Список вопросов:"
+        message = ""
         for question in questions_list:
-            message += f"\nID вопроса: {question.tg_message_id}; ID пользователя: {question.regular_user.tg_bot_user_id}; Текст вопроса: {question.message[0:100]}..."
+            message += f"ID вопроса: {question.tg_message_id}; ID пользователя: {question.regular_user.tg_bot_user_id}; Текст вопроса: {question.message[0:100]}...\n"
 
-        return [message]
+        return ["Список вопросов:", message]
 
     async def get_answers_list_message(
         self,
@@ -292,7 +344,10 @@ class RUMessages(Messages):
     ) -> list[str]:
         message = "Список ответов:"
         for answer in answers_list:
-            message += f"\nID ответа: {answer.tg_message_id}; ID отвечавшего пользователя: {answer.support_user.tg_bot_user_id}\nТекст ответа: {f'{answer.message[0:100]}...' if len(answer.message) > 100 else answer.message[0:100]}"
+            message += (
+                f"\nID ответа: {answer.tg_message_id}; ID отвечавшего пользователя: {answer.support_user.tg_bot_user_id}\n"
+                + f"Текст ответа: {f'{answer.message[0:100]}...' if len(answer.message) > 100 else answer.message[0:100]}"
+            )
 
         return [message]
 
@@ -380,7 +435,8 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота. Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
+            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота."
+            + "Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
         ]
 
     async def get_already_inited_owner_message(
@@ -457,13 +513,15 @@ class RUMessages(Messages):
         if include_question:
             return [
                 f"На Ваш вопрос от {answer.question.date} был дан ответ: ",
-                f"Вопрос:\n\n{answer.question.message}",
-                f"Ответ:\n\n{answer.message}",
+                "Вопрос:",
+                f"{answer.question.message}",
+                "Ответ:",
+                f"{answer.message}",
             ]
 
         return [
             f"На Ваш вопрос от {answer.question.date} был дан ответ: ",
-            f"Ответ:\n\n{answer.message}",
+            f"{answer.message}",
         ]
 
     async def get_no_question_attachments_message(

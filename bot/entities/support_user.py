@@ -6,6 +6,7 @@ from bot.entities.answer import Answer
 from bot.entities.question import Question
 from bot.entities.role import Role
 from bot.utils import IdComparable
+from bot.services.statistics import SupportUserStatistics
 
 
 class SupportUser(IdComparable):
@@ -118,6 +119,9 @@ class SupportUser(IdComparable):
         await repo.activate_support_user(self.id)
 
         self.is_active = True
+
+    async def get_statistics(self, repo: Repo) -> SupportUserStatistics:
+        return await SupportUserStatistics.get_statistics(self.id, repo)
 
     @classmethod
     async def add_support_user(
