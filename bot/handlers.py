@@ -167,6 +167,31 @@ async def handle_get_id(update, context: ContextTypes.DEFAULT_TYPE):
     await TextToSend(get_id_messages).send(update)
 
 
+# STATISTICS
+
+
+async def handle_global_statistics(update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Handles /globalstats command
+    """
+    user = update.effective_user
+
+    messages = get_messages(update.effective_user.language_code)
+
+    repo = RepositoryClass()
+
+    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+
+    support_user_manager = SupportUserManager(
+        user, support_user, messages, repo
+    )
+
+    messages_to_send = await support_user_manager.get_global_statistics()
+
+    for message in messages_to_send:
+        await message.send(update)
+
+
 # ROLES
 
 

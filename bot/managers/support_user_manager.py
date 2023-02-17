@@ -14,6 +14,8 @@ from bot.utils import (
     AttachmentType,
     get_file_to_send_from_attachment_entity,
 )
+from bot.services.statistics import GlobalStatistics
+
 import json
 
 
@@ -30,6 +32,26 @@ class SupportUserManager:
         self.messages = messages
         self.repo = repo
         self.markup = Markup(messages)
+
+    async def get_global_statistics(self) -> list[MessageToSend]:
+        if self.is_manage_permission_denied():
+            return [
+                TextToSend(
+                    await self.messages.get_permission_denied_message(
+                        self.tg_user
+                    )
+                )
+            ]
+
+        global_statistics = await GlobalStatistics.get_statistics(self.repo)
+
+        return [
+            TextToSend(
+                await self.messages.get_global_statistics_message(
+                    global_statistics
+                )
+            )
+        ]
 
     async def bind_question(
         self, question_tg_message_id: int

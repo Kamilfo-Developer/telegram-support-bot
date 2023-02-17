@@ -151,7 +151,6 @@ class Messages(abc.ABC):
         *args,
         **kwargs,
     ) -> list[str]:
-
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -407,6 +406,12 @@ class Messages(abc.ABC):
         raise NotImplementedError
 
     # OTHER MESSAGES
+
+    @abc.abstractmethod
+    async def get_global_statistics_message(
+        self, global_statistics: GlobalStatistics, *args, **kwargs
+    ) -> list[str]:
+        raise NotImplementedError
 
     @abc.abstractmethod
     async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:

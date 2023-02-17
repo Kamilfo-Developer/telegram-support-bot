@@ -86,9 +86,7 @@ class RUMessages(Messages):
         *args,
         **kwargs,
     ) -> list[str]:
-        return [
-            "Помощь ты сегодня не получишь, ёбаный ты долбоёб инициализированный"
-        ]
+        return ["Доступные команды:\n"]
 
     async def get_not_inited_owner_help_message(
         self,
@@ -97,13 +95,17 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            "Помощь ты сегодня не получишь, ёбаный ты долбоёб неинициализированный"
+            "Вы являетесь владельцем бота, однако для начала необходимо пройти *инициализацию*. Для этого введите команду /init_owner"
         ]
 
     async def get_regular_user_help_message(
         self, user: User, *args, **kwargs
     ) -> list[str]:
-        return ["Уважаемый пользователь, эта команда пока не реализована"]
+        return [
+            "Чтобы задать вопрос, Вы можете просто отправить сообщение.\n"
+            + "Чтобы добавить *приложения* к вопросу (например фото, видео, голосовые сообщения и другие файты), просто задайте вопрос, а затем пришлите в этот чат нужный файл.\n\n"
+            + "Имейте в виду, что после того, как Вы зададите вопрос или отправите приложение к нему, *их нельзя будет удалить*!"
+        ]
 
     async def get_support_user_help_message(
         self, user: User, user_entity: SupportUser, *args, **kwargs
@@ -164,7 +166,6 @@ class RUMessages(Messages):
         *args,
         **kwargs,
     ) -> list[str]:
-
         return [
             f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name}` успешно добавлен!\nЕго ID: `{support_user.tg_bot_user_id}`"  # type: ignore
         ]
@@ -278,9 +279,9 @@ class RUMessages(Messages):
         return [
             f"ID: `{question.tg_message_id}`\n"
             + f"ID задавшего вопрос пользователя: `{question.regular_user.tg_bot_user_id}`\n"
-            + f"Вопрос был задан: {question.date}"
-            + f"Ответов на вопрос: {question_statistics.total_answers}"
-            + f"Всего приложений: {question_statistics.total_attachments}",
+            # + f"Вопрос был задан: {question.date}\n"
+            + f"Ответов на вопрос: {question_statistics.total_answers}\n"
+            + f"Всего приложений: {question_statistics.total_attachments}\n",
             "Текст вопроса:",
             f"{question.message}",
         ]
@@ -495,6 +496,25 @@ class RUMessages(Messages):
 
     # OTHER MESSAGES
 
+    async def get_global_statistics_message(
+        self, global_statistics: GlobalStatistics
+    ) -> list[str]:
+        return [
+            "Общая статистика:\n"
+            + f"Всего обычных пользователей: *{global_statistics.total_regular_users}*\n"
+            + f"Всего пользователей поддержки: *{global_statistics.total_support_users}*\n"
+            + f"Всего ролей: *{global_statistics.total_roles}*\n"
+            + f"Всего вопросов: *{global_statistics.total_questions}*\n"
+            + f"Всего отвеченных вопросов: *{global_statistics.total_answered_questions}*\n"
+            + f"Всего неотвеченных вопросов: *{global_statistics.total_unanswered_questions}*\n"
+            + f"Всего приложений к вопросам: *{global_statistics.total_questions_attachments}*\n"
+            + f"Всего ответов *{global_statistics.total_answers}*\n"
+            + f"Всего полезных ответов: *{global_statistics.total_useful_answers}*\n"
+            + f"Всего бесполезных ответов: *{global_statistics.total_unuseful_answers}*\n"
+            + f"Всего неоценённых ответов: *{global_statistics.total_unestimated_ansers}*\n"
+            + f"Всего приложений к ответам: *{global_statistics.total_answers_attachments}*\n"
+        ]
+
     async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
         return ["Ваш id пользователя для этого бота:", str(id)]
 
@@ -512,7 +532,7 @@ class RUMessages(Messages):
     ) -> list[str]:
         if include_question:
             return [
-                f"На Ваш вопрос от {answer.question.date} был дан ответ: ",
+                f"На Ваш вопрос был дан ответ:",
                 "Вопрос:",
                 f"{answer.question.message}",
                 "Ответ:",
@@ -520,7 +540,7 @@ class RUMessages(Messages):
             ]
 
         return [
-            f"На Ваш вопрос от {answer.question.date} был дан ответ: ",
+            f"На Ваш вопрос от {answer.question.date} был дан ответ:",
             f"{answer.message}",
         ]
 

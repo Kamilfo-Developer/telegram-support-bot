@@ -78,6 +78,10 @@ app.add_handler(
 )
 
 app.add_handler(
+    CommandHandler("globalstats", handlers.handle_global_statistics)
+)
+
+app.add_handler(
     CommandHandler(
         "deactivatesupuser", handlers.handle_deactivate_support_user
     )
