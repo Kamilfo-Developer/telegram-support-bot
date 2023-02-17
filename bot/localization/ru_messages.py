@@ -150,7 +150,7 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            f"Роль с названием `{role.name}` успешно добавлена!\n\nЕё ID: `{role.id}`\nЕё права:\nМожет отвечать на вопросы: {'да' if role.can_answer_questions else 'нет'}\nМожет управлять пользователями поддержки: {'да' if role.can_manage_support_users else 'нет'}"
+            f"Роль с названием `{role.name}` успешно добавлена!\n\nЕё ID: `{role.id}`\nЕё права:\nМожет отвечать на вопросы: {'да' if role.permissions.can_answer_questions else 'нет'}\nМожет управлять пользователями поддержки: {'да' if role.permissions.can_manage_support_users else 'нет'}"
         ]
 
     async def get_role_name_duplicate_message(
@@ -220,9 +220,9 @@ class RUMessages(Messages):
             + f"*Имя роли*: `{role.name}`\n\n"
             + "*Её права*:\n\n"
             + "Может отвечать на вопросы: "
-            + f"{'*да*' if role.can_answer_questions else '*нет*'}\n"
+            + f"{'*да*' if role.permissions.can_answer_questions else '*нет*'}\n"
             + "Может управлять пользователями поддержки: "
-            + f"{'*да*' if role.can_manage_support_users else '*нет*'}\n\n"
+            + f"{'*да*' if role.permissions.can_manage_support_users else '*нет*'}\n\n"
             + "Всего пользователей с ролью: "
             + f"{role_statistics.total_users}"
         ]

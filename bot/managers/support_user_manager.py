@@ -1,6 +1,6 @@
 from bot.localization.messages import Messages
 from bot.entities.support_user import SupportUser
-from bot.entities.role import Role
+from bot.entities.role import Role, RolePermissions
 from bot.entities.question import Question
 from bot.entities.attachment import Attachment
 from bot.states import States
@@ -136,8 +136,7 @@ class SupportUserManager:
 
         new_role = await Role.add_role(
             role_name,
-            can_answer_questions,
-            can_manage_support_users,
+            RolePermissions(can_answer_questions, can_manage_support_users),
             repo=self.repo,
             adding_date=date,
         )
@@ -737,7 +736,7 @@ class SupportUserManager:
                 support_user.is_owner
                 or (
                     support_user.role
-                    and support_user.role.can_manage_support_users
+                    and support_user.role.permissions.can_manage_support_users
                 )
             )
         )
@@ -753,7 +752,7 @@ class SupportUserManager:
                 support_user.is_owner
                 or (
                     support_user.role
-                    and support_user.role.can_answer_questions
+                    and support_user.role.permissions.can_answer_questions
                 )
             )
         )

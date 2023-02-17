@@ -23,7 +23,7 @@ from bot.utils import AttachmentType
 from bot.entities.answer import Answer
 from bot.entities.regular_user import RegularUser
 from bot.entities.support_user import SupportUser
-from bot.entities.role import Role
+from bot.entities.role import Role, RolePermissions
 from bot.entities.question_attachment import QuestionAttachment
 from bot.entities.question import Question
 
@@ -76,12 +76,15 @@ class RoleModel(ModelBase):
         self.users.append(support_user)
 
     def as_role_entity(self) -> Role:
+        permissions = RolePermissions(
+            self.can_answer_questions, self.can_manage_support_users
+        )
+
         return Role(
             id=self.id,
             name=self.name,
             description=self.description,
-            can_answer_questions=self.can_answer_questions,
-            can_manage_support_users=(self.can_manage_support_users),
+            permissions=permissions,
             created_date=self.created_date,
         )
 

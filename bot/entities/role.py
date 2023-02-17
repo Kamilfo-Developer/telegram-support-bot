@@ -12,9 +12,7 @@ class Role(IdComparable):
 
     description: str
 
-    can_answer_questions: bool
-
-    can_manage_support_users: bool
+    permissions: RolePermissions
 
     created_date: datetime = datetime.now()
 
@@ -23,16 +21,15 @@ class Role(IdComparable):
         id: int,
         name: str,
         description: str,
-        can_answer_questions: bool,
-        can_manage_support_users: bool,
+        permissions: RolePermissions,
         created_date: datetime = datetime.now(),
     ) -> None:
         self.id = id
         self.name = name
         self.description = description
 
-        self.can_answer_questions = can_answer_questions
-        self.can_manage_support_users = can_manage_support_users
+        self.permissions = permissions
+
         self.created_date = created_date
 
     async def get_support_users_with_this_role(self, repo: Repo):
@@ -45,8 +42,7 @@ class Role(IdComparable):
     async def add_role(
         cls,
         name: str,
-        can_answer_questions: bool,
-        can_manage_support_users: bool,
+        permissions: RolePermissions,
         repo: Repo,
         description: str = "",
         adding_date: datetime = datetime.now(),
@@ -57,9 +53,19 @@ class Role(IdComparable):
             id=0,
             name=name,
             description=description,
-            can_answer_questions=can_answer_questions,
-            can_manage_support_users=can_manage_support_users,
+            permissions=permissions,
             created_date=adding_date,
         )
 
         return await repo.add_role(role)
+
+
+class RolePermissions:
+    can_answer_questions: bool
+    can_manage_support_users: bool
+
+    def __init__(
+        self, can_answer_questions: bool, can_manage_support_users: bool
+    ):
+        self.can_answer_questions = can_answer_questions
+        self.can_manage_support_users = can_manage_support_users

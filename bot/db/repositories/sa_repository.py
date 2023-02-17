@@ -29,13 +29,15 @@ class SARepo(Repo):
 
     async def add_role(self, role: Role) -> Role:
         async with self._session() as session:
+            role_permissions = role.permissions
+
             role_model = (
                 RoleModel(
                     id=role.id,
                     name=role.name,
                     description=role.description,
-                    can_answer_questions=role.can_answer_questions,
-                    can_manage_support_users=role.can_manage_support_users,
+                    can_answer_questions=role_permissions.can_answer_questions,
+                    can_manage_support_users=role_permissions.can_manage_support_users,
                     created_date=role.created_date,
                 )
                 # If role.id equals to zero.
@@ -44,8 +46,8 @@ class SARepo(Repo):
                 else RoleModel(
                     name=role.name,
                     description=role.description,
-                    can_answer_questions=role.can_answer_questions,
-                    can_manage_support_users=role.can_manage_support_users,
+                    can_answer_questions=role_permissions.can_answer_questions,
+                    can_manage_support_users=role_permissions.can_manage_support_users,
                     created_date=role.created_date,
                 )
             )
