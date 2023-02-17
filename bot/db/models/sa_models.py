@@ -64,6 +64,20 @@ class RoleModel(ModelBase):
 
     # METHODS
 
+    def __init__(self, role_entity: Role):
+        if role_entity.id:
+            self.id = role_entity.id
+
+        self.name = role_entity.name
+        self.description = role_entity.description
+        self.can_answer_questions = (
+            role_entity.permissions.can_answer_questions
+        )
+        self.can_manage_support_users = (
+            role_entity.permissions.can_manage_support_users
+        )
+        self.created_date = role_entity.created_date
+
     def add_user(self, support_user: SupportUserModel):
         """Binds question to the support_user
 
@@ -117,10 +131,19 @@ class RegularUserModel(ModelBase):
     )
 
     # METHODS
+
+    def __init__(self, regular_user_entity: RegularUser):
+        if regular_user_entity.id:
+            self.id = regular_user_entity.id
+
+        self.tg_bot_user_id = regular_user_entity.tg_bot_user_id
+
+        self.join_date = regular_user_entity.join_date
+
     def add_question(self, question: QuestionModel):
         """Adds question to this user
 
-        Needed to be commited using session.commit()
+        Must be commited using session.commit()
 
         Args:
             question (QuestionModel): a question that will be
@@ -195,10 +218,32 @@ class SupportUserModel(ModelBase):
 
     # METHODS
 
+    def __init__(self, support_user_entity: SupportUser):
+        if self.id:
+            self.id = support_user_entity.id
+
+        self.current_question_id = (
+            support_user_entity.current_question.id
+            if support_user_entity.current_question
+            else None
+        )
+
+        self.role_id = (
+            support_user_entity.role.id if support_user_entity.role else None
+        )
+
+        self.descriptive_name = support_user_entity.descriptive_name
+
+        self.tg_bot_user_id = support_user_entity.tg_bot_user_id
+
+        self.join_date = support_user_entity.join_date
+        self.is_active = support_user_entity.is_active
+        self.is_owner = support_user_entity.is_owner
+
     def bind_question(self, question: QuestionModel):
         """Binds question to the support_user
 
-        Needed to be commited using session.commit()
+        Must be commited using session.commit()
 
         Args:
             question (QuestionModel): a question that will be binded
@@ -208,7 +253,7 @@ class SupportUserModel(ModelBase):
     def add_answer(self, answer: AnswerModel):
         """Adds answer to this user's answers
 
-        Needed to be commited using session.commit()
+        Must be commited using session.commit()
 
         Args:
             answer (AnswerModel): an answer that will be added to
@@ -286,10 +331,22 @@ class QuestionModel(ModelBase):
 
     # METHODS
 
+    def __init__(self, question_entitity: Question):
+        if question_entitity.id:
+            self.id = question_entitity.id
+
+        self.regular_user_id = question_entitity.regular_user.id
+
+        self.message = question_entitity.message
+
+        self.tg_message_id = question_entitity.tg_message_id
+
+        self.date = question_entitity.date
+
     def add_answer(self, answer: AnswerModel):
         """Adds answer to this user's answers
 
-        Needed to be commited using session.commit()
+        Must be commited using session.commit()
 
         Args:
             answer (AnswerModel): an answer that will be added to
@@ -298,11 +355,7 @@ class QuestionModel(ModelBase):
         self.answers.append(answer)
 
     def as_question_entity(self) -> Question:
-        regular_user = (
-            self.regular_user.as_regular_user_entity()
-            if self.regular_user
-            else None
-        )
+        regular_user = self.regular_user.as_regular_user_entity()
 
         return Question(
             id=self.id,
@@ -360,16 +413,21 @@ class AnswerModel(ModelBase):
         DateTime, nullable=False, default=datetime.now
     )
 
-    def as_answer_entity(self) -> Answer:
-        support_user = (
-            self.support_user.as_support_user_entity()
-            if self.support_user
-            else None
-        )
+    def __init__(self, answer_entity: Answer):
+        if answer_entity.id:
+            self.id = answer_entity.id
 
-        question = (
-            self.question.as_question_entity() if self.question else None
-        )
+        self.support_user_id = answer_entity.support_user.id
+        self.question_id = answer_entity.question.id
+        self.message = answer_entity.message
+        self.tg_message_id = answer_entity.tg_message_id
+        self.is_useful = answer_entity.is_useful
+        self.date = answer_entity.date
+
+    def as_answer_entity(self) -> Answer:
+        support_user = self.support_user.as_support_user_entity()
+
+        question = self.question.as_question_entity()
 
         return Answer(
             id=self.id,
@@ -416,6 +474,18 @@ class QuestionAttachmentModel(ModelBase):
         DateTime, nullable=False, default=datetime.now
     )
 
+    # METHODS
+
+    def __init__(self, question_attachment_entity: QuestionAttachment):
+        if question_attachment_entity.id:
+            self.id = question_attachment_entity.id
+
+        self.question_id = question_attachment_entity.question_id
+        self.tg_file_id = question_attachment_entity.tg_file_id
+        self.attachment_type = question_attachment_entity.attachment_type
+        self.caption = question_attachment_entity.caption
+        self.date = question_attachment_entity.date
+
     def as_question_attachment_entity(self) -> QuestionAttachment:
         return QuestionAttachment(
             id=self.id,
@@ -461,10 +531,20 @@ class AnswerAttachmentModel(ModelBase):
         DateTime, nullable=False, default=datetime.now
     )
 
+    def __init__(self, answer_attachment_entity: AnswerAttachment):
+        if answer_attachment_entity.id:
+            self.id = answer_attachment_entity.id
+
+        self.answer_id = answer_attachment_entity.answer_id
+        self.tg_file_id = answer_attachment_entity.tg_file_id
+        self.attachment_type = answer_attachment_entity.attachment_type
+        self.caption = answer_attachment_entity.caption
+        self.date = answer_attachment_entity.date
+
     def as_answer_attachment_entity(self) -> AnswerAttachment:
         return AnswerAttachment(
             id=self.id,
-            answer_id=self.answer.id,
+            answer_id=self.answer_id,
             tg_file_id=self.tg_file_id,
             attachment_type=self.attachment_type,
             caption=self.caption,

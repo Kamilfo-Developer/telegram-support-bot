@@ -629,13 +629,13 @@ class SupportUserManager:
                 markup=self.markup.get_answer_estimation_buttons_markup(
                     json.dumps(
                         {
-                            "id": answer.tg_message_id,  # type: ignore
+                            "id": answer.tg_message_id,
                             "action": States.ESTIMATE_AS_USEFUL_ACTION,
                         }
                     ),
                     json.dumps(
                         {
-                            "id": answer.tg_message_id,  # type: ignore
+                            "id": answer.tg_message_id,
                             "action": States.ESTIMATE_AS_UNUSEFUL_ACTION,
                         }
                     ),

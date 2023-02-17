@@ -29,28 +29,7 @@ class SARepo(Repo):
 
     async def add_role(self, role: Role) -> Role:
         async with self._session() as session:
-            role_permissions = role.permissions
-
-            role_model = (
-                RoleModel(
-                    id=role.id,
-                    name=role.name,
-                    description=role.description,
-                    can_answer_questions=role_permissions.can_answer_questions,
-                    can_manage_support_users=role_permissions.can_manage_support_users,
-                    created_date=role.created_date,
-                )
-                # If role.id equals to zero.
-                # It means that a new id will be created on the DB's side
-                if role.id
-                else RoleModel(
-                    name=role.name,
-                    description=role.description,
-                    can_answer_questions=role_permissions.can_answer_questions,
-                    can_manage_support_users=role_permissions.can_manage_support_users,
-                    created_date=role.created_date,
-                )
-            )
+            role_model = RoleModel(role)
 
             session.add(role_model)
 
@@ -151,11 +130,7 @@ class SARepo(Repo):
 
     async def add_regular_user(self, regular_user: RegularUser) -> RegularUser:
         async with self._session() as session:
-            regular_user_model = RegularUserModel(
-                id=regular_user.id,
-                tg_bot_user_id=regular_user.tg_bot_user_id,
-                join_date=regular_user.join_date,
-            )
+            regular_user_model = RegularUserModel(regular_user)
 
             session.add(regular_user_model)
 
@@ -243,16 +218,7 @@ class SARepo(Repo):
     async def add_support_user(self, support_user: SupportUser) -> SupportUser:
         async with self._session() as session:
             support_user_model = SupportUserModel(
-                id=support_user.id,
-                current_question_id=(
-                    support_user.current_question
-                    and support_user.current_question.id
-                ),
-                role_id=(support_user.role and support_user.role.id),
-                descriptive_name=support_user.descriptive_name,
-                tg_bot_user_id=support_user.tg_bot_user_id,
-                join_date=support_user.join_date,
-                is_owner=support_user.is_owner,
+                support_user_entity=support_user
             )
 
             session.add(support_user_model)
@@ -482,15 +448,7 @@ class SARepo(Repo):
 
     async def add_question(self, question: Question) -> Question:
         async with self._session() as session:
-            question_model = QuestionModel(
-                id=question.id,
-                regular_user_id=question.regular_user.id
-                if question.regular_user
-                else None,
-                message=question.message,
-                tg_message_id=question.tg_message_id,
-                date=question.date,
-            )
+            question_model = QuestionModel(question)
 
             session.add(question_model)
 
@@ -679,16 +637,7 @@ class SARepo(Repo):
         answer: Answer,
     ) -> Answer:
         async with self._session() as session:
-            answer_model = AnswerModel(
-                id=answer.id,
-                support_user_id=answer.support_user.id
-                if answer.support_user
-                else None,
-                question_id=answer.question.id if answer.question else None,
-                message=answer.message,
-                tg_message_id=answer.tg_message_id,
-                date=answer.date,
-            )
+            answer_model = AnswerModel(answer)
 
             session.add(answer_model)
 
@@ -928,11 +877,7 @@ class SARepo(Repo):
     ) -> QuestionAttachment:
         async with self._session() as session:
             question_attachment_model = QuestionAttachmentModel(
-                id=question_attachment.id,
-                question_id=question_attachment.question_id,
-                tg_file_id=question_attachment.tg_file_id,
-                attachment_type=question_attachment.attachment_type,
-                date=question_attachment.date,
+                question_attachment
             )
 
             session.add(question_attachment_model)
@@ -1034,13 +979,7 @@ class SARepo(Repo):
         self, answer_attachment: AnswerAttachment
     ) -> AnswerAttachment:
         async with self._session() as session:
-            answer_attachment_model = AnswerAttachmentModel(
-                id=answer_attachment.id,
-                answer_id=answer_attachment.answer_id,
-                tg_file_id=answer_attachment.tg_file_id,
-                attachment_type=answer_attachment.attachment_type,
-                date=answer_attachment.date,
-            )
+            answer_attachment_model = AnswerAttachmentModel(answer_attachment)
 
             session.add(answer_attachment_model)
 

@@ -81,7 +81,6 @@ class SupportUser(IdComparable):
         return await repo.get_support_user_answers_with_id(self.id)
 
     async def change_role(self, new_role: Role, repo: Repo) -> None:
-
         await repo.change_support_user_role(self.id, new_role.id)
 
         self.role = new_role
@@ -134,7 +133,6 @@ class SupportUser(IdComparable):
         is_owner: bool = False,
         addition_time: datetime = datetime.now(),
     ) -> SupportUser:
-
         support_user = SupportUser(
             id=uuid4(),
             role=role,

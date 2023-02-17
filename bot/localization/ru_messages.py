@@ -49,7 +49,8 @@ class RUMessages(Messages):
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
-            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы можете написать сюда сообщение и в скором времени Вам придёт ответ от одного из наших сотрудников поддержки.",
+            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\n"
+            + "Вы можете написать сюда сообщение и в скором времени Вам придёт ответ от одного из наших сотрудников поддержки.",
         ]
 
     async def get_start_support_user_message(
@@ -61,7 +62,8 @@ class RUMessages(Messages):
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
-            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы являетесь пользователь поддержки. Если возникли трудности, введите команду /help."
+            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\n"
+            + "Вы являетесь пользователь поддержки. Если возникли трудности, введите команду /help."
         ]
 
     async def get_start_owner_message(
@@ -74,7 +76,8 @@ class RUMessages(Messages):
         bot = telegram_user.get_bot()
 
         return [
-            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\nВы являетесь владельцем бота. Если возникли трудности, введите команду /help.",
+            f"Здравствуйте, {telegram_user.first_name}. Вас приветствует {bot.name}.\n"
+            + "Вы являетесь владельцем бота. Если возникли трудности, введите команду /help.",
         ]
 
     # HELP MESSAGES
@@ -139,7 +142,7 @@ class RUMessages(Messages):
     async def get_unavailable_or_deleted_object_message(
         self, *args, **kwargs
     ) -> list[str]:
-        return [f"Данный объект недоступен или был удалён"]
+        return ["Данный объект недоступен или был удалён"]
 
     # ADDITION MESSAGES
 
@@ -150,7 +153,11 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            f"Роль с названием `{role.name}` успешно добавлена!\n\nЕё ID: `{role.id}`\nЕё права:\nМожет отвечать на вопросы: {'да' if role.permissions.can_answer_questions else 'нет'}\nМожет управлять пользователями поддержки: {'да' if role.permissions.can_manage_support_users else 'нет'}"
+            f"Роль с названием `{role.name}` успешно добавлена!\n\n"
+            + f"Её ID: `{role.id}`\n"
+            + "Её права:\n"
+            + f"Может отвечать на вопросы: {'да' if role.permissions.can_answer_questions else 'нет'}\n"
+            + f"Может управлять пользователями поддержки: {'да' if role.permissions.can_manage_support_users else 'нет'}"
         ]
 
     async def get_role_name_duplicate_message(
@@ -167,7 +174,8 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name}` успешно добавлен!\nЕго ID: `{support_user.tg_bot_user_id}`"  # type: ignore
+            f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name if support_user.role else '(без роли)'}` успешно добавлен!\n"
+            + f"Его ID: `{support_user.tg_bot_user_id}`"
         ]
 
     async def get_successful_answering_message(
@@ -436,7 +444,7 @@ class RUMessages(Messages):
         **kwargs,
     ) -> list[str]:
         return [
-            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота."
+            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота.\n"
             + "Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
         ]
 

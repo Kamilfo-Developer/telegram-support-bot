@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 
 class Answer(IdComparable):
     id: UUID
-    support_user: SupportUser | None
-    question: Question | None
+    support_user: SupportUser
+    question: Question
     message: str
     tg_message_id: int
     is_useful: bool | None
@@ -25,8 +25,8 @@ class Answer(IdComparable):
     def __init__(
         self,
         id: UUID,
-        support_user: SupportUser | None,
-        question: Question | None,
+        support_user: SupportUser,
+        question: Question,
         message: str,
         tg_message_id: int,
         is_useful: bool | None = None,

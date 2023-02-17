@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class Question(IdComparable):
     id: UUID
 
-    regular_user: RegularUser | None
+    regular_user: RegularUser
 
     message: str
 
@@ -24,12 +24,10 @@ class Question(IdComparable):
 
     date: datetime
 
-    statistics: QuestionStatistics | None
-
     def __init__(
         self,
         id: UUID,
-        regular_user: RegularUser | None,
+        regular_user: RegularUser,
         message: str,
         tg_message_id: int,
         date: datetime = datetime.now(),
