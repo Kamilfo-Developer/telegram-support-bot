@@ -9,12 +9,11 @@ from bot.utils import (
     TextToSend,
 )
 from bot.settings import (
-    OWNER_ID,
+    OWNER_PASSWORD,
     OWNER_DEFAULT_DESCRIPTIVE_NAME,
 )
 from bot.managers.support_user_manager import SupportUserManager
 from bot.managers.regular_user_manager import RegularUserManager
-from telegram import Update
 from telegram.ext import ContextTypes, CallbackContext
 import json
 
@@ -31,7 +30,7 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE):
 
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if support_user and support_user.is_active:
+    if support_user:
         if support_user.is_owner:
             await TextToSend(
                 await messages.get_start_owner_message(user, support_user)
@@ -39,22 +38,14 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE):
 
             return
 
-        await TextToSend(
-            await messages.get_start_support_user_message(user, support_user)
-        ).send(update)
+        if support_user.is_active:
+            await TextToSend(
+                await messages.get_start_support_user_message(
+                    user, support_user
+                )
+            ).send(update)
 
-        return
-
-    if user.id == OWNER_ID:
-        await TextToSend(
-            await messages.get_start_support_user_message(user, support_user)
-        ).send(update)
-
-        await TextToSend(
-            await messages.get_not_inited_owner_message(user)
-        ).send(update)
-
-        return
+            return
 
     regular_user = await repo.get_regular_user_by_tg_bot_user_id(
         user.id
@@ -76,31 +67,29 @@ async def handle_init_owner(update, context: ContextTypes.DEFAULT_TYPE):
     messages = get_messages(update.effective_user.language_code)
     repo = RepositoryClass()
 
-    if user.id != OWNER_ID:
+    support_user = await repo.get_owner()
+
+    if support_user:
         await TextToSend(
-            await messages.get_permission_denied_message(user)
+            await messages.get_already_inited_owner_message(user, support_user)
         ).send(update)
 
         return
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    if support_user:
-        if support_user.is_owner:
-            await TextToSend(
-                await messages.get_already_inited_owner_message(
-                    user, support_user
-                )
-            ).send(update)
-
-            return
-
-        await support_user.make_owner(repo)
-
+    if not context.args:
         await TextToSend(
-            await messages.get_successful_owner_init_message(
-                user, support_user
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.owner_password_argument_name], user
             )
+        ).send(update)
+
+        return
+
+    password = context.args[0]
+
+    if password != OWNER_PASSWORD:
+        await TextToSend(
+            await messages.get_incorrect_owner_password_message()
         ).send(update)
 
         return

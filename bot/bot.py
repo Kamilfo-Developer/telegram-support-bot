@@ -130,7 +130,8 @@ app.add_handler(
     CallbackQueryHandler(
         handlers.handle_show_attachments_button,
         lambda x: (
-            json.loads(x)["action"] == States.SHOW_ATTACHMENTS_ACTION  # type: ignore
+            json.loads(x)["action"]  # type: ignore
+            == States.SHOW_ATTACHMENTS_ACTION
         ),
     )
 )

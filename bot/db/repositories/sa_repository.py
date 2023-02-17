@@ -317,6 +317,18 @@ class SARepo(Repo):
 
             await session.commit()
 
+    async def get_owner(self) -> SupportUser | None:
+        async with self._session() as session:
+            q = self._get_support_user_query_with_options(
+                select(SupportUserModel).where(
+                    SupportUserModel.is_owner == True  # noqa: E712
+                )
+            )
+
+            result = (await session.execute(q)).scalars().first()
+
+            return result and result.as_support_user_entity()
+
     async def get_support_user_by_id(self, id: UUID) -> SupportUser | None:
         async with self._session() as session:
             q = self._get_support_user_query_with_options(

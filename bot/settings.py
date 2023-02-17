@@ -7,7 +7,7 @@ import os
 
 # Needed for some developing features
 # Should be False when production
-DEBUG = True
+DEBUG = os.getenv("BOT_TOKEN") or False
 
 # Path to .env file where the bot token is stored
 DOTENV_PATH: Path | str = Path(".env")
@@ -29,6 +29,6 @@ DEFAULT_LANGUAGE_CODE: str = "ru"
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
-OWNER_ID = int(os.getenv("OWNER_ID"))
+OWNER_PASSWORD = os.getenv("OWNER_PASSWORD")
 
 OWNER_DEFAULT_DESCRIPTIVE_NAME = "Owner"

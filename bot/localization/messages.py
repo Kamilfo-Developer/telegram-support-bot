@@ -18,6 +18,7 @@ import abc
 
 class Messages(abc.ABC):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
+    owner_password_argument_name: str
     regular_user_id_argument_name: str
     regular_tg_bot_user_id_argument_name: str
     support_user_id_argument_name: str
@@ -351,6 +352,10 @@ class Messages(abc.ABC):
     async def get_successful_owner_init_message(
         self, user: User, support_user: SupportUser, *args, **kwargs
     ) -> list[str]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_incorrect_owner_password_message(self) -> list[str]:
         raise NotImplementedError
 
     # SUPPORT USER ACTIVATION MESSAGES

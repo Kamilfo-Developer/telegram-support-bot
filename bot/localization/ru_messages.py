@@ -17,6 +17,7 @@ from bot.services.statistics import (
 
 class RUMessages(Messages):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
+    owner_password_argument_name = "пароль владельца бота"
     regular_user_id_argument_name = "ID обычного пользователя"
     regular_tg_bot_user_id_argument_name = (
         "ID обычного пользователя в Телеграме у данного бота (число)"
@@ -457,6 +458,9 @@ class RUMessages(Messages):
         self, user: User, support_user: SupportUser, *args, **kwargs
     ) -> list[str]:
         return ["Поздравляем, Вы теперь владелец данного бота!"]
+
+    async def get_incorrect_owner_password_message(self) -> list[str]:
+        return ["Пароль неверн, попробуйте снова"]
 
     # SUPPORT USER ACTIVATION MESSAGES
 

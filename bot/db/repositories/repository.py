@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class Repo(abc.ABC):
-
     # ROLES METHODS
 
     @abc.abstractmethod
@@ -128,6 +127,10 @@ class Repo(abc.ABC):
     async def get_support_user_by_tg_bot_user_id(
         self, tg_bot_user_id: int
     ) -> SupportUser | None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def get_owner(self) -> SupportUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod
