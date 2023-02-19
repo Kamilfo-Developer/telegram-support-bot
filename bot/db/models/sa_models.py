@@ -49,7 +49,7 @@ class RoleModel(ModelBase):
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
 
     created_date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     # If False a support user cannot use answering
@@ -118,7 +118,7 @@ class RegularUserModel(ModelBase):
     tg_bot_user_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     join_date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     # RELATIONSHIPS
@@ -173,7 +173,7 @@ class SupportUserModel(ModelBase):
     tg_bot_user_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     join_date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     is_owner: Mapped[bool] = mapped_column(
@@ -326,7 +326,7 @@ class QuestionModel(ModelBase):
     tg_message_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     # METHODS
@@ -410,7 +410,7 @@ class AnswerModel(ModelBase):
     tg_message_id: Mapped[int] = mapped_column(Integer, unique=True)
 
     date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     def __init__(self, answer_entity: Answer):
@@ -471,7 +471,7 @@ class QuestionAttachmentModel(ModelBase):
     )
 
     date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     # METHODS
@@ -528,7 +528,7 @@ class AnswerAttachmentModel(ModelBase):
     )
 
     date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.now
+        DateTime(timezone=True), nullable=False, default=datetime.now
     )
 
     def __init__(self, answer_attachment_entity: AnswerAttachment):
