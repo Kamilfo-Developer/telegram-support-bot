@@ -128,13 +128,6 @@ async def handle_help_command(update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    if user.id == OWNER_ID:
-        await TextToSend(
-            await messages.get_not_inited_owner_help_message(user)
-        ).send(update)
-
-        return
-
     regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
 
     if regular_user:
