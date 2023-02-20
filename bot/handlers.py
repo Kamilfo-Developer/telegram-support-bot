@@ -115,9 +115,7 @@ async def handle_help_command(update, context: ContextTypes.DEFAULT_TYPE):
     if support_user and support_user.is_active:
         if support_user.is_owner:
             await TextToSend(
-                await messages.get_inited_owner_help_message(
-                    user, support_user
-                )
+                await messages.get_owner_help_message(user, support_user)
             ).send(update)
 
             return

@@ -70,19 +70,10 @@ class Messages(abc.ABC):
     # HELP MESSAGES
 
     @abc.abstractmethod
-    async def get_inited_owner_help_message(
+    async def get_owner_help_message(
         self,
         user: User,
         user_entity: SupportUser,
-        *args,
-        **kwargs,
-    ) -> list[str]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def get_not_inited_owner_help_message(
-        self,
-        user: User,
         *args,
         **kwargs,
     ) -> list[str]:
@@ -96,7 +87,7 @@ class Messages(abc.ABC):
 
     @abc.abstractmethod
     async def get_support_user_help_message(
-        self, user: User, user_entity: SupportUser, *args, **kwargs
+        self, tg_user: User, support_user: SupportUser, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 

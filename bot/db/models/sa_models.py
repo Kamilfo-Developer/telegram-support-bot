@@ -44,7 +44,7 @@ class RoleModel(ModelBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
 
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
 
@@ -165,7 +165,7 @@ class SupportUserModel(ModelBase):
 
     # PROPERTIES
     descriptive_name: Mapped[str] = mapped_column(
-        String, nullable=False, unique=False
+        String(255), nullable=False, unique=False
     )
 
     # Unique telegram id that's given
@@ -441,7 +441,7 @@ class AnswerModel(ModelBase):
 
 
 class QuestionAttachmentModel(ModelBase):
-    __tablename__ = "questions_attachmets"
+    __tablename__ = "questions_attachments"
 
     # RELATIONSHIPS
 
@@ -460,7 +460,7 @@ class QuestionAttachmentModel(ModelBase):
         UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
     )
 
-    tg_file_id: Mapped[str] = mapped_column(String, nullable=False)
+    tg_file_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
     attachment_type: Mapped[AttachmentType] = mapped_column(
         Enum(AttachmentType), nullable=False
@@ -498,7 +498,7 @@ class QuestionAttachmentModel(ModelBase):
 
 
 class AnswerAttachmentModel(ModelBase):
-    __tablename__ = "answers_attachmets"
+    __tablename__ = "answers_attachments"
 
     # RELATIONSHIPS
 
@@ -517,7 +517,7 @@ class AnswerAttachmentModel(ModelBase):
         UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
     )
 
-    tg_file_id: Mapped[str] = mapped_column(String, nullable=False)
+    tg_file_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
     attachment_type: Mapped[AttachmentType] = mapped_column(
         Enum(AttachmentType), nullable=False

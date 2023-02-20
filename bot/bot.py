@@ -49,17 +49,11 @@ app.add_handler(
 
 app.add_handler(CommandHandler("question", handlers.handle_get_question))
 
-app.add_handler(CommandHandler("initowner", handlers.handle_init_owner))
-
 app.add_handler(CommandHandler("bind", handlers.handle_bind_question))
 
 app.add_handler(CommandHandler("unbind", handlers.handle_unbind_question))
 
 app.add_handler(CommandHandler("addsupuser", handlers.handle_add_support_user))
-
-app.add_handler(
-    CommandHandler("getallsups", handlers.handle_get_all_suppurt_users)
-)
 
 app.add_handler(CommandHandler("answer", handlers.handle_get_answer))
 
@@ -78,13 +72,13 @@ app.add_handler(
 )
 
 app.add_handler(
-    CommandHandler("globalstats", handlers.handle_global_statistics)
-)
-
-app.add_handler(
     CommandHandler(
         "deactivatesupuser", handlers.handle_deactivate_support_user
     )
+)
+
+app.add_handler(
+    CommandHandler("globalstats", handlers.handle_global_statistics)
 )
 
 

@@ -83,23 +83,53 @@ class RUMessages(Messages):
 
     # HELP MESSAGES
 
-    async def get_inited_owner_help_message(
+    async def get_owner_help_message(
         self,
         user: User,
         user_entity: SupportUser,
         *args,
         **kwargs,
     ) -> list[str]:
-        return ["Доступные команды:\n"]
+        other_commands_list = "\n".join(
+            [
+                "/start",
+                "/help",
+                "/getid",
+            ]
+        )
 
-    async def get_not_inited_owner_help_message(
-        self,
-        user: User,
-        *args,
-        **kwargs,
-    ) -> list[str]:
+        roles_commands_list = "\n".join(
+            [
+                "/roles",
+                "/role",
+                "/addrole",
+            ]
+        )
+
+        support_users_commands_list = "\n".join(
+            [
+                "/supuser",
+                "/supusers",
+                "/addsupuser",
+                "/activatesupuser",
+                "/deactivatesupuser",
+            ]
+        )
+
+        questions_commands_list = "\n".join(
+            ["/question", "/bind", "/unbind", "/answer", "/answers"]
+        )
+
         return [
-            "Вы являетесь владельцем бота, однако для начала необходимо пройти *инициализацию*. Для этого введите команду /init_owner"
+            "Вы являетесь владельцем бота.\n"
+            + "Вам доступен его полный функционал.\n"
+            + "Вы можете управлять пользователями поддержки, создавать роли, а также самостоятельно отвечать на вопросы.\n\n"
+            "Доступные команды:\n\n",
+            "Команды для ответов на вопросы:\n" + questions_commands_list,
+            "Команды управления пользователями поддержки\n"
+            + support_users_commands_list,
+            "Комады для управления ролями\n" + roles_commands_list,
+            "Другие команды:\n" + other_commands_list,
         ]
 
     async def get_regular_user_help_message(
@@ -112,10 +142,80 @@ class RUMessages(Messages):
         ]
 
     async def get_support_user_help_message(
-        self, user: User, user_entity: SupportUser, *args, **kwargs
+        self, tg_user: User, support_user: SupportUser, *args, **kwargs
     ) -> list[str]:
+        if not support_user.role:
+            return [
+                "Вы являетесь пользователем поддержки. Однако у Вас нет роли. Чтобы выполнять какие-либо действия, Вам необходимо получить её. Для этого свяжитесь с владельцем бота или с другим пользователем, способным назначать роли"
+            ]
+
+        permissions = support_user.role.permissions
+
+        other_commands_list = "\n".join(
+            [
+                "Другие команды:",
+                "/start",
+                "/help",
+                "/getid",
+            ]
+        )
+
+        roles_commands_list = "\n".join(
+            [
+                "Комады для управления ролями",
+                "/roles",
+                "/role",
+                "/addrole",
+            ]
+        )
+
+        support_users_commands_list = "\n".join(
+            [
+                "Команды управления пользователями поддержки",
+                "/supuser",
+                "/supusers",
+                "/addsupuser",
+                "/activatesupuser",
+                "/deactivatesupuser",
+            ]
+        )
+
+        questions_commands_list = "\n".join(
+            [
+                "Команды для ответов на вопросы:",
+                "/question",
+                "/bind",
+                "/unbind",
+                "/answer",
+                "/answers",
+            ]
+        )
+
+        commands = "\n".join(
+            filter(
+                lambda x: x,
+                [
+                    "Доступные команды:\n",
+                    questions_commands_list
+                    if permissions.can_answer_questions
+                    else "",
+                    support_users_commands_list
+                    if permissions.can_manage_support_users
+                    else "",
+                    roles_commands_list
+                    if permissions.can_manage_support_users
+                    else "",
+                    other_commands_list,
+                ],
+            )
+        )
+
         return [
-            "Уважаемый пользователь поддержки, эта команда пока не реализована"
+            "Вы являетесь пользователем поддержки.\n",
+            "Возможности Вашей роли:\n"
+            + f"Управление пользователями поддержки: {'да' if permissions.can_manage_support_users else 'нет'}"
+            + f"Ответы на вопросы: {'да' if permissions.can_answer_questions else 'нет'}\n",
+            commands,
         ]
 
     # ARGUMENTS MESSAGES

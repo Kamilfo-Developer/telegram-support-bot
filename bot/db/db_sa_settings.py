@@ -30,7 +30,7 @@ match DB_PROVIDER:
 
         POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME") or "postgres"
 
-        POSGRES_HOST = os.getenv("POSTGRES_HOST") or "localhost"
+        POSTGRES_HOST = os.getenv("POSTGRES_HOST") or "localhost"
 
         POSTGRES_DB_PORT = os.getenv("POSTGRES_DB_PORT") or "5432"
 
@@ -44,8 +44,38 @@ match DB_PROVIDER:
         DB_URL = (
             f"postgresql+{POSTGRES_DRIVER_NAME}://"
             + f"{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}"
-            + f"@{POSGRES_HOST}:{POSTGRES_DB_PORT}"
+            + f"@{POSTGRES_HOST}:{POSTGRES_DB_PORT}"
             + f"/{POSTGRES_DB_NAME}"
+        )
+
+    case "mysql":
+        MYSQL_DRIVER_NAME = os.getenv("MYSQL_DRIVER_NAME") or "asyncmy"
+
+        MYSQL_DB_NAME = os.getenv("MYSQL_DB_NAME")
+
+        MYSQL_USERNAME = os.getenv("MYSQL_USERNAME") or "root"
+
+        MYSQL_HOST = os.getenv("MYSQL_HOST") or "localhost"
+
+        MYSQL_DB_PORT = os.getenv("MYSQL_DB_PORT") or "3306"
+
+        MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+
+        if not MYSQL_PASSWORD:
+            raise EnvironmentError(
+                "MYSQL_PASSWORD required if you are using MySQL"
+            )
+
+        if not MYSQL_DB_NAME:
+            raise EnvironmentError(
+                "MYSQL_DB_NAME required if you are using MySQL"
+            )
+
+        DB_URL = (
+            f"mysql+{MYSQL_DRIVER_NAME}://"
+            + f"{MYSQL_USERNAME}:{MYSQL_PASSWORD}"
+            + f"@{MYSQL_HOST}:{MYSQL_DB_PORT}"
+            + f"/{MYSQL_DB_NAME}"
         )
 
     case _:
@@ -60,6 +90,8 @@ match DB_PROVIDER:
         SQLITE_DB_FILE_PATH = os.getenv("SQLITE_DB_FILE_PATH") or os.path.join(
             ROOT_DIR, f"{DB_NAME}.db"
         )
+
+        print(SQLITE_DB_FILE_PATH)
 
         # URL for your database
         DB_URL = f"sqlite+{SQLITE_DRIVER_NAME}:///" + SQLITE_DB_FILE_PATH
