@@ -20,7 +20,7 @@ class Messages(abc.ABC):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
     owner_password_argument_name: str
     regular_user_id_argument_name: str
-    regular_tg_bot_user_id_argument_name: str
+    regular_user_tg_bot_id_argument_name: str
     support_user_id_argument_name: str
     role_id_argument_name: str
     support_user_descriptive_name: str

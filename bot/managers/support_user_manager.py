@@ -53,6 +53,37 @@ class SupportUserManager:
             )
         ]
 
+    async def get_regular_user_info(self, tg_id: int) -> list[MessageToSend]:
+        if self.is_answer_questions_permission_denied():
+            return [
+                TextToSend(
+                    await self.messages.get_permission_denied_message(
+                        self.tg_user
+                    )
+                )
+            ]
+
+        regular_user = await self.repo.get_regular_user_by_tg_bot_user_id(
+            tg_id
+        )
+
+        if not regular_user:
+            return [
+                TextToSend(
+                    await self.messages.get_no_object_with_this_id_message(
+                        str(tg_id)
+                    )
+                )
+            ]
+
+        return [
+            TextToSend(
+                await self.messages.get_regular_user_info_message(
+                    regular_user, await regular_user.get_statistics(self.repo)
+                )
+            )
+        ]
+
     async def bind_question(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
@@ -572,11 +603,11 @@ class SupportUserManager:
                 )
             ]
 
-        await support_user.activate(self.repo)
+        await support_user.deactivate(self.repo)
 
         return [
             TextToSend(
-                await self.messages.get_support_user_activation_message(
+                await self.messages.get_support_user_deactivation_message(
                     support_user
                 )
             )

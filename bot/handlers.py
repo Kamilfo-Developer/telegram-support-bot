@@ -147,6 +147,39 @@ async def handle_get_id(update, context: ContextTypes.DEFAULT_TYPE):
     await TextToSend(get_id_messages).send(update)
 
 
+# REGULAR USERS
+
+
+async def handle_get_regular_user(update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    messages = get_messages(update.effective_user.language_code)
+
+    repo = RepositoryClass()
+
+    if not (context.args and is_string_int(context.args[0])):  # type: ignore
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.regular_user_tg_bot_id_argument_name]
+            )
+        ).send(update)
+
+        return
+
+    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+
+    support_user_manager = SupportUserManager(
+        user, support_user, messages, repo
+    )
+
+    messages_to_send = await support_user_manager.get_regular_user_info(
+        int(context.args[0])
+    )
+
+    for message in messages_to_send:
+        await message.send(update)
+
+
 # STATISTICS
 
 
@@ -700,7 +733,7 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE):
 
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if support_user:
+    if support_user and support_user.is_active:
         support_user_manager = SupportUserManager(
             user, support_user, messages, repo
         )
@@ -749,7 +782,7 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
 
     suppport_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if suppport_user:
+    if suppport_user and suppport_user.is_active:
         support_user_manager = SupportUserManager(
             user, suppport_user, messages, repo
         )

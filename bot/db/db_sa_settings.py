@@ -91,8 +91,6 @@ match DB_PROVIDER:
             ROOT_DIR, f"{DB_NAME}.db"
         )
 
-        print(SQLITE_DB_FILE_PATH)
-
         # URL for your database
         DB_URL = f"sqlite+{SQLITE_DRIVER_NAME}:///" + SQLITE_DB_FILE_PATH
 

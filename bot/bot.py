@@ -77,6 +77,8 @@ app.add_handler(
     )
 )
 
+app.add_handler(CommandHandler("reguser", handlers.handle_get_regular_user))
+
 app.add_handler(
     CommandHandler("globalstats", handlers.handle_global_statistics)
 )

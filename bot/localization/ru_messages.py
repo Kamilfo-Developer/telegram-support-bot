@@ -19,7 +19,7 @@ class RUMessages(Messages):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
     owner_password_argument_name = "пароль владельца бота"
     regular_user_id_argument_name = "ID обычного пользователя"
-    regular_tg_bot_user_id_argument_name = (
+    regular_user_tg_bot_id_argument_name = (
         "ID обычного пользователя в Телеграме у данного бота (число)"
     )
     support_user_id_argument_name = "ID пользователя поддержки"
@@ -191,11 +191,11 @@ class RUMessages(Messages):
             ]
         )
 
-        commands = "\n".join(
+        commands = "\n\n".join(
             filter(
                 lambda x: x,
                 [
-                    "Доступные команды:\n",
+                    "Доступные команды:",
                     questions_commands_list
                     if permissions.can_answer_questions
                     else "",
@@ -213,7 +213,7 @@ class RUMessages(Messages):
         return [
             "Вы являетесь пользователем поддержки.\n",
             "Возможности Вашей роли:\n"
-            + f"Управление пользователями поддержки: {'да' if permissions.can_manage_support_users else 'нет'}"
+            + f"Управление пользователями поддержки: {'да' if permissions.can_manage_support_users else 'нет'}\n"
             + f"Ответы на вопросы: {'да' if permissions.can_answer_questions else 'нет'}\n",
             commands,
         ]
@@ -373,9 +373,15 @@ class RUMessages(Messages):
     ) -> list[str]:
         return [
             f"ID: `{regular_user.tg_bot_user_id}`\n"
-            + f"Дата присоединения: {regular_user.join_date}\n"
+            + f"Дата присоединения: {regular_user.join_date}\n\n"
+            + f"Статистика:\n"
             + f"Задано вопросов: {regular_user_statistics.asked_questions}\n"
-            + f"Из них ответ получили: {regular_user_statistics.answered_questions}"
+            + f"Из них ответ получили: {regular_user_statistics.answered_questions}\n"
+            + f"Из них ответ не получили: {regular_user_statistics.unanswered_questions}\n"
+            + f"Всего ответов на вопросы пользователя: {regular_user_statistics.answers_for_questions}\n"
+            + f"Из них полезных: {regular_user_statistics.useful_answers}\n"
+            + f"Из них бесполезных: {regular_user_statistics.unuseful_answers}\n"
+            + f"Из них неоценённых: {regular_user_statistics.unestimated_answers}\n"
         ]
 
     async def get_question_info_message(
@@ -388,7 +394,7 @@ class RUMessages(Messages):
         return [
             f"ID: `{question.tg_message_id}`\n"
             + f"ID задавшего вопрос пользователя: `{question.regular_user.tg_bot_user_id}`\n"
-            # + f"Вопрос был задан: {question.date}\n"
+            + f"Вопрос был задан: {question.date}\n"
             + f"Ответов на вопрос: {question_statistics.total_answers}\n"
             + f"Всего приложений: {question_statistics.total_attachments}\n",
             "Текст вопроса:",

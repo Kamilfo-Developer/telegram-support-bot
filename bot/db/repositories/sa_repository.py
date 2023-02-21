@@ -613,7 +613,7 @@ class SARepo(Repo):
         self, regular_user_id: UUID
     ) -> int:
         async with self._session() as session:
-            q = select(func.count(QuestionModel)).where(
+            q = select(func.count(QuestionModel.id)).where(
                 QuestionModel.regular_user_id == regular_user_id
             )
 
@@ -631,6 +631,19 @@ class SARepo(Repo):
         async with self._session() as session:
             q = select(func.count(QuestionModel.id)).where(
                 QuestionModel.answers != None
+            )
+
+            return (await session.execute(q)).scalar()
+
+    async def count_regular_user_answered_questions(
+        self, regular_user_id: UUID
+    ) -> int:
+        async with self._session() as session:
+            q = select(func.count(QuestionModel.id)).where(
+                and_(
+                    QuestionModel.regular_user_id == regular_user_id,
+                    QuestionModel.answers != None,  # noqa: 712
+                )
             )
 
             return (await session.execute(q)).scalar()
@@ -856,6 +869,65 @@ class SARepo(Repo):
                 and_(
                     AnswerModel.is_useful == True,  # noqa: 712
                     AnswerModel.support_user_id == support_user_id,
+                )
+            )
+
+            return (await session.execute(q)).scalar()
+
+    async def count_regular_user_questions_answers(
+        self, regular_user_id: UUID
+    ) -> int:
+        async with self._session() as session:
+            q = select(func.count(AnswerModel.id)).where(
+                and_(
+                    AnswerModel.question.and_(
+                        QuestionModel.regular_user_id == regular_user_id
+                    ),
+                )
+            )
+
+            return (await session.execute(q)).scalar()
+
+    async def count_regular_user_questions_useful_answers(
+        self, regular_user_id: UUID
+    ) -> int:
+        async with self._session() as session:
+            q = select(func.count(AnswerModel.id)).where(
+                and_(
+                    AnswerModel.question.and_(
+                        QuestionModel.regular_user_id == regular_user_id
+                    ),
+                    AnswerModel.is_useful == True,  # noqa: 712
+                )
+            )
+
+            return (await session.execute(q)).scalar()
+
+    async def count_regular_user_questions_unuseful_answers(
+        self, regular_user_id: UUID
+    ) -> int:
+        async with self._session() as session:
+            q = select(func.count(AnswerModel.id)).where(
+                and_(
+                    AnswerModel.question.and_(
+                        QuestionModel.regular_user_id == regular_user_id
+                    ),
+                    AnswerModel.is_useful == False,  # noqa: 712
+                )
+            )
+
+            return (await session.execute(q)).scalar()
+
+    async def count_regular_user_questions_unestimated_answers(
+        self, regular_user_id: UUID
+    ) -> int:
+        async with self._session() as session:
+            q = select(func.count(AnswerModel.id)).where(
+                and_(
+                    AnswerModel.question.and_(
+                        QuestionModel.regular_user_id == regular_user_id
+                    ),
+                    AnswerModel.is_useful == None,  # noqa: 712
                 )
             )
 

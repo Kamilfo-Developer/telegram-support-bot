@@ -112,15 +112,50 @@ class SupportUserStatistics:
 class RegularUserStatistics:
     asked_questions: int
     answered_questions: int
+    unanswered_questions: int
+    answers_for_questions: int
+    unestimated_answers: int
+    useful_answers: int
+    unuseful_answers: int
 
     @classmethod
     async def get_statistics(
-        cls, question_id: UUID, repo: Repo
+        cls, regular_user_id: UUID, repo: Repo
     ) -> RegularUserStatistics:
         statistics = RegularUserStatistics()
 
         statistics.asked_questions = await repo.count_regular_users_questions(
-            question_id
+            regular_user_id
+        )
+
+        statistics.answered_questions = (
+            await repo.count_regular_user_answered_questions(regular_user_id)
+        )
+
+        statistics.answers_for_questions = (
+            await repo.count_regular_user_questions_answers(regular_user_id)
+        )
+
+        statistics.unanswered_questions = (
+            statistics.asked_questions - statistics.answered_questions
+        )
+
+        statistics.useful_answers = (
+            await repo.count_regular_user_questions_useful_answers(
+                regular_user_id
+            )
+        )
+
+        statistics.unuseful_answers = (
+            await repo.count_regular_user_questions_unuseful_answers(
+                regular_user_id
+            )
+        )
+
+        statistics.unestimated_answers = (
+            await repo.count_regular_user_questions_unestimated_answers(
+                regular_user_id
+            )
         )
 
         return statistics
