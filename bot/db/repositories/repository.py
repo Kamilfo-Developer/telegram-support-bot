@@ -1,8 +1,7 @@
 from __future__ import annotations
 from uuid import UUID
-import abc
-
 from typing import TYPE_CHECKING
+import abc
 
 if TYPE_CHECKING:
     from bot.entities.support_user import SupportUser

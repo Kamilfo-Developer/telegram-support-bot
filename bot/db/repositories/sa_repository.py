@@ -1,3 +1,4 @@
+from __future__ import annotations
 from uuid import UUID
 from sqlalchemy import delete, func, Select, select, and_
 from sqlalchemy.orm import selectinload
