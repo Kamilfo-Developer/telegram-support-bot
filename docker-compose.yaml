@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  bot:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - bot_network
+    command:
+      bash -c "cd bot/db/migrations && ls alembic/versions && alembic upgrade head && cd ../../.. && python3 -m bot"
+
+  db:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - bot_network
+    ports:
+      - '5432:5432'
+
+networks:
+  bot_network:
+    driver: bridge
+
+volumes:
+  db-data:
+
