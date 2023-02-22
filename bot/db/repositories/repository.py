@@ -282,8 +282,8 @@ class Repo(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_support_user_last_answer(
-        self, support_user_id: UUID
+    async def get_question_last_answer(
+        self, question_id: UUID
     ) -> Answer | None:
         raise NotImplementedError
 

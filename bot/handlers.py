@@ -3,11 +3,10 @@ from bot.settings import RepositoryClass
 from bot.entities.support_user import SupportUser
 from bot.localization.get_messages import get_messages
 from bot.utils import (
-    send_text_messages,
     get_file_type_and_file_id,
     is_string_int,
-    TextToSend,
 )
+from bot.bot_messages import TextToSend
 from bot.settings import (
     OWNER_PASSWORD,
     OWNER_DEFAULT_DESCRIPTIVE_NAME,
@@ -264,14 +263,11 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE):
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if not context.args:
-        await send_text_messages(
-            TextToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.answer_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.answer_id_argument_name]
+            )
+        ).send(update)
 
         return
 
@@ -322,14 +318,11 @@ async def handle_delete_role(update, context: ContextTypes.DEFAULT_TYPE):
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if not context.args:
-        await send_text_messages(
-            TextToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.answer_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.answer_id_argument_name]
+            )
+        ).send(update)
 
         return
 
@@ -687,14 +680,11 @@ async def handle_get_answer(update, context: ContextTypes.DEFAULT_TYPE):
     manager = SupportUserManager(user, support_user, messages, repo)
 
     if not context.args:
-        await send_text_messages(
-            TextToSend(
-                await messages.get_incorrect_num_of_arguments_message(
-                    [messages.answer_id_argument_name]
-                )
-            ),
-            update,
-        )
+        await TextToSend(
+            await messages.get_incorrect_num_of_arguments_message(
+                [messages.answer_id_argument_name]
+            )
+        ).send(update)
 
         return
 
@@ -773,10 +763,9 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE):
     file_type, file_id = get_file_type_and_file_id(update)
 
     if not (file_type and file_id):
-        await send_text_messages(
-            TextToSend(await messages.get_unsupported_message_type_message()),
-            update,
-        )
+        await TextToSend(
+            await messages.get_unsupported_message_type_message()
+        ).send(update)
 
         return
 

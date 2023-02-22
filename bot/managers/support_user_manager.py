@@ -9,9 +9,11 @@ from bot.typing import Repo
 from telegram import User
 from datetime import datetime
 from bot.utils import (
+    AttachmentType,
+)
+from bot.bot_messages import (
     MessageToSend,
     TextToSend,
-    AttachmentType,
     get_file_to_send_from_attachment_entity,
 )
 from bot.services.statistics import GlobalStatistics
@@ -686,8 +688,15 @@ class SupportUserManager:
                 )
             ]
 
-        last_answer = await self.repo.get_support_user_last_answer(
-            self.support_user.id
+        if not self.support_user.current_question:
+            return [
+                TextToSend(
+                    await self.messages.get_no_binded_question_message()
+                )
+            ]
+
+        last_answer = await self.repo.get_question_last_answer(
+            self.support_user.current_question.id
         )
 
         if not last_answer:
@@ -696,6 +705,16 @@ class SupportUserManager:
                     await self.messages.get_no_last_answer_message(
                         self.support_user
                     )
+                )
+            ]
+
+        if (
+            not self.support_user.current_question
+            or self.support_user.current_question != last_answer.question
+        ):
+            return [
+                TextToSend(
+                    await self.messages.get_no_binded_question_message()
                 )
             ]
 

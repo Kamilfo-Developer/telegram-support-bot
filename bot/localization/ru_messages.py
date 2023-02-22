@@ -92,6 +92,7 @@ class RUMessages(Messages):
     ) -> list[str]:
         other_commands_list = "\n".join(
             [
+                "Другие команды:",
                 "/start",
                 "/help",
                 "/getid",
@@ -100,6 +101,7 @@ class RUMessages(Messages):
 
         roles_commands_list = "\n".join(
             [
+                "Комады для управления ролями:",
                 "/roles",
                 "/role",
                 "/addrole",
@@ -108,6 +110,7 @@ class RUMessages(Messages):
 
         support_users_commands_list = "\n".join(
             [
+                "Команды управления пользователями поддержки:",
                 "/supuser",
                 "/supusers",
                 "/addsupuser",
@@ -117,7 +120,21 @@ class RUMessages(Messages):
         )
 
         questions_commands_list = "\n".join(
-            ["/question", "/bind", "/unbind", "/answer", "/answers"]
+            [
+                "Команды для ответов на вопросы:",
+                "/question",
+                "/bind",
+                "/unbind",
+                "/answer",
+                "/answers",
+            ]
+        )
+
+        regular_users_list = "\n".join(
+            [
+                "Команды для получения информации об обычных пользователях:",
+                "/reguser",
+            ]
         )
 
         return [
@@ -125,11 +142,11 @@ class RUMessages(Messages):
             + "Вам доступен его полный функционал.\n"
             + "Вы можете управлять пользователями поддержки, создавать роли, а также самостоятельно отвечать на вопросы.\n\n"
             "Доступные команды:\n\n",
-            "Команды для ответов на вопросы:\n" + questions_commands_list,
-            "Команды управления пользователями поддержки\n"
-            + support_users_commands_list,
-            "Комады для управления ролями\n" + roles_commands_list,
-            "Другие команды:\n" + other_commands_list,
+            questions_commands_list,
+            support_users_commands_list,
+            roles_commands_list,
+            regular_users_list,
+            other_commands_list,
         ]
 
     async def get_regular_user_help_message(
@@ -162,7 +179,7 @@ class RUMessages(Messages):
 
         roles_commands_list = "\n".join(
             [
-                "Комады для управления ролями",
+                "Комады для управления ролями:",
                 "/roles",
                 "/role",
                 "/addrole",
@@ -171,7 +188,7 @@ class RUMessages(Messages):
 
         support_users_commands_list = "\n".join(
             [
-                "Команды управления пользователями поддержки",
+                "Команды управления пользователями поддержки:",
                 "/supuser",
                 "/supusers",
                 "/addsupuser",
@@ -191,6 +208,13 @@ class RUMessages(Messages):
             ]
         )
 
+        regular_users_list = "\n".join(
+            [
+                "Команды для получения информации об обычных пользователях:",
+                "/reguser",
+            ]
+        )
+
         commands = "\n\n".join(
             filter(
                 lambda x: x,
@@ -204,6 +228,9 @@ class RUMessages(Messages):
                     else "",
                     roles_commands_list
                     if permissions.can_manage_support_users
+                    else "",
+                    regular_users_list
+                    if permissions.can_answer_questions
                     else "",
                     other_commands_list,
                 ],

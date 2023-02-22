@@ -716,13 +716,13 @@ class SARepo(Repo):
 
             return result and result.as_answer_entity()
 
-    async def get_support_user_last_answer(
-        self, support_user_id: UUID
+    async def get_question_last_answer(
+        self, question_id: UUID
     ) -> Answer | None:
         async with self._session() as session:
             q = self._get_answer_query_with_options(
                 select(AnswerModel)
-                .where(AnswerModel.support_user_id == support_user_id)
+                .where(AnswerModel.question_id == question_id)
                 .order_by(AnswerModel.date.desc())
             )
 

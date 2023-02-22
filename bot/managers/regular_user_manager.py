@@ -7,11 +7,8 @@ from bot.markup import Markup
 from bot.typing import Repo
 from telegram import User
 from datetime import datetime
-from bot.utils import (
-    TextToSend,
-    AttachmentType,
-    MessageToSend,
-)
+from bot.utils import AttachmentType
+from bot.bot_messages import TextToSend, MessageToSend
 
 
 class RegularUserManager:
