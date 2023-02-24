@@ -22,7 +22,7 @@ RepositoryClass: Type[Repo] = SARepo
 
 # Language code that satisfies IETF standard
 # (https://en.wikipedia.org/wiki/IETF_language_tag)
-DEFAULT_LANGUAGE_CODE: str = "ru"
+DEFAULT_LANGUAGE_CODE: str = os.getenv("DEFAULT_LANGUAGE_CODE") or "en"
 
 # Your bot token, can be taken from here:
 # https://t.me/botfather

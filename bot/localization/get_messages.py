@@ -5,18 +5,18 @@ from bot.localization.ru_messages import RUMessages
 
 
 def get_messages(lang_code: str) -> Messages:
-    all_messages = {"ru": RUMessages}
+    all_messages = {"ru": RUMessages, "en": ENMessages}
 
-    messages = all_messages.get(lang_code)
+    MessagesClass = all_messages.get(lang_code)
 
-    if messages:
-        return messages()
+    if MessagesClass:
+        return MessagesClass()
 
     messages = all_messages.get(DEFAULT_LANGUAGE_CODE)
 
     if not messages:
         raise ValueError(
-            f"No class for this DEFAULT_LANGUAGE_CODE: {DEFAULT_LANGUAGE_CODE}"
+            f"No messages for this DEFAULT_LANGUAGE_CODE: {DEFAULT_LANGUAGE_CODE}"
         )
 
     return messages()

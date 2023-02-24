@@ -274,7 +274,7 @@ class Messages(abc.ABC):
 
     @abc.abstractmethod
     async def get_question_already_binded_message(
-        self, question_id: int, *args, **kwargs
+        self, question_id: int, support_user_id: int, *args, **kwargs
     ) -> list[str]:
         raise NotImplementedError
 
@@ -323,15 +323,6 @@ class Messages(abc.ABC):
         raise NotImplementedError
 
     # INITIALIZING MESSAGES
-
-    @abc.abstractmethod
-    async def get_not_inited_owner_message(
-        self,
-        telegram_user: User,
-        *args,
-        **kwargs,
-    ) -> list[str]:
-        raise NotImplementedError
 
     @abc.abstractmethod
     async def get_already_inited_owner_message(

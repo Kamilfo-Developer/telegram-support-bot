@@ -522,10 +522,10 @@ class RUMessages(Messages):
     # BINDING MESSAGES
 
     async def get_question_already_binded_message(
-        self, question_id: int, *args, **kwargs
+        self, question_id: int, support_user_id: int, *args, **kwargs
     ) -> list[str]:
         return [
-            f"Вопрос с ID: {question_id} уже привязан к другому пользователю"
+            f"Вопрос с ID: `{question_id}` уже привязан к другому пользователю с ID: `{support_user_id}`"
         ]
 
     async def get_successful_unbinding_message(
@@ -567,20 +567,9 @@ class RUMessages(Messages):
     async def get_answer_estimated_as_unuseful_message(
         self, answer: Answer, *args, **kwargs
     ) -> list[str]:
-        return ["Ответы был оценён как бесполезный"]
+        return ["Ответ был оценён как бесполезный"]
 
     # INITIALIZING MESSAGES
-
-    async def get_not_inited_owner_message(
-        self,
-        telegram_user: User,
-        *args,
-        **kwargs,
-    ) -> list[str]:
-        return [
-            "Вы являетесь владельцем бота, однако Вы не завершили настройку бота.\n"
-            + "Для этого введите команду /initowner. Если возникли трудности, введите команду /help.",
-        ]
 
     async def get_already_inited_owner_message(
         self, user: User, *args, **kwargs
@@ -593,7 +582,7 @@ class RUMessages(Messages):
         return ["Поздравляем, Вы теперь владелец данного бота!"]
 
     async def get_incorrect_owner_password_message(self) -> list[str]:
-        return ["Пароль неверн, попробуйте снова"]
+        return ["Пароль неверен, попробуйте снова"]
 
     # SUPPORT USER ACTIVATION MESSAGES
 
@@ -653,7 +642,7 @@ class RUMessages(Messages):
             + f"Всего отвеченных вопросов: *{global_statistics.total_answered_questions}*\n"
             + f"Всего неотвеченных вопросов: *{global_statistics.total_unanswered_questions}*\n"
             + f"Всего приложений к вопросам: *{global_statistics.total_questions_attachments}*\n"
-            + f"Всего ответов *{global_statistics.total_answers}*\n"
+            + f"Всего ответов: *{global_statistics.total_answers}*\n"
             + f"Всего полезных ответов: *{global_statistics.total_useful_answers}*\n"
             + f"Всего бесполезных ответов: *{global_statistics.total_unuseful_answers}*\n"
             + f"Всего неоценённых ответов: *{global_statistics.total_unestimated_ansers}*\n"
@@ -661,7 +650,7 @@ class RUMessages(Messages):
         ]
 
     async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
-        return ["Ваш id пользователя для этого бота:", str(id)]
+        return ["Ваш ID пользователя для этого бота:", str(id)]
 
     async def get_permission_denied_message(
         self, user: User, *args, **kwargs
