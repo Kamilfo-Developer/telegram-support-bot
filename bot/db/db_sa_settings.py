@@ -34,7 +34,7 @@ match DB_PROVIDER:
 
         POSTGRES_DB_PORT = os.getenv("POSTGRES_DB_PORT") or "5432"
 
-        POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+        POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD") or "postgres"
 
         if not POSTGRES_PASSWORD:
             raise EnvironmentError(
