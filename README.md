@@ -9,7 +9,6 @@ A telegram bot made in Python that will allow you to quickly deploy a convenient
 
 ## Deploy
 
----
 
 Ways:
 
@@ -130,7 +129,6 @@ If you've done everything right, the bot will be ready to use. Congratulations!
 
 ## Configuration description
 
----
 
 - [Basic configuration](#basic-configuration)
   1. [BOT_TOKEN](#bot_token)
