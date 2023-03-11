@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "telegram-support-bot"
+version = "0.1.0"
+description = "An open source python Telegram bot that provides a wide range of features and helps you in organizing technical support for your project/product"
+authors = ["Kamil Biktimirov <Biktimirov.kamil@yandex.ru>"]
+license = "MIT License"
+readme = "README.md"
+packages = [{include = "telegram_support_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-telegram-bot = "^20.1"
+alembic = "^1.10.2"
+SQLAlchemy = "^2.0.5.post1"
+SQLAlchemy-Utils = "^0.40.0"
+python-dotenv = "^1.0.0"
+asyncpg = "^0.27.0"
+aiosqlite = "^0.18.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+mypy = "^1.1.1"
+flake8 = "^6.0.0"
+pytest = "^7.2.2"
+pytest-asyncio = "^0.20.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

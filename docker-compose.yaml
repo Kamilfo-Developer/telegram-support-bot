@@ -14,8 +14,6 @@ services:
       - db
     networks:
       - bot_network
-    command:
-      bash -c "cd bot/db/migrations && ls alembic/versions && alembic upgrade head && cd ../../.. && python3 -m bot"
 
   db:
     image: postgres:latest
