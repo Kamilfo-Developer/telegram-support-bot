@@ -9,7 +9,6 @@ A telegram bot made in Python that will allow you to quickly deploy a convenient
 
 ## Deploy
 
-
 Ways:
 
 1. [Deploy using Docker](#deploy-using-docker) (This way is recommended in case you are not going to change the source code)
@@ -70,22 +69,21 @@ Then go to the repo root directory:
 cd telegram-support-bot
 ```
 
-Now we have to create `venv`:
+Now we have to install `poetry`:
 
-- Windows: `python -m venv venv`
-- Linux: `python3 -m venv venv`
+- Windows: `pip install poetry`
+- Linux: `pip3 install poetry`
 
-That far, we are ready to install all the dependencies.
-
-First, let's activate `venv`:
-
-- Windows: `./venv/Scripts/activate`
-- Linux: `source venv/bin/activate`
-
-After activating `venv`, we need to install all the packages using pip (the installation speed can vary depending on your device's internet connection quality):
+That far, we are ready to install all the dependencies using `poetry` (the installation speed can vary depending on your device's internet connection quality):
 
 ```
-pip install -r requirements/prod.txt
+poetry install
+```
+
+Let's activate the environment with the collected dependencies:
+
+```
+poetry shell
 ```
 
 Now we are ready to create `.env` file which will be a config for the app. After it's done, we need to open it using a text editor. For example, [nano](https://www.nano-editor.org/download.php) for Linux or Notepad for Windows.
@@ -128,7 +126,6 @@ python -m bot
 If you've done everything right, the bot will be ready to use. Congratulations!
 
 ## Configuration description
-
 
 - [Basic configuration](#basic-configuration)
   1. [BOT_TOKEN](#bot_token)
