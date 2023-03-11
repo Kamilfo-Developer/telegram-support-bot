@@ -1,7 +1,9 @@
 .vscode
 
 # SQLite files
-*.db
+data/*
+!data/.gitkeep
+
 
 #Tokens, other pricate data
 config.py

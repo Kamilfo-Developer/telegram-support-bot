@@ -81,14 +81,14 @@ match DB_PROVIDER:
     case _:
         SQLITE_DRIVER_NAME = os.getenv("SQLITE_DRIVER_NAME") or "aiosqlite"
 
-        DB_NAME = "data"
+        SQLITE_DB_NAME = "data.db"
 
         ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
         # In case you want to change path to SQLite DB file,
         # just change this variable
         SQLITE_DB_FILE_PATH = os.getenv("SQLITE_DB_FILE_PATH") or os.path.join(
-            ROOT_DIR, f"{DB_NAME}.db"
+            ROOT_DIR, f"data/{SQLITE_DB_NAME}"
         )
 
         # URL for your database
