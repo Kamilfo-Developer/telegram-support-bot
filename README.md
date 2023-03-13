@@ -158,26 +158,26 @@ If you've done everything right, the bot will be ready to use. Congratulations!
 
 Used for passing the token to the bot. The token can be obtained here: https://telegram.me/BotFather.
 
-**Default value:**: no default value
+**Default value:** no default value
 
 #### **OWNER_PASSWORD**
 
 Password to for the owner initializing precess. Should be a single world. For example, `MyReallyReliablePassword`.
 After starting the bot, you will need to enter `/initowner` command with the password as first argument. Eventually, you will have next string: `/initowner MyReallyReliablePassword`. After sending this comnad, the bot will be ready to use.
 
-**Default value:**: no default value
+**Default value:** no default value
 
 #### **OWNER_DEFAULT_DESCRIPTIVE_NAME**
 
 Default owner's name. Must be a single word. For example, `OwnerOfThisBot`.
 
-**Default value:**: `Owner`
+**Default value:** `Owner`
 
 #### **DEFAULT_LANGUAGE_CODE**
 
 Sets the default language. Will be used if user's language can't be found among the available languages. The string must be a [IETF-tag](https://en.wikipedia.org/wiki/IETF_language_tag#List_of_common_primary_language_subtags). For example, `ru` or `en`.
 
-**Default value:**: `en`.
+**Default value:** `en`.
 
 #### **DB_PROVIDER**
 
@@ -187,6 +187,12 @@ Accepts next values: `sqlite`, `postgres`, `mysql`
 **Default value:** `sqlite`
 
 **docker-compose default value:** `postgres`
+
+#### **TIMEZONE**
+
+Timezone which will be used for formating date and time for users' messages. Example: `America/New_York`. Full list of timezones in this format can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
+
+**Default value:** will be used local timezone
 
 <br/>
 

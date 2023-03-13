@@ -13,6 +13,8 @@ from bot.services.statistics import (
     SupportUserStatistics,
     RegularUserStatistics,
 )
+from datetime import timezone
+from bot.utils import get_eu_formated_datetime
 
 
 class RUMessages(Messages):
@@ -39,6 +41,9 @@ class RUMessages(Messages):
     estimate_answer_as_useful_button_text = "Ответ полезен"
     estimate_answer_as_unuseful_button_text = "Ответ бесполезен"
     show_attachments_button_text = "Показать приложения к вопросу"
+
+    def __init__(self, tz: timezone):
+        self.tz = tz
 
     # START MESSAGES
     async def get_start_regular_user_message(
@@ -383,7 +388,7 @@ class RUMessages(Messages):
             f"*ID*: `{support_user.tg_bot_user_id}`\n"
             + f"*Имя*: `{support_user.descriptive_name}`\n\n"
             + f"{role_desctiption}\n\n"
-            + f"*Дата назначения*: {support_user.join_date}\n\n"
+            + f"*Дата назначения*: {get_eu_formated_datetime(support_user.join_date, self.tz)}\n\n"
             + "*Статистика*:\n"
             + f"Всего ответов: {support_user_statistics.total_answers}\n"
             + f"Полезных ответов: {support_user_statistics.useful_answers}\n"
@@ -400,7 +405,7 @@ class RUMessages(Messages):
     ) -> list[str]:
         return [
             f"ID: `{regular_user.tg_bot_user_id}`\n"
-            + f"Дата присоединения: {regular_user.join_date}\n\n"
+            + f"Дата присоединения: {get_eu_formated_datetime( regular_user.join_date, self.tz)}\n\n"
             + f"Статистика:\n"
             + f"Задано вопросов: {regular_user_statistics.asked_questions}\n"
             + f"Из них ответ получили: {regular_user_statistics.answered_questions}\n"
@@ -421,7 +426,7 @@ class RUMessages(Messages):
         return [
             f"ID: `{question.tg_message_id}`\n"
             + f"ID задавшего вопрос пользователя: `{question.regular_user.tg_bot_user_id}`\n"
-            + f"Вопрос был задан: {question.date}\n"
+            + f"Вопрос был задан: {get_eu_formated_datetime(question.date, self.tz)}\n"
             + f"Ответов на вопрос: {question_statistics.total_answers}\n"
             + f"Всего приложений: {question_statistics.total_attachments}\n",
             "Текст вопроса:",
@@ -444,7 +449,7 @@ class RUMessages(Messages):
             f"ID: `{answer.tg_message_id}`\n"
             + f"ID вопроса: `{answer.question.tg_message_id}`\n"
             + f"Автор ответа: {answer.support_user.descriptive_name} (ID пользователя: `{answer.support_user.tg_bot_user_id}`)\n"
-            + f"Дата ответа: {answer.date}\n{estimation_description}\n"
+            + f"Дата ответа: {get_eu_formated_datetime(answer.date, self.tz)}\n{estimation_description}\n"
             + f"Всего приложений: {answer_statistics.total_attachments}",
             "Текст ответа:",
             f"{answer.message}",
@@ -463,7 +468,7 @@ class RUMessages(Messages):
 
         message = ""
         for role in roles_list:
-            message += f"Имя: `{role.name}`; ID: `{role.id}`; Дата создания: {role.created_date}\n"
+            message += f"Имя: `{role.name}`; ID: `{role.id}`; Дата создания: {get_eu_formated_datetime(role.created_date, self.tz)}\n"
 
         return ["Список ролей:", message]
 
@@ -515,7 +520,7 @@ class RUMessages(Messages):
                 or "роль не назначена"
             )
 
-            message += f"\nИмя: `{support_user.descriptive_name}`; ID: `{support_user.tg_bot_user_id}`; {role_desctiption}; Дата назначения: {support_user.join_date}"
+            message += f"\nИмя: `{support_user.descriptive_name}`; ID: `{support_user.tg_bot_user_id}`; {role_desctiption}; Дата назначения: {get_eu_formated_datetime( support_user.join_date, self.tz)}"
 
         return [message]
 
@@ -666,7 +671,7 @@ class RUMessages(Messages):
     ) -> list[str]:
         if include_question:
             return [
-                f"На Ваш вопрос был дан ответ:",
+                "На Ваш вопрос был дан ответ:",
                 "Вопрос:",
                 f"{answer.question.message}",
                 "Ответ:",
@@ -674,7 +679,7 @@ class RUMessages(Messages):
             ]
 
         return [
-            f"На Ваш вопрос от {answer.question.date} был дан ответ:",
+            "На Ваш вопрос был дан ответ:",
             f"{answer.message}",
         ]
 

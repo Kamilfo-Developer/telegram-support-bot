@@ -13,6 +13,8 @@ from bot.services.statistics import (
     RoleStatistics,
 )
 
+from datetime import timezone
+
 import abc
 
 
@@ -34,6 +36,10 @@ class Messages(abc.ABC):
     estimate_answer_as_useful_button_text: str
     estimate_answer_as_unuseful_button_text: str
     show_attachments_button_text: str
+
+    @abc.abstractmethod
+    def __init__(self, tz: timezone):
+        raise NotImplementedError
 
     # START MESSAGES
 

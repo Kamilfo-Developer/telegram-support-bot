@@ -3,7 +3,17 @@ from bot.db.repositories.repository import Repo
 from bot.db.repositories.sa_repository import SARepo
 from dotenv import load_dotenv
 from pathlib import Path
+from tzlocal import get_localzone
+import pytz
 import os
+
+# Should be one of tz database
+# https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+TIMEZONE = (
+    os.getenv("TIMEZONE")
+    and pytz.timezone(os.getenv("TIMEZONE"))  # type: ignore
+    or get_localzone()
+)
 
 # Needed for some developing features
 # Should be False when production

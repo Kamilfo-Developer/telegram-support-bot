@@ -1,13 +1,12 @@
 from __future__ import annotations
 from telegram import (
     Update,
-    ReplyKeyboardMarkup,
-    InlineKeyboardMarkup,
-    ReplyKeyboardRemove,
 )
 from uuid import UUID
 from enum import Enum
 from typing import Any, TYPE_CHECKING
+from datetime import datetime, timezone
+
 
 if TYPE_CHECKING:
     from bot.entities.attachment import Attachment
@@ -67,3 +66,19 @@ class IdComparable:
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, self.__class__) and self.id == __o.id
+
+
+def get_eu_formated_datetime(dt: datetime, tz: timezone) -> str:
+    return (
+        dt.replace(tzinfo=timezone.utc)
+        .astimezone(tz)
+        .strftime("%m.%d.%Y, %H:%M:%S")
+    )
+
+
+def get_us_formated_datetime(dt: datetime, tz: timezone) -> str:
+    return (
+        dt.replace(tzinfo=timezone.utc)
+        .astimezone(tz)
+        .strftime("%d.%m.%Y, %H:%M:%S")
+    )

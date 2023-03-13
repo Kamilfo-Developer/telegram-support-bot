@@ -13,6 +13,9 @@ from bot.services.statistics import (
     SupportUserStatistics,
     RegularUserStatistics,
 )
+from datetime import timezone
+
+from bot.utils import get_us_formated_datetime
 
 
 class ENMessages(Messages):
@@ -39,6 +42,9 @@ class ENMessages(Messages):
     estimate_answer_as_useful_button_text = "The answer is useful"
     estimate_answer_as_unuseful_button_text = "The answer is useless"
     show_attachments_button_text = "Show question's attachments"
+
+    def __init__(self, tz: timezone):
+        self.tz = tz
 
     # START MESSAGES
     async def get_start_regular_user_message(
@@ -383,7 +389,7 @@ class ENMessages(Messages):
             f"*ID*: `{support_user.tg_bot_user_id}`\n"
             + f"*Descriptive name*: `{support_user.descriptive_name}`\n\n"
             + f"{role_desctiption}\n\n"
-            + f"*Appointment date*: {support_user.join_date}\n\n"
+            + f"*Appointment date*: {get_us_formated_datetime(support_user.join_date, self.tz)}\n\n"
             + "*Statistics*:\n"
             + f"Total answers: {support_user_statistics.total_answers}\n"
             + f"Useful answers: {support_user_statistics.useful_answers}\n"
@@ -400,7 +406,7 @@ class ENMessages(Messages):
     ) -> list[str]:
         return [
             f"ID: `{regular_user.tg_bot_user_id}`\n"
-            + f"Join date: {regular_user.join_date}\n\n"
+            + f"Join date: {get_us_formated_datetime(regular_user.join_date, self.tz)}\n\n"
             + f"Statistics:\n"
             + f"Questions asked: {regular_user_statistics.asked_questions}\n"
             + f"Were answered: {regular_user_statistics.answered_questions}\n"
@@ -421,7 +427,7 @@ class ENMessages(Messages):
         return [
             f"ID: `{question.tg_message_id}`\n"
             + f"Regular user ID: `{question.regular_user.tg_bot_user_id}`\n"
-            + f"Asking date: {question.date}\n"
+            + f"Asking date: {get_us_formated_datetime(question.date, self.tz)}\n"
             + f"Total answers: {question_statistics.total_answers}\n"
             + f"Total attachments: {question_statistics.total_attachments}\n",
             "The question's text:",
@@ -444,7 +450,7 @@ class ENMessages(Messages):
             f"ID: `{answer.tg_message_id}`\n"
             + f"Question's ID: `{answer.question.tg_message_id}`\n"
             + f"The answer's author: {answer.support_user.descriptive_name} (Support user's ID: `{answer.support_user.tg_bot_user_id}`)\n"
-            + f"The answer's date: {answer.date}\n{estimation_description}\n"
+            + f"The answer's date: {get_us_formated_datetime(answer.date, self.tz)}\n{estimation_description}\n"
             + f"Total attachments: {answer_statistics.total_attachments}",
             "The answer's text:",
             f"{answer.message}",
@@ -463,7 +469,7 @@ class ENMessages(Messages):
 
         message = ""
         for role in roles_list:
-            message += f"Name: `{role.name}`; ID: `{role.id}`; Creation date: {role.created_date}\n"
+            message += f"Name: `{role.name}`; ID: `{role.id}`; Creation date: {get_us_formated_datetime(role.created_date, self.tz)}\n"
 
         return ["Roles list:", message]
 
@@ -512,7 +518,7 @@ class ENMessages(Messages):
                 or "no role assigned"
             )
 
-            message += f"\nName: `{support_user.descriptive_name}`; ID: `{support_user.tg_bot_user_id}`; {role_desctiption}; Appointment date: {support_user.join_date}"
+            message += f"\nName: `{support_user.descriptive_name}`; ID: `{support_user.tg_bot_user_id}`; {role_desctiption}; Appointment date: {get_us_formated_datetime(support_user.join_date, self.tz)}"
 
         return [message]
 
@@ -663,7 +669,7 @@ class ENMessages(Messages):
     ) -> list[str]:
         if include_question:
             return [
-                f"Your question was answered:",
+                "Your question was answered:",
                 "Question:",
                 f"{answer.question.message}",
                 "Anser:",
@@ -671,7 +677,7 @@ class ENMessages(Messages):
             ]
 
         return [
-            f"Your question dated {answer.question.date} was answered:",
+            "Your question was answered:",
             f"{answer.message}",
         ]
 
