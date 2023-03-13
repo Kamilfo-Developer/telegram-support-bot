@@ -51,8 +51,6 @@ class ENMessages(Messages):
         self,
         telegram_user: User,
         user_entity: RegularUser | None = None,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
@@ -64,8 +62,6 @@ class ENMessages(Messages):
         self,
         telegram_user: User,
         user_entity: SupportUser | None = None,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
@@ -77,8 +73,6 @@ class ENMessages(Messages):
         self,
         telegram_user: User,
         user_entity: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
 
@@ -93,8 +87,6 @@ class ENMessages(Messages):
         self,
         user: User,
         user_entity: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         other_commands_list = "\n".join(
             [
@@ -155,9 +147,7 @@ class ENMessages(Messages):
             other_commands_list,
         ]
 
-    async def get_regular_user_help_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_regular_user_help_message(self, user: User) -> list[str]:
         return [
             "To ask a question, you can simply send a message.\n"
             + "To add an *attachment* to a question (for example, photos, videos, voice messages and other files), just ask the question and then send the files to this chat.\n\n"
@@ -165,7 +155,7 @@ class ENMessages(Messages):
         ]
 
     async def get_support_user_help_message(
-        self, tg_user: User, support_user: SupportUser, *args, **kwargs
+        self, tg_user: User, support_user: SupportUser
     ) -> list[str]:
         if not support_user.role:
             return [
@@ -254,7 +244,7 @@ class ENMessages(Messages):
     # ARGUMENTS MESSAGES
 
     async def get_incorrect_num_of_arguments_message(
-        self, arguments_list: list[str], *args, **kwargs
+        self, arguments_list: list[str]
     ) -> list[str]:
         return [
             "Incorrect arguments for this command. Required arguments:"
@@ -263,19 +253,13 @@ class ENMessages(Messages):
             ),
         ]
 
-    async def get_incorrect_arguments_passed_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_incorrect_arguments_passed_message(self) -> list[str]:
         return ["Invalid argument(s). Please, try again"]
 
-    async def get_no_object_with_this_id_message(
-        self, id: str, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_object_with_this_id_message(self, id: str) -> list[str]:
         return [f"No object with such id: {id}"]
 
-    async def get_unavailable_or_deleted_object_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_unavailable_or_deleted_object_message(self) -> list[str]:
         return ["This object is unavailable or was deleted"]
 
     # ADDITION MESSAGES
@@ -283,8 +267,6 @@ class ENMessages(Messages):
     async def get_successful_role_addition_message(
         self,
         role: Role,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Role with name `{role.name}` successfully added!\n\n"
@@ -296,16 +278,12 @@ class ENMessages(Messages):
 
     async def get_role_name_duplicate_message(
         self,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return ["Role with this name already exists"]
 
     async def get_successful_support_user_addition_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Support user with name `{support_user.descriptive_name}`, with role `{support_user.role.name if support_user.role else '(no role)'}` successfully added!\n"
@@ -316,8 +294,6 @@ class ENMessages(Messages):
         self,
         question: Question,
         answer: Answer,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Question with ID: {question.tg_message_id} successfully answered. The answer now has next ID: {answer.tg_message_id}"
@@ -326,15 +302,13 @@ class ENMessages(Messages):
     async def get_successful_asking_message(
         self,
         question: Question,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             "The question successfully asked. As soon as a technical support employee answers your question, the message will be sent to this chat. Answering can take a while"
         ]
 
     async def get_support_user_already_exists_message(
-        self, support_user: SupportUser, *args, **kwargs
+        self, support_user: SupportUser
     ) -> list[str]:
         return ["A user with such ID already is a support user"]
 
@@ -343,8 +317,6 @@ class ENMessages(Messages):
     async def role_deleted_message(
         self,
         role: Role,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [f"Role with ID: {role.id} successfully deleted"]
 
@@ -354,8 +326,6 @@ class ENMessages(Messages):
         self,
         role: Role,
         role_statistics: RoleStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"*The role's ID*: `{role.id}`\n"
@@ -373,8 +343,6 @@ class ENMessages(Messages):
         self,
         support_user: SupportUser,
         support_user_statistics: SupportUserStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         role_desctiption = "*Role*: " + (
             (
@@ -401,8 +369,6 @@ class ENMessages(Messages):
         self,
         regular_user: RegularUser,
         regular_user_statistics: RegularUserStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"ID: `{regular_user.tg_bot_user_id}`\n"
@@ -421,8 +387,6 @@ class ENMessages(Messages):
         self,
         question: Question,
         question_statistics: QuestionStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"ID: `{question.tg_message_id}`\n"
@@ -438,8 +402,6 @@ class ENMessages(Messages):
         self,
         answer: Answer,
         answer_statistics: AnswerStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         estimation_description = (
             "The answer wasn't estimated"
@@ -461,8 +423,6 @@ class ENMessages(Messages):
     async def get_roles_list_message(
         self,
         roles_list: list[Role],
-        *args,
-        **kwargs,
     ) -> list[str]:
         if not roles_list:
             return ["No role was added"]
@@ -476,8 +436,6 @@ class ENMessages(Messages):
     async def get_questions_list_message(
         self,
         questions_list: list[Question],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = ""
         for question in questions_list:
@@ -488,8 +446,6 @@ class ENMessages(Messages):
     async def get_answers_list_message(
         self,
         answers_list: list[Answer],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = "Answers list:"
         for answer in answers_list:
@@ -503,8 +459,6 @@ class ENMessages(Messages):
     async def get_support_users_list_message(
         self,
         support_users_list: list[SupportUser],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = "Support users:"
 
@@ -525,62 +479,54 @@ class ENMessages(Messages):
     # BINDING MESSAGES
 
     async def get_question_already_binded_message(
-        self, question_id: int, support_user_id: int, *args, **kwargs
+        self, question_id: int, support_user_id: int
     ) -> list[str]:
         return [
             f"Answer with ID: `{question_id}` is already binded to another support user with next ID: `{support_user_id}`"
         ]
 
-    async def get_successful_unbinding_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_successful_unbinding_message(self) -> list[str]:
         return [
             "Successful unbinding. Now you are not answering a single question"
         ]
 
     async def get_successful_binding_message(
-        self, question: Question, *args, **kwargs
+        self, question: Question
     ) -> list[str]:
         return [
             f"Now you are answering a question with next ID: {question.tg_message_id}"
         ]
 
-    async def get_no_binded_question_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_binded_question_message(self) -> list[str]:
         return ["You are not answering a single question"]
 
-    async def get_no_unbinded_quetstions_left_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_unbinded_quetstions_left_message(self) -> list[str]:
         return ["No more unanswered or unbinded questions left"]
 
     # ESTIMATION MESSAGES
 
     async def get_answer_already_estimated_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["The answer is already estimated"]
 
     async def get_answer_estimated_as_useful_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["The answer is estimated as useful"]
 
     async def get_answer_estimated_as_unuseful_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["The answer was estimated as useless"]
 
     # INITIALIZING MESSAGES
 
-    async def get_already_inited_owner_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_already_inited_owner_message(self, user: User) -> list[str]:
         return ["The bot's owner is already initialized"]
 
     async def get_successful_owner_init_message(
-        self, user: User, support_user: SupportUser, *args, **kwargs
+        self, user: User, support_user: SupportUser
     ) -> list[str]:
         return ["Congratulations, now you are the bot's owner!"]
 
@@ -592,8 +538,6 @@ class ENMessages(Messages):
     async def get_support_user_deactivation_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Support with ID: {support_user.tg_bot_user_id} successfully deactivated"
@@ -602,8 +546,6 @@ class ENMessages(Messages):
     async def get_support_user_activation_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Support user with ID: {support_user.tg_bot_user_id} successfully activated"
@@ -652,20 +594,16 @@ class ENMessages(Messages):
             + f"Total answers attachments: *{global_statistics.total_answers_attachments}*\n"
         ]
 
-    async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
+    async def get_id_message(self, id: int) -> list[str]:
         return ["Your user's ID for this bot:", str(id)]
 
-    async def get_permission_denied_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_permission_denied_message(self, user: User) -> list[str]:
         return ["Permission denied"]
 
     async def get_answer_for_regular_user_message(
         self,
         answer: Answer,
         include_question: bool = False,
-        *args,
-        **kwargs,
     ) -> list[str]:
         if include_question:
             return [
@@ -686,19 +624,15 @@ class ENMessages(Messages):
     ) -> list[str]:
         return ["No attachments for this question"]
 
-    async def get_unsupported_message_type_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_unsupported_message_type_message(self) -> list[str]:
         return [
             "We are sorry, but this file format is not currently supported"
         ]
 
-    async def get_unknown_command_message(self, *args, **kwargs) -> list[str]:
+    async def get_unknown_command_message(self) -> list[str]:
         return [
             "No such command. If you are having some issues using the bot, enter /help"
         ]
 
-    async def get_regular_user_not_authorized_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_regular_user_not_authorized_message(self) -> list[str]:
         return ["Enter /start command to continue using the bot"]

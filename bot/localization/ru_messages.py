@@ -50,8 +50,6 @@ class RUMessages(Messages):
         self,
         telegram_user: User,
         user_entity: RegularUser | None = None,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
@@ -63,8 +61,6 @@ class RUMessages(Messages):
         self,
         telegram_user: User,
         user_entity: SupportUser | None = None,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
         return [
@@ -76,8 +72,6 @@ class RUMessages(Messages):
         self,
         telegram_user: User,
         user_entity: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         bot = telegram_user.get_bot()
 
@@ -92,8 +86,6 @@ class RUMessages(Messages):
         self,
         user: User,
         user_entity: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         other_commands_list = "\n".join(
             [
@@ -154,9 +146,7 @@ class RUMessages(Messages):
             other_commands_list,
         ]
 
-    async def get_regular_user_help_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_regular_user_help_message(self, user: User) -> list[str]:
         return [
             "Чтобы задать вопрос, Вы можете просто отправить сообщение.\n"
             + "Чтобы добавить *приложения* к вопросу (например фото, видео, голосовые сообщения и другие файты), просто задайте вопрос, а затем пришлите в этот чат нужный файл.\n\n"
@@ -164,7 +154,7 @@ class RUMessages(Messages):
         ]
 
     async def get_support_user_help_message(
-        self, tg_user: User, support_user: SupportUser, *args, **kwargs
+        self, tg_user: User, support_user: SupportUser
     ) -> list[str]:
         if not support_user.role:
             return [
@@ -253,7 +243,7 @@ class RUMessages(Messages):
     # ARGUMENTS MESSAGES
 
     async def get_incorrect_num_of_arguments_message(
-        self, arguments_list: list[str], *args, **kwargs
+        self, arguments_list: list[str]
     ) -> list[str]:
         return [
             "Неправильные аргументы для данной команды. Необходимые аргументы: "
@@ -262,19 +252,13 @@ class RUMessages(Messages):
             ),
         ]
 
-    async def get_incorrect_arguments_passed_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_incorrect_arguments_passed_message(self) -> list[str]:
         return ["Аргумент(ы) указан(ы) неверно, попробуйте снова"]
 
-    async def get_no_object_with_this_id_message(
-        self, id: str, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_object_with_this_id_message(self, id: str) -> list[str]:
         return [f"Нет объекта с таким ID: {id}"]
 
-    async def get_unavailable_or_deleted_object_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_unavailable_or_deleted_object_message(self) -> list[str]:
         return ["Данный объект недоступен или был удалён"]
 
     # ADDITION MESSAGES
@@ -282,8 +266,6 @@ class RUMessages(Messages):
     async def get_successful_role_addition_message(
         self,
         role: Role,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Роль с названием `{role.name}` успешно добавлена!\n\n"
@@ -295,16 +277,12 @@ class RUMessages(Messages):
 
     async def get_role_name_duplicate_message(
         self,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return ["Роль с таким именем уже существует"]
 
     async def get_successful_support_user_addition_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Пользователь поддержки с именем `{support_user.descriptive_name}`, с ролью `{support_user.role.name if support_user.role else '(без роли)'}` успешно добавлен!\n"
@@ -315,8 +293,6 @@ class RUMessages(Messages):
         self,
         question: Question,
         answer: Answer,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Вопрос с ID: {question.tg_message_id} успешно отвечен. Ответ получил ID: {answer.tg_message_id}"
@@ -325,15 +301,13 @@ class RUMessages(Messages):
     async def get_successful_asking_message(
         self,
         question: Question,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             "Вопрос успешно задан. Как только сотрудник поддержки ответит на Ваш вопрос, Вам придёт сообщение в этот чат. Ответ на вопрос может занять некоторое время"
         ]
 
     async def get_support_user_already_exists_message(
-        self, support_user: SupportUser, *args, **kwargs
+        self, support_user: SupportUser
     ) -> list[str]:
         return ["Пользователь с таким ID уже является пользователем поддержки"]
 
@@ -342,8 +316,6 @@ class RUMessages(Messages):
     async def role_deleted_message(
         self,
         role: Role,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [f"Роль с ID: {role.id} успешно удалена"]
 
@@ -353,8 +325,6 @@ class RUMessages(Messages):
         self,
         role: Role,
         role_statistics: RoleStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"*ID роли*: `{role.id}`\n"
@@ -372,8 +342,6 @@ class RUMessages(Messages):
         self,
         support_user: SupportUser,
         support_user_statistics: SupportUserStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         role_desctiption = "*Роль*: " + (
             (
@@ -400,8 +368,6 @@ class RUMessages(Messages):
         self,
         regular_user: RegularUser,
         regular_user_statistics: RegularUserStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"ID: `{regular_user.tg_bot_user_id}`\n"
@@ -420,8 +386,6 @@ class RUMessages(Messages):
         self,
         question: Question,
         question_statistics: QuestionStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"ID: `{question.tg_message_id}`\n"
@@ -437,8 +401,6 @@ class RUMessages(Messages):
         self,
         answer: Answer,
         answer_statistics: AnswerStatistics,
-        *args,
-        **kwargs,
     ) -> list[str]:
         estimation_description = (
             "Ответ не получил оценки"
@@ -460,8 +422,6 @@ class RUMessages(Messages):
     async def get_roles_list_message(
         self,
         roles_list: list[Role],
-        *args,
-        **kwargs,
     ) -> list[str]:
         if not roles_list:
             return ["Ни одной роли пока не было добавлено"]
@@ -475,8 +435,6 @@ class RUMessages(Messages):
     async def get_questions_list_message(
         self,
         questions_list: list[Question],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = ""
         for question in questions_list:
@@ -487,8 +445,6 @@ class RUMessages(Messages):
     async def get_answers_list_message(
         self,
         answers_list: list[Answer],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = "Список ответов:"
         for answer in answers_list:
@@ -502,8 +458,6 @@ class RUMessages(Messages):
     async def get_support_users_list_message(
         self,
         support_users_list: list[SupportUser],
-        *args,
-        **kwargs,
     ) -> list[str]:
         message = "Пользователи поддержки:"
 
@@ -527,32 +481,26 @@ class RUMessages(Messages):
     # BINDING MESSAGES
 
     async def get_question_already_binded_message(
-        self, question_id: int, support_user_id: int, *args, **kwargs
+        self, question_id: int, support_user_id: int
     ) -> list[str]:
         return [
             f"Вопрос с ID: `{question_id}` уже привязан к другому пользователю с ID: `{support_user_id}`"
         ]
 
-    async def get_successful_unbinding_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_successful_unbinding_message(self) -> list[str]:
         return ["Теперь Вы не отвечаете ни на один вопрос"]
 
     async def get_successful_binding_message(
-        self, question: Question, *args, **kwargs
+        self, question: Question
     ) -> list[str]:
         return [
             f"Теперь Вы отвечаете на вопрос с ID: {question.tg_message_id}"
         ]
 
-    async def get_no_binded_question_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_binded_question_message(self) -> list[str]:
         return ["Вы сейчас не отвечаете ни на один вопрос"]
 
-    async def get_no_unbinded_quetstions_left_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_no_unbinded_quetstions_left_message(self) -> list[str]:
         return [
             "Больше неотвеченных и непрекреплённых ни к кому вопросов не осталось"
         ]
@@ -560,29 +508,27 @@ class RUMessages(Messages):
     # ESTIMATION MESSAGES
 
     async def get_answer_already_estimated_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["Ответ уже оценён"]
 
     async def get_answer_estimated_as_useful_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["Ответ был оценён как полезный"]
 
     async def get_answer_estimated_as_unuseful_message(
-        self, answer: Answer, *args, **kwargs
+        self, answer: Answer
     ) -> list[str]:
         return ["Ответ был оценён как бесполезный"]
 
     # INITIALIZING MESSAGES
 
-    async def get_already_inited_owner_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_already_inited_owner_message(self, user: User) -> list[str]:
         return ["Владелец бота уже инициализирован"]
 
     async def get_successful_owner_init_message(
-        self, user: User, support_user: SupportUser, *args, **kwargs
+        self, user: User, support_user: SupportUser
     ) -> list[str]:
         return ["Поздравляем, Вы теперь владелец данного бота!"]
 
@@ -594,8 +540,6 @@ class RUMessages(Messages):
     async def get_support_user_deactivation_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Пользователь с ID: {support_user.tg_bot_user_id} успешно деактивирован"
@@ -604,8 +548,6 @@ class RUMessages(Messages):
     async def get_support_user_activation_message(
         self,
         support_user: SupportUser,
-        *args,
-        **kwargs,
     ) -> list[str]:
         return [
             f"Пользователь с ID: {support_user.tg_bot_user_id} успешно активирован"
@@ -654,20 +596,16 @@ class RUMessages(Messages):
             + f"Всего приложений к ответам: *{global_statistics.total_answers_attachments}*\n"
         ]
 
-    async def get_id_message(self, id: int, *args, **kwargs) -> list[str]:
+    async def get_id_message(self, id: int) -> list[str]:
         return ["Ваш ID пользователя для этого бота:", str(id)]
 
-    async def get_permission_denied_message(
-        self, user: User, *args, **kwargs
-    ) -> list[str]:
+    async def get_permission_denied_message(self, user: User) -> list[str]:
         return ["Отказано в доступе"]
 
     async def get_answer_for_regular_user_message(
         self,
         answer: Answer,
         include_question: bool = False,
-        *args,
-        **kwargs,
     ) -> list[str]:
         if include_question:
             return [
@@ -688,19 +626,15 @@ class RUMessages(Messages):
     ) -> list[str]:
         return ["К этому вопросу нет приложений"]
 
-    async def get_unsupported_message_type_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_unsupported_message_type_message(self) -> list[str]:
         return [
             "Мы просим прощения, но данный формат сообщений на данный момент не поддерживается"
         ]
 
-    async def get_unknown_command_message(self, *args, **kwargs) -> list[str]:
+    async def get_unknown_command_message(self) -> list[str]:
         return [
             "Это несуществующая команда. Если возникли трудности, введите команду /help"
         ]
 
-    async def get_regular_user_not_authorized_message(
-        self, *args, **kwargs
-    ) -> list[str]:
+    async def get_regular_user_not_authorized_message(self) -> list[str]:
         return ["Введите команду /start, чтобы продолжить пользоваться ботом"]
