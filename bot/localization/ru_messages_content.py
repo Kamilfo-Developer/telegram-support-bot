@@ -3,7 +3,7 @@ from bot.entities.regular_user import RegularUser
 from bot.entities.support_user import SupportUser
 from bot.entities.question import Question
 from bot.entities.answer import Answer
-from bot.localization.messages import Messages
+from bot.localization.messages_content import MessagesContent
 from bot.entities.role import Role
 from bot.services.statistics import (
     GlobalStatistics,
@@ -18,7 +18,7 @@ from datetime import timezone
 from bot.utils import get_eu_formated_datetime
 
 
-class RUMessages(Messages):
+class RUMessagesContent(MessagesContent):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
     owner_password_argument_name = "пароль владельца бота"
     regular_user_id_argument_name = "ID обычного пользователя"

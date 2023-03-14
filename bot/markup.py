@@ -1,10 +1,10 @@
-from bot.localization.messages import Messages
+from bot.localization.messages_content import MessagesContent
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 class Markup:
-    def __init__(self, messages: Messages):
-        self.messages = messages
+    def __init__(self, messages_content: MessagesContent):
+        self.msgs = messages_content
 
     def get_question_info_buttons_markup(
         self,
@@ -16,17 +16,17 @@ class Markup:
             [
                 [
                     InlineKeyboardButton(
-                        self.messages.bind_question_button_text,
+                        self.msgs.bind_question_button_text,
                         callback_data=bind_button_callback_data,
                     ),
                     InlineKeyboardButton(
-                        self.messages.unbind_question_button_text,
+                        self.msgs.unbind_question_button_text,
                         callback_data=unbind_button_callback_data,
                     ),
                 ],
                 [
                     InlineKeyboardButton(
-                        self.messages.show_attachments_button_text,
+                        self.msgs.show_attachments_button_text,
                         callback_data=show_attachments_button_callback_data,
                     ),
                 ],
@@ -44,13 +44,13 @@ class Markup:
             [
                 [
                     InlineKeyboardButton(
-                        self.messages.estimate_answer_as_useful_button_text,
+                        self.msgs.estimate_answer_as_useful_button_text,
                         callback_data=useful_answer_button_callback_data,
                     ),
                 ],
                 [
                     InlineKeyboardButton(
-                        self.messages.estimate_answer_as_unuseful_button_text,
+                        self.msgs.estimate_answer_as_unuseful_button_text,
                         callback_data=unuseful_answer_button_callback_data,
                     ),
                 ],

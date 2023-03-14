@@ -1,4 +1,4 @@
-from bot.localization.messages import Messages
+from bot.localization.messages_content import MessagesContent
 from bot.entities.support_user import SupportUser
 from bot.entities.regular_user import RegularUser
 from bot.entities.question_attachment import QuestionAttachment
@@ -16,14 +16,14 @@ class RegularUserManager:
         self,
         tg_user: User,
         regular_user: RegularUser | None,
-        messages: Messages,
+        messages_content: MessagesContent,
         repo: Repo,
     ):
         self.tg_user = tg_user
         self.regular_user = regular_user
-        self.messages = messages
+        self.msgs = messages_content
         self.repo = repo
-        self.markup = Markup(messages)
+        self.markup = Markup(messages_content)
 
     async def ask_question(
         self, question_text: str, message_id: int, message_date: datetime
@@ -31,7 +31,7 @@ class RegularUserManager:
         if not self.is_regular_user_authorized():
             return [
                 TextToSend(
-                    await self.messages.get_regular_user_not_authorized_message()
+                    await self.msgs.get_regular_user_not_authorized_message()
                 )
             ]
 
@@ -41,7 +41,7 @@ class RegularUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_successful_asking_message(question),
+                await self.msgs.get_successful_asking_message(question),
                 reply_to=message_id,
             )
         ]
@@ -52,7 +52,7 @@ class RegularUserManager:
         if not self.is_regular_user_authorized():
             return [
                 TextToSend(
-                    await self.messages.get_regular_user_not_authorized_message()
+                    await self.msgs.get_regular_user_not_authorized_message()
                 )
             ]
 
@@ -63,7 +63,7 @@ class RegularUserManager:
         if not answer:
             return [
                 TextToSend(
-                    await self.messages.get_no_object_with_this_id_message(
+                    await self.msgs.get_no_object_with_this_id_message(
                         str(answer_tg_message_id)
                     )
                 )
@@ -72,7 +72,7 @@ class RegularUserManager:
         if answer.is_useful is not None:
             return [
                 TextToSend(
-                    await self.messages.get_answer_already_estimated_message(
+                    await self.msgs.get_answer_already_estimated_message(
                         answer
                     )
                 )
@@ -82,9 +82,7 @@ class RegularUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_answer_estimated_as_useful_message(
-                    answer
-                )
+                await self.msgs.get_answer_estimated_as_useful_message(answer)
             )
         ]
 
@@ -94,7 +92,7 @@ class RegularUserManager:
         if not self.is_regular_user_authorized():
             return [
                 TextToSend(
-                    await self.messages.get_regular_user_not_authorized_message()
+                    await self.msgs.get_regular_user_not_authorized_message()
                 )
             ]
 
@@ -105,7 +103,7 @@ class RegularUserManager:
         if not answer:
             return [
                 TextToSend(
-                    await self.messages.get_no_object_with_this_id_message(
+                    await self.msgs.get_no_object_with_this_id_message(
                         str(answer_tg_message_id)
                     )
                 )
@@ -114,7 +112,7 @@ class RegularUserManager:
         if answer.is_useful is not None:
             return [
                 TextToSend(
-                    await self.messages.get_answer_already_estimated_message(
+                    await self.msgs.get_answer_already_estimated_message(
                         answer
                     )
                 )
@@ -124,7 +122,7 @@ class RegularUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_answer_estimated_as_unuseful_message(
+                await self.msgs.get_answer_estimated_as_unuseful_message(
                     answer
                 )
             )
@@ -136,7 +134,7 @@ class RegularUserManager:
         if not self.is_regular_user_authorized():
             return [
                 TextToSend(
-                    await self.messages.get_regular_user_not_authorized_message()
+                    await self.msgs.get_regular_user_not_authorized_message()
                 )
             ]
 
@@ -147,7 +145,7 @@ class RegularUserManager:
         if not last_question:
             return [
                 TextToSend(
-                    await self.messages.get_no_last_asked_question_message(
+                    await self.msgs.get_no_last_asked_question_message(
                         self.regular_user
                     )
                 )
@@ -159,7 +157,7 @@ class RegularUserManager:
 
         return [
             TextToSend(
-                await self.messages.get_question_attachment_addition_message(
+                await self.msgs.get_question_attachment_addition_message(
                     self.regular_user
                 )
             )

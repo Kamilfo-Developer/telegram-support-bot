@@ -3,7 +3,7 @@ from bot.entities.regular_user import RegularUser
 from bot.entities.support_user import SupportUser
 from bot.entities.question import Question
 from bot.entities.answer import Answer
-from bot.localization.messages import Messages
+from bot.localization.messages_content import MessagesContent
 from bot.entities.role import Role
 from bot.services.statistics import (
     GlobalStatistics,
@@ -20,7 +20,7 @@ from datetime import timezone
 from bot.utils import get_us_formated_datetime
 
 
-class ENMessages(Messages):
+class ENMessagesContent(MessagesContent):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
     owner_password_argument_name = "owner's password"
     regular_user_id_argument_name = "regular user's ID"

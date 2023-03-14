@@ -18,7 +18,7 @@ from datetime import timezone
 import abc
 
 
-class Messages(abc.ABC):
+class MessagesContent(abc.ABC):
     # ARGUMENTS NAMES MESSAGE TEMPLATES
     owner_password_argument_name: str
     regular_user_id_argument_name: str
