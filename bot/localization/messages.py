@@ -12,7 +12,7 @@ from bot.services.statistics import (
     RegularUserStatistics,
     RoleStatistics,
 )
-
+from pytz.tzinfo import DstTzInfo, BaseTzInfo, StaticTzInfo
 from datetime import timezone
 
 import abc
@@ -38,7 +38,9 @@ class Messages(abc.ABC):
     show_attachments_button_text: str
 
     @abc.abstractmethod
-    def __init__(self, tz: timezone):
+    def __init__(
+        self, tz: timezone | DstTzInfo | BaseTzInfo | StaticTzInfo
+    ) -> None:
         raise NotImplementedError
 
     # START MESSAGES

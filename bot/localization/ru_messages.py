@@ -13,6 +13,7 @@ from bot.services.statistics import (
     SupportUserStatistics,
     RegularUserStatistics,
 )
+from pytz.tzinfo import DstTzInfo, BaseTzInfo, StaticTzInfo
 from datetime import timezone
 from bot.utils import get_eu_formated_datetime
 
@@ -42,7 +43,9 @@ class RUMessages(Messages):
     estimate_answer_as_unuseful_button_text = "Ответ бесполезен"
     show_attachments_button_text = "Показать приложения к вопросу"
 
-    def __init__(self, tz: timezone):
+    def __init__(
+        self, tz: timezone | DstTzInfo | BaseTzInfo | StaticTzInfo
+    ) -> None:
         self.tz = tz
 
     # START MESSAGES
