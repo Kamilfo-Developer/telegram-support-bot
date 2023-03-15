@@ -219,7 +219,7 @@ class SupportUserModel(ModelBase):
     # METHODS
 
     def __init__(self, support_user_entity: SupportUser):
-        if self.id:
+        if support_user_entity.id:
             self.id = support_user_entity.id
 
         self.current_question_id = (
