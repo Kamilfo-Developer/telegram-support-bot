@@ -44,7 +44,7 @@ class RegularUserManager:
     async def ask_question(
         self, question_text: str, message_id: int, message_date: datetime
     ) -> list[MessageToSend]:
-        if not self.is_regular_user_authorized():
+        if not self.regular_user:
             return [
                 TextToSend(
                     await self.msgs.get_regular_user_not_authorized_message()
@@ -65,7 +65,7 @@ class RegularUserManager:
     async def estimate_answer_as_useful(
         self, answer_tg_message_id: int
     ) -> list[MessageToSend]:
-        if not self.is_regular_user_authorized():
+        if not self.regular_user:
             return [
                 TextToSend(
                     await self.msgs.get_regular_user_not_authorized_message()
@@ -105,7 +105,7 @@ class RegularUserManager:
     async def estimate_answer_as_unuseful(
         self, answer_tg_message_id: int
     ) -> list[MessageToSend]:
-        if not self.is_regular_user_authorized():
+        if not self.regular_user:
             return [
                 TextToSend(
                     await self.msgs.get_regular_user_not_authorized_message()
@@ -147,7 +147,7 @@ class RegularUserManager:
     async def add_attachment_to_last_asked_question(
         self, tg_file_id: str, attachment_type: AttachmentType, date: datetime
     ) -> list[MessageToSend]:
-        if not self.is_regular_user_authorized():
+        if not self.regular_user:
             return [
                 TextToSend(
                     await self.msgs.get_regular_user_not_authorized_message()
@@ -178,9 +178,3 @@ class RegularUserManager:
                 )
             )
         ]
-
-    def is_regular_user_authorized(self) -> bool:
-        if not self.regular_user:
-            return False
-
-        return True

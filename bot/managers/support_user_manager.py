@@ -32,7 +32,9 @@ class SupportUserManager:
         repo: Repo,
     ):
         self.tg_user = tg_user
-        self.support_user = support_user
+        self.support_user = (
+            support_user if support_user and support_user.is_active else None
+        )
         self.msgs = messages_content
         self.repo = repo
         self.markup = Markup(messages_content)
@@ -53,7 +55,7 @@ class SupportUserManager:
         )
 
     async def get_global_statistics(self) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -71,7 +73,10 @@ class SupportUserManager:
         ]
 
     async def get_regular_user_info(self, tg_id: int) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -102,7 +107,10 @@ class SupportUserManager:
     async def bind_question(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -131,7 +139,10 @@ class SupportUserManager:
         ]
 
     async def unbind_question(self) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -154,7 +165,7 @@ class SupportUserManager:
         can_manage_support_users: bool,
         date: datetime,
     ) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -182,7 +193,7 @@ class SupportUserManager:
         ]
 
     async def get_role(self, role_id: int) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -209,7 +220,7 @@ class SupportUserManager:
         ]
 
     async def get_all_roles(self) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -221,7 +232,7 @@ class SupportUserManager:
         return [TextToSend(await self.msgs.get_roles_list_message(roles))]
 
     async def delete_role(self, role_id: int) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -256,7 +267,7 @@ class SupportUserManager:
         descriptive_name: str,
         message_date: datetime,
     ) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -319,7 +330,7 @@ class SupportUserManager:
     async def get_support_user(
         self, support_user_tg_id: int
     ) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(
@@ -350,7 +361,7 @@ class SupportUserManager:
         ]
 
     async def get_all_support_users(self) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(
@@ -372,7 +383,10 @@ class SupportUserManager:
     async def get_question_by_id(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -422,7 +436,10 @@ class SupportUserManager:
         ]
 
     async def get_random_unanswered_question(self) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -469,7 +486,10 @@ class SupportUserManager:
     async def get_answer_by_id(
         self, answer_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -500,7 +520,10 @@ class SupportUserManager:
     async def get_question_answers(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -529,7 +552,7 @@ class SupportUserManager:
     async def activate_support_user(
         self, support_user_tg_id: int
     ) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -562,7 +585,7 @@ class SupportUserManager:
     async def deactivate_support_user(
         self, support_user_tg_id: int
     ) -> list[MessageToSend]:
-        if self.is_manage_permission_denied():
+        if not self.support_user or self.is_manage_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -595,7 +618,10 @@ class SupportUserManager:
     async def answer_binded_question(
         self, answer_text: str, message_id: int, message_date: datetime
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -648,7 +674,10 @@ class SupportUserManager:
     async def add_attachment_to_last_answer(
         self, tg_file_id: str, attachment_type: AttachmentType, date: datetime
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -702,7 +731,7 @@ class SupportUserManager:
     async def get_attachments_for_question(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.is_answer_questions_permission_denied():
+        if self.support_user or self.is_answer_questions_permission_denied():
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
@@ -742,7 +771,7 @@ class SupportUserManager:
         support_user = self.support_user
 
         return not (
-            (support_user and support_user.is_active)
+            support_user
             and (
                 support_user.is_owner
                 or (
@@ -758,7 +787,7 @@ class SupportUserManager:
         support_user = self.support_user
 
         return not (
-            (support_user and support_user.is_active)
+            support_user
             and (
                 support_user.is_owner
                 or (
