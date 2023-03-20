@@ -17,9 +17,6 @@ load_dotenv()
 # Should be False when production
 DEBUG = os.getenv("BOT_TOKEN") or False
 
-# Should the uuids stored as bytes?
-BINARY_UUID = False
-
 
 DB_PROVIDER = os.getenv("DB_PROVIDER") or "sqlite"
 

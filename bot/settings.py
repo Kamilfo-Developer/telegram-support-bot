@@ -1,7 +1,3 @@
-from typing import Type
-from bot.db.repositories.repository import Repo, RepoConfig
-from bot.db.repositories.sa_repository import SARepo, SARepoConfig
-from bot.db.db_sa_settings import async_session
 from dotenv import load_dotenv
 from pathlib import Path
 from tzlocal import get_localzone

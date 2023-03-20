@@ -25,6 +25,7 @@ class RepoConfig(abc.ABC):
 
 class Repo(abc.ABC):
     # ROLES METHODS
+    repo_config: RepoConfig
 
     @abc.abstractmethod
     def __init__(self, repo_config: RepoConfig):
