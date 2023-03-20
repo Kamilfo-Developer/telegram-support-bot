@@ -1,6 +1,7 @@
 from typing import Type
-from bot.db.repositories.repository import Repo
-from bot.db.repositories.sa_repository import SARepo
+from bot.db.repositories.repository import Repo, RepoConfig
+from bot.db.repositories.sa_repository import SARepo, SARepoConfig
+from bot.db.db_sa_settings import async_session
 from dotenv import load_dotenv
 from pathlib import Path
 from tzlocal import get_localzone
@@ -17,7 +18,7 @@ TIMEZONE = (
 
 # Needed for some developing features
 # Should be False when production
-DEBUG = os.getenv("BOT_TOKEN") or False
+DEBUG = os.getenv("DEBUG") or False
 
 # Path to .env file where the bot token is stored
 DOTENV_PATH: Path | str = Path(".env")
@@ -27,8 +28,8 @@ load_dotenv(dotenv_path=DOTENV_PATH)
 
 
 # Repository that will be used for getting access to the DB
-# Defaults to SARepo, which is implemented using SQLAlchemy
-RepositoryClass: Type[Repo] = SARepo
+# Defaults to 'sa', which is implemented using SQLAlchemy
+REPO_TYPE: str = "sa"
 
 # Language code that satisfies IETF standard
 # (https://en.wikipedia.org/wiki/IETF_language_tag)

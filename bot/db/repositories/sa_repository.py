@@ -9,7 +9,6 @@ from bot.entities.question_attachment import QuestionAttachment
 from bot.entities.regular_user import RegularUser
 from bot.entities.role import Role
 from bot.entities.support_user import SupportUser
-from bot.db.db_sa_settings import async_session
 from bot.db.models.sa_models import (
     QuestionModel,
     QuestionAttachmentModel,
@@ -19,12 +18,22 @@ from bot.db.models.sa_models import (
     SupportUserModel,
     RoleModel,
 )
-from bot.db.repositories.repository import Repo
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Callable
+
+from bot.db.repositories.repository import Repo, RepoConfig
+
+
+class SARepoConfig(RepoConfig):
+    connection_provider: Callable[..., AsyncSession]
+
+    def __init__(self, connection_povider: Callable[..., AsyncSession]):
+        self.connection_provider = connection_povider
 
 
 class SARepo(Repo):
-    def __init__(self) -> None:
-        self._session = async_session
+    def __init__(self, repo_config: RepoConfig) -> None:
+        self._session = repo_config.connection_provider
 
     # ROLES METHODS
 

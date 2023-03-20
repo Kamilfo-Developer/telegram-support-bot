@@ -1,5 +1,4 @@
 from bot.entities.regular_user import RegularUser
-from bot.settings import RepositoryClass
 from bot.entities.support_user import SupportUser
 from bot.localization.get_messages import get_messages
 from bot.utils import (
@@ -12,10 +11,13 @@ from bot.settings import (
     OWNER_DEFAULT_DESCRIPTIVE_NAME,
     DEFAULT_LANGUAGE_CODE,
     TIMEZONE,
+    REPO_TYPE,
 )
+from bot.db.repositories.get_repo import get_repo
 from bot.managers.support_user_manager import SupportUserManager
 from bot.managers.regular_user_manager import RegularUserManager
 from telegram.ext import ContextTypes, CallbackContext
+
 import json
 
 
@@ -25,7 +27,7 @@ async def handle_start(update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
 
     user = update.effective_user
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     messages = get_messages(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
@@ -72,7 +74,7 @@ async def handle_init_owner(
     messages = get_messages(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     support_user = await repo.get_owner()
 
@@ -119,7 +121,7 @@ async def handle_help_command(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
@@ -172,7 +174,7 @@ async def handle_get_regular_user(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     if not (context.args and is_string_int(context.args[0])):  # type: ignore
         await TextToSend(
@@ -210,7 +212,7 @@ async def handle_global_statistics(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     support_user_manager = await SupportUserManager.get_manager(
         user, user.user.id, messages, repo
@@ -232,7 +234,7 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     if not context.args or len(context.args) < 3 or len(context.args) > 3:
         await TextToSend(
@@ -280,7 +282,7 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     if not context.args:
         await TextToSend(
@@ -318,7 +320,7 @@ async def handle_get_all_roles(
     """
     user = update.effective_user
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     messages = get_messages(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
@@ -343,7 +345,7 @@ async def handle_delete_role(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     if not context.args:
         await TextToSend(
@@ -385,7 +387,7 @@ async def handle_add_support_user(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -432,7 +434,7 @@ async def handle_activate_support_user(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -470,7 +472,7 @@ async def handle_deactivate_support_user(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -512,7 +514,7 @@ async def handle_get_support_user(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -550,7 +552,7 @@ async def handle_get_all_suppurt_users(
     """
     user = update.effective_user
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     messages = get_messages(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
@@ -581,7 +583,7 @@ async def handle_get_question(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -620,7 +622,7 @@ async def handle_get_question_answers(
     """
     user = update.effective_user
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     messages = get_messages(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
@@ -666,7 +668,7 @@ async def handle_bind_question(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -708,7 +710,7 @@ async def handle_unbind_question(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -735,7 +737,7 @@ async def handle_get_answer(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -781,7 +783,7 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     message = update.message
 
@@ -822,7 +824,7 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     file_type, file_id = get_file_type_and_file_id(update)
 
@@ -905,7 +907,7 @@ async def handle_bind_question_button(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -932,7 +934,7 @@ async def handle_unbind_question_button(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo
@@ -959,7 +961,7 @@ async def handle_estimate_question_as_useful_button(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await RegularUserManager.get_manager(
         user, user.id, messages, repo
@@ -986,7 +988,7 @@ async def handle_estimate_question_as_unuseful_button(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await RegularUserManager.get_manager(
         user, user.id, messages, repo
@@ -1013,7 +1015,7 @@ async def handle_show_attachments_button(
         user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    repo = RepositoryClass()
+    repo = get_repo(REPO_TYPE)
 
     manager = await SupportUserManager.get_manager(
         user, user.id, messages, repo

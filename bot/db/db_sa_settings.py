@@ -1,5 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
@@ -7,6 +6,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 import os
+
+from bot.db.repositories.sa_repository import SARepoConfig
 
 
 load_dotenv()
@@ -102,6 +103,7 @@ async_session = sessionmaker(  # type: ignore
     engine, expire_on_commit=False, class_=AsyncSession  # type: ignore
 )
 
+sa_repo_config = SARepoConfig(connection_povider=async_session)
 
 if DB_PROVIDER == "sqlite":
 
