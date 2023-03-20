@@ -1,10 +1,7 @@
 from __future__ import annotations
-from uuid import UUID
 from bot.localization.messages_content import MessagesContent
 from bot.entities.support_user import SupportUser
 from bot.entities.role import Role, RolePermissions
-from bot.entities.question import Question
-from bot.entities.attachment import Attachment
 from bot.states import States
 from bot.markup import Markup
 from bot.typing import Repo
@@ -33,7 +30,10 @@ class SupportUserManager:
     ):
         self.tg_user = tg_user
         self.support_user = (
-            support_user if support_user and support_user.is_active else None
+            support_user
+            if support_user
+            and (support_user.is_owner or support_user.is_active)
+            else None
         )
         self.msgs = messages_content
         self.repo = repo
@@ -130,7 +130,7 @@ class SupportUserManager:
                 )
             ]
 
-        await self.support_user.bind_question(question, self.repo)  # type: ignore
+        await self.support_user.bind_question(question, self.repo)
 
         return [
             TextToSend(
@@ -149,12 +149,12 @@ class SupportUserManager:
                 )
             ]
 
-        if not self.support_user.current_question:  # type: ignore
+        if not self.support_user.current_question:
             return [
                 TextToSend(await self.msgs.get_no_binded_question_message())
             ]
 
-        await self.support_user.unbind_question(self.repo)  # type: ignore
+        await self.support_user.unbind_question(self.repo)
 
         return [TextToSend(await self.msgs.get_successful_unbinding_message())]
 
@@ -628,14 +628,14 @@ class SupportUserManager:
                 )
             ]
 
-        question = self.support_user.current_question  # type: ignore
+        question = self.support_user.current_question
 
         if not question:
             return [
                 TextToSend(await self.msgs.get_no_binded_question_message())
             ]
 
-        answer = await self.support_user.answer_current_question(  # type: ignore
+        answer = await self.support_user.answer_current_question(
             answer_text, message_id, self.repo, answer_date=message_date
         )
 
@@ -731,7 +731,10 @@ class SupportUserManager:
     async def get_attachments_for_question(
         self, question_tg_message_id: int
     ) -> list[MessageToSend]:
-        if self.support_user or self.is_answer_questions_permission_denied():
+        if (
+            not self.support_user
+            or self.is_answer_questions_permission_denied()
+        ):
             return [
                 TextToSend(
                     await self.msgs.get_permission_denied_message(self.tg_user)
