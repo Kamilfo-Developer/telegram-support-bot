@@ -17,7 +17,7 @@ from sqlalchemy import (
 )
 from sqlalchemy_utils import UUIDType
 from uuid import uuid4, UUID
-from bot.db.db_sa_settings import BINARY_UUID
+
 from bot.entities.answer import AnswerAttachment
 from bot.utils import AttachmentType
 from bot.entities.answer import Answer
@@ -108,7 +108,7 @@ class RegularUserModel(ModelBase):
 
     # User id
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     # PROPERTIES
@@ -160,7 +160,7 @@ class SupportUserModel(ModelBase):
 
     # User id
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     # PROPERTIES
@@ -188,7 +188,7 @@ class SupportUserModel(ModelBase):
 
     # Current question relationship
     current_question_id: Mapped[UUID | None] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("questions.id"),
         nullable=True,
         default=None,
@@ -289,7 +289,7 @@ class QuestionModel(ModelBase):
 
     # Regular User relationship
     regular_user_id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("regular_users.id", ondelete="CASCADE"),
     )
 
@@ -318,7 +318,7 @@ class QuestionModel(ModelBase):
 
     # PROPERTIES
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     message: Mapped[str] = mapped_column(Text, nullable=False)
@@ -373,7 +373,7 @@ class AnswerModel(ModelBase):
 
     # Support User relationship
     support_user_id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("support_users.id", ondelete="CASCADE"),
     )
 
@@ -383,7 +383,7 @@ class AnswerModel(ModelBase):
 
     # Question relationship
     question_id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("questions.id", ondelete="CASCADE"),
     )
 
@@ -398,7 +398,7 @@ class AnswerModel(ModelBase):
 
     # PROPERTIES
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     message: Mapped[str] = mapped_column(Text)
@@ -447,7 +447,7 @@ class QuestionAttachmentModel(ModelBase):
 
     # Question relationship
     question_id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("questions.id", ondelete="CASCADE"),
     )
 
@@ -457,7 +457,7 @@ class QuestionAttachmentModel(ModelBase):
 
     # PROPERTIES
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     tg_file_id: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -504,7 +504,7 @@ class AnswerAttachmentModel(ModelBase):
 
     # Question relationship
     answer_id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID),
+        UUIDType(binary=False),
         ForeignKey("answers.id", ondelete="CASCADE"),
     )
 
@@ -514,7 +514,7 @@ class AnswerAttachmentModel(ModelBase):
 
     # PROPERTIES
     id: Mapped[UUID] = mapped_column(
-        UUIDType(binary=BINARY_UUID), primary_key=True, default=uuid4
+        UUIDType(binary=False), primary_key=True, default=uuid4
     )
 
     tg_file_id: Mapped[str] = mapped_column(String(255), nullable=False)
