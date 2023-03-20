@@ -1,3 +1,5 @@
+from __future__ import annotations
+from uuid import UUID
 from bot.localization.messages_content import MessagesContent
 from bot.entities.support_user import SupportUser
 from bot.entities.role import Role, RolePermissions
@@ -34,6 +36,21 @@ class SupportUserManager:
         self.msgs = messages_content
         self.repo = repo
         self.markup = Markup(messages_content)
+
+    @staticmethod
+    async def get_manager(
+        tg_user: User,
+        support_user_id: int,
+        messages_content: MessagesContent,
+        repo: Repo,
+    ) -> SupportUserManager:
+        support_user = await repo.get_support_user_by_tg_bot_user_id(
+            support_user_id
+        )
+
+        return SupportUserManager(
+            tg_user, support_user, messages_content, repo
+        )
 
     async def get_global_statistics(self) -> list[MessageToSend]:
         if self.is_manage_permission_denied():

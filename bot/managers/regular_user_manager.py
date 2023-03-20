@@ -1,3 +1,4 @@
+from __future__ import annotations
 from bot.localization.messages_content import MessagesContent
 from bot.entities.support_user import SupportUser
 from bot.entities.regular_user import RegularUser
@@ -24,6 +25,21 @@ class RegularUserManager:
         self.msgs = messages_content
         self.repo = repo
         self.markup = Markup(messages_content)
+
+    @staticmethod
+    async def get_manager(
+        tg_user: User,
+        regular_user_id: int,
+        messages_content: MessagesContent,
+        repo: Repo,
+    ) -> RegularUserManager:
+        regular_user = await repo.get_regular_user_by_tg_bot_user_id(
+            regular_user_id
+        )
+
+        return RegularUserManager(
+            tg_user, regular_user, messages_content, repo
+        )
 
     async def ask_question(
         self, question_text: str, message_id: int, message_date: datetime

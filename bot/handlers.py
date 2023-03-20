@@ -183,10 +183,8 @@ async def handle_get_regular_user(
 
         return
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    support_user_manager = SupportUserManager(
-        user, support_user, messages, repo
+    support_user_manager = await SupportUserManager.get_manager(
+        user, user.user.id, messages, repo
     )
 
     messages_to_send = await support_user_manager.get_regular_user_info(
@@ -214,10 +212,8 @@ async def handle_global_statistics(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    support_user_manager = SupportUserManager(
-        user, support_user, messages, repo
+    support_user_manager = await SupportUserManager.get_manager(
+        user, user.user.id, messages, repo
     )
 
     messages_to_send = await support_user_manager.get_global_statistics()
@@ -237,8 +233,6 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
     repo = RepositoryClass()
-
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if not context.args or len(context.args) < 3 or len(context.args) > 3:
         await TextToSend(
@@ -264,7 +258,9 @@ async def handle_add_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
     can_answer_questions = bool(int(context.args[1]))
     can_manage_support_users = bool(int(context.args[2]))
 
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.user.id, messages, repo
+    )
 
     messages_to_send = await manager.add_role(
         role_name,
@@ -286,8 +282,6 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
     if not context.args:
         await TextToSend(
             await messages.get_incorrect_num_of_arguments_message(
@@ -306,7 +300,9 @@ async def handle_get_role(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     id = int(context.args[0])
 
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     messages_to_send = await manager.get_role(id)
 
@@ -328,9 +324,9 @@ async def handle_get_all_roles(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     messages_to_send = await manager.get_all_roles()
 
@@ -348,8 +344,6 @@ async def handle_delete_role(
     )
 
     repo = RepositoryClass()
-
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
     if not context.args:
         await TextToSend(
@@ -369,7 +363,9 @@ async def handle_delete_role(
 
     id = int(context.args[0])
 
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     messages_to_send = await manager.get_role(id)
 
@@ -391,9 +387,9 @@ async def handle_add_support_user(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args or len(context.args) < 3 or len(context.args) > 3:
         await TextToSend(
@@ -438,9 +434,9 @@ async def handle_activate_support_user(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args or not len(context.args) == 1:
         await TextToSend(
@@ -476,9 +472,9 @@ async def handle_deactivate_support_user(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args or not len(context.args) == 1:
         await TextToSend(
@@ -518,9 +514,9 @@ async def handle_get_support_user(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args or not len(context.args) == 1:
         await TextToSend(
@@ -560,9 +556,9 @@ async def handle_get_all_suppurt_users(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     messages_to_send = await manager.get_all_support_users()
 
@@ -587,9 +583,9 @@ async def handle_get_question(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if context.args:
         if not is_string_int(context.args[0]):
@@ -630,9 +626,9 @@ async def handle_get_question_answers(
         update.effective_user.language_code, TIMEZONE, DEFAULT_LANGUAGE_CODE
     )
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args:
         await TextToSend(
@@ -672,9 +668,9 @@ async def handle_bind_question(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args or len(context.args) > 1:
         await TextToSend(
@@ -714,9 +710,9 @@ async def handle_unbind_question(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     messages_to_send = await manager.unbind_question()
 
@@ -741,9 +737,9 @@ async def handle_get_answer(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     if not context.args:
         await TextToSend(
@@ -805,10 +801,8 @@ async def handle_message(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         return
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
-
-    regular_user_manager = RegularUserManager(
-        user, regular_user, messages, repo
+    regular_user_manager = await RegularUserManager.get_manager(
+        user, user.id, messages, repo
     )
 
     messages_for_regular_user = await regular_user_manager.ask_question(
@@ -839,11 +833,11 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         return
 
-    suppport_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
+    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
 
-    if suppport_user and suppport_user.is_active:
+    if support_user and support_user.is_active:
         support_user_manager = SupportUserManager(
-            user, suppport_user, messages, repo
+            user, support_user, messages, repo
         )
 
         messages_to_send = (
@@ -857,23 +851,20 @@ async def handle_file(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         return
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
+    regular_user_manager = await RegularUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
-    if regular_user:
-        regular_user_manager = RegularUserManager(
-            user, regular_user, messages, repo
+    messages_to_send = (
+        await regular_user_manager.add_attachment_to_last_asked_question(
+            file_id, file_type, update.message.date
         )
+    )
 
-        messages_to_send = (
-            await regular_user_manager.add_attachment_to_last_asked_question(
-                file_id, file_type, update.message.date
-            )
-        )
+    for message in messages_to_send:
+        await message.send(update)
 
-        for message in messages_to_send:
-            await message.send(update)
-
-        return
+    return
 
 
 async def handle_unsuppported_message_type(
@@ -916,9 +907,9 @@ async def handle_bind_question_button(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     query = update.callback_query
 
@@ -943,9 +934,9 @@ async def handle_unbind_question_button(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     query = update.callback_query
 
@@ -970,9 +961,9 @@ async def handle_estimate_question_as_useful_button(
 
     repo = RepositoryClass()
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
-
-    manager = RegularUserManager(user, regular_user, messages, repo)
+    manager = await RegularUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     query = update.callback_query
 
@@ -997,9 +988,9 @@ async def handle_estimate_question_as_unuseful_button(
 
     repo = RepositoryClass()
 
-    regular_user = await repo.get_regular_user_by_tg_bot_user_id(user.id)
-
-    manager = RegularUserManager(user, regular_user, messages, repo)
+    manager = await RegularUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     query = update.callback_query
 
@@ -1024,9 +1015,9 @@ async def handle_show_attachments_button(
 
     repo = RepositoryClass()
 
-    support_user = await repo.get_support_user_by_tg_bot_user_id(user.id)
-
-    manager = SupportUserManager(user, support_user, messages, repo)
+    manager = await SupportUserManager.get_manager(
+        user, user.id, messages, repo
+    )
 
     query = update.callback_query
 
