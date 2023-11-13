@@ -24,4 +24,4 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 # Making migrations using alembic
 RUN cd /app/bot/db/migrations && alembic upgrade head && cd /app 
 
-CMD ["python3", "-m", "bot"]
+CMD ["python3", "-m", "app"]

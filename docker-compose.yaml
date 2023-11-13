@@ -1,12 +1,12 @@
 version: "3.8"
 services:
   bot:
-    image: kamilfodeveloper/telegram-support-bot:latest 
+    image: kamilfodeveloper/telegram-support-bot:latest
     restart: always
     env_file:
       - .env
     environment:
-      - DB_PROVIDER=postgres
+      - SA_DB_PROVIDER=postgres
       - POSTGRES_HOST=db
     depends_on:
       - db
@@ -34,4 +34,5 @@ networks:
 
 volumes:
   db-data:
+
 

@@ -179,9 +179,9 @@ Sets the default language. Will be used if user's language can't be found among 
 
 **Default value:** `en`.
 
-#### **DB_PROVIDER**
+#### **SA_DB_PROVIDER**
 
-Sets the database, which will be used as bot's storage.
+Sets the database that will be used as the bot's SQLAlchemy storage.
 Accepts next values: `sqlite`, `postgres`, `mysql`
 
 **Default value:** `sqlite`
